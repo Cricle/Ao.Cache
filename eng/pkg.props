@@ -1,0 +1,11 @@
+<Project>
+  <PropertyGroup>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Version>1.0.0-preview1</Version>
+    <Authors>Cricle</Authors>
+    <Description>A cache model</Description>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+</Project>

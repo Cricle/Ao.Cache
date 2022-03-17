@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<Import Project="..\..\eng\pkg.props" />
+  <PropertyGroup>
+	  <TargetFrameworks>netstandard2.0;net5.0;</TargetFrameworks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MessagePack" Version="2.3.85" />
+    <PackageReference Include="StackExchange.Redis" Version="2.5.43" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Ao.Cache.Core\Ao.Cache.Core.csproj" />
+  </ItemGroup>
+
+</Project>
