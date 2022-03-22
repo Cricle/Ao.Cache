@@ -71,16 +71,21 @@ namespace Ao.Cache.Redis.Finders
         {
             return string.Concat(GetHead(), ".", GetPart(identity));
         }
-        public async Task<TEntity> FindInDbAsync(TIdentity identity, bool cache = true)
+        public virtual async Task<TEntity> FindInDbAsync(TIdentity identity, bool cache = true)
         {
             var entry = await OnFindInDbAsync(identity);
-            if (entry != null && cache)
+            if (CanCache(identity, entry, cache))
             {
                 await SetInCahceAsync(identity, entry);
             }
             return entry;
         }
 
+        protected virtual bool CanCache(TIdentity identity,TEntity entry,bool cache)
+        {
+            return entry != null && cache;
+        }
+        
         protected abstract Task<object> CoreGetColumn(TIdentity identity, ICacheColumn column);
 
         protected virtual bool CheckColumn(TIdentity identity, ICacheColumn column)
