@@ -13,12 +13,8 @@ namespace Ao.Cache.Redis.Finders
 
         public ExpressionListCacheOperator ExpressionCacher => expressionCacher;
 
-        public IDatabase Database { get; }
+        public abstract IDatabase GetDatabase();
 
-        protected ListCacheFinder(IDatabase database)
-        {
-            Database = database ?? throw new ArgumentNullException(nameof(database));                        
-        }
         protected override ICacheOperator<RedisValue[]> GetOperator()
         {
             if (EntityType.IsPrimitive ||
@@ -52,7 +48,7 @@ namespace Ao.Cache.Redis.Finders
 
         protected override Task<RedisValue[]> GetValueAsync(string key, TIdentity identity)
         {
-            return Database.ListRangeAsync(key);
+            return GetDatabase().ListRangeAsync(key);
         }
 
         protected override async Task<object> CoreGetColumn(TIdentity identity, ICacheColumn column)
@@ -62,7 +58,7 @@ namespace Ao.Cache.Redis.Finders
             {
                 return null;
             }
-            var val = await Database.ListGetByIndexAsync(GetEntryKey(identity), index);
+            var val = await GetDatabase().ListGetByIndexAsync(GetEntryKey(identity), index);
             if (val.HasValue)
             {
                 return null;
@@ -89,8 +85,9 @@ namespace Ao.Cache.Redis.Finders
 
         protected override async Task<bool> CoreSetInCacheAsync(TIdentity identity, TEntry entity, string key, RedisValue[] value, TimeSpan? cacheTime)
         {
-            await Database.ListRightPushAsync(key, value);
-            await Database.KeyExpireAsync(key, cacheTime);
+            var db = GetDatabase();
+            await db.ListRightPushAsync(key, value);
+            await db.KeyExpireAsync(key, cacheTime);
             return true;
         }
     }

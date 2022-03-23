@@ -6,6 +6,8 @@ using Microsoft.Extensions.Caching.Memory;
 using StackExchange.Redis;
 using System;
 using System.Diagnostics;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Ao.Cache.WebApi.Controllers
@@ -73,11 +75,19 @@ namespace Ao.Cache.WebApi.Controllers
     public class WeatherForecastDataFinder2 : HashCacheFinder<string, WeatherForecast>
     {
         //private readonly IMemoryCache memoryCache;
+        private readonly IDatabase database;
 
-        public WeatherForecastDataFinder2(IDatabase database) : base(database)
+        public WeatherForecastDataFinder2(IDatabase database)
         {
+            this.database = database;
             Build();
         }
+
+        public override IDatabase GetDatabase()
+        {
+            return database;
+        }
+
         protected override Task<WeatherForecast> OnFindInDbAsync(string identity)
         {
             return Task.FromResult(new WeatherForecast
@@ -91,11 +101,18 @@ namespace Ao.Cache.WebApi.Controllers
     public class WeatherForecastDataFinder1 : ListCacheFinder<string, WeatherForecast>
     {
         //private readonly IMemoryCache memoryCache;
-
-        public WeatherForecastDataFinder1(IDatabase database) : base(database)
+        private readonly IDatabase database;
+        public WeatherForecastDataFinder1(IDatabase database)
         {
+            this.database = database;
             Build();
         }
+
+        public override IDatabase GetDatabase()
+        {
+            return database;
+        }
+
         protected override Task<WeatherForecast> OnFindInDbAsync(string identity)
         {
             return Task.FromResult(new WeatherForecast
@@ -106,12 +123,15 @@ namespace Ao.Cache.WebApi.Controllers
             });
         }
     }
+    [JsonSerializable(typeof(WeatherForecast))]
+    internal partial class WeatherForecastContext : JsonSerializerContext
+    {
+    }
     public class WeatherForecastDataFinder3 : RedisJsonDataFinder<string, WeatherForecast>
     {
         public WeatherForecastDataFinder3(IDatabase database) : base(database)
         {
         }
-
         protected override Task<WeatherForecast> OnFindInDbAsync(string identity)
         {
             return Task.FromResult(new WeatherForecast

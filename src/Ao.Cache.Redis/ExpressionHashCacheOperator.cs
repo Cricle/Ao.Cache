@@ -30,7 +30,8 @@ namespace Ao.Cache.Redis
         private static readonly MethodInfo ConvertMethod = typeof(ICacheValueConverter).GetMethod("Convert");
         private static readonly MethodInfo ConvertBackMethod = typeof(ICacheValueConverter).GetMethod("ConvertBack");
 
-        public ExpressionHashCacheOperator(Type target, ICacheColumnAnalysis columnAnalysis) : base(target, columnAnalysis)
+        public ExpressionHashCacheOperator(Type target, ICacheColumnAnalysis columnAnalysis) 
+            : base(target, columnAnalysis)
         {
         }
         

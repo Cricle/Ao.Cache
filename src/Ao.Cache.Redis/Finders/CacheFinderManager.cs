@@ -79,10 +79,11 @@ namespace Ao.Cache.Redis.Finders
         {
             private readonly IWorkDataFinder<TIdentity, TEntity> finder;
             private readonly IServiceScope serviceScope;
+            private readonly IDatabase database;
 
             public InternaHashCacheFinder(IServiceScope scope, IDatabase database, IWorkDataFinder<TIdentity, TEntity> finder)
-                : base(database)
             {
+                this.database = database;
                 Debug.Assert(finder != null);
                 this.serviceScope = scope;
                 this.finder = finder;
@@ -91,6 +92,11 @@ namespace Ao.Cache.Redis.Finders
             public override void Dispose()
             {
                 serviceScope.Dispose();
+            }
+
+            public override IDatabase GetDatabase()
+            {
+                return database;
             }
 
             protected override Task<TEntity> OnFindInDbAsync(TIdentity identity)
@@ -102,11 +108,12 @@ namespace Ao.Cache.Redis.Finders
         {
             private readonly IWorkDataFinder<TIdentity, TEntity> finder;
             private readonly IServiceScope serviceScope;
+            private readonly IDatabase database;
 
             public InternalListCacheFinder(IServiceScope scope, IDatabase database, IWorkDataFinder<TIdentity, TEntity> finder)
-                : base(database)
             {
                 Debug.Assert(finder != null);
+                this.database = database;
                 this.serviceScope = scope;
                 this.finder = finder;
             }
@@ -114,6 +121,11 @@ namespace Ao.Cache.Redis.Finders
             public override void Dispose()
             {
                 serviceScope.Dispose();
+            }
+
+            public override IDatabase GetDatabase()
+            {
+                return database;
             }
 
             protected override Task<TEntity> OnFindInDbAsync(TIdentity identity)

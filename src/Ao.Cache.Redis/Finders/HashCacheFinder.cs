@@ -10,12 +10,8 @@ namespace Ao.Cache.Redis.Finders
 
         public ExpressionHashCacheOperator ExpressionCacher => expressionCacher;
 
-        public IDatabase Database { get; }
+        public abstract IDatabase GetDatabase();
 
-        protected HashCacheFinder(IDatabase database)
-        {
-            Database = database ?? throw new ArgumentNullException(nameof(database));
-        }
         protected override ICacheOperator<HashEntry[]> GetOperator()
         {
             if (EntityType.IsPrimitive ||
@@ -29,7 +25,6 @@ namespace Ao.Cache.Redis.Finders
         protected override void OnBuild()
         {
             expressionCacher = Operator as ExpressionHashCacheOperator;
-
         }
 
         protected override TEntity Write(TIdentity identity, HashEntry[] value)
@@ -49,12 +44,12 @@ namespace Ao.Cache.Redis.Finders
 
         protected override Task<HashEntry[]> GetValueAsync(string key, TIdentity identity)
         {
-            return Database.HashGetAllAsync(key);
+            return GetDatabase().HashGetAllAsync(key);
         }
 
         protected override async Task<object> CoreGetColumn(TIdentity identity, ICacheColumn column)
         {
-            var val = await Database.HashGetAsync(GetEntryKey(identity), column.Path);
+            var val = await GetDatabase().HashGetAsync(GetEntryKey(identity), column.Path);
             if (val.HasValue)
             {
                 return null;
@@ -68,8 +63,9 @@ namespace Ao.Cache.Redis.Finders
 
         protected override async Task<bool> CoreSetInCacheAsync(TIdentity identity, TEntity entity, string key, HashEntry[] value, TimeSpan? cacheTime)
         {
-            await Database.HashSetAsync(key, value);
-            await Database.KeyExpireAsync(key, cacheTime);
+            var db = GetDatabase();
+            await db.HashSetAsync(key, value);
+            await db.KeyExpireAsync(key, cacheTime);
             return true;
         }
     }
