@@ -18,16 +18,15 @@ namespace StackExchange.Redis
             var count = 0L;
             await foreach (var item in ScanKeys(database, pattern, pageSize))
             {
-                var keys = AsRedisKey(item);
-                count += await database.KeyDeleteAsync(keys);
+                count += await database.KeyDeleteAsync(item);
             }
             return count;
         }
-        public static IAsyncEnumerable<string[]> ScanKeys(this IDatabase database, string pattern)
+        public static IAsyncEnumerable<RedisKey[]> ScanKeys(this IDatabase database, string pattern)
         {
             return ScanKeys(database, pattern, DefaultPageSize);
         }
-        public static async IAsyncEnumerable<string[]> ScanKeys(this IDatabase database, string pattern, int pageSize)
+        public static async IAsyncEnumerable<RedisKey[]> ScanKeys(this IDatabase database, string pattern, int pageSize)
         {
             var count = 0L;
             do
@@ -35,7 +34,7 @@ namespace StackExchange.Redis
                 var res = await database.ExecuteAsync("scan", count, "match", pattern, "count", pageSize);
                 var f = ((RedisResult[])res);
                 count = ((long)f[0]);
-                yield return ((string[])f[1]);
+                yield return ((RedisKey[])f[1]);
             } while (count != 0);
         }
         private static RedisKey[] AsRedisKey(string[] keys)
