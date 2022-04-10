@@ -10,6 +10,7 @@ namespace Ao.Cache.Redis.Finders
         {
             Database = database ?? throw new ArgumentNullException(nameof(database));
             DataAccesstor = dataAccesstor ?? throw new ArgumentNullException(nameof(dataAccesstor));
+            Build();
         }
 
         public IDatabase Database { get; }
