@@ -129,8 +129,15 @@ namespace Ao.Cache.WebApi.Controllers
     }
     public class WeatherForecastDataFinder3 : RedisJsonDataFinder<string, WeatherForecast>
     {
-        public WeatherForecastDataFinder3(IDatabase database) : base(database)
+        public WeatherForecastDataFinder3(IDatabase database)
         {
+            Database = database;
+        }
+        public IDatabase Database { get; }
+
+        protected override IDatabase GetDatabase()
+        {
+            return Database;
         }
         protected override Task<WeatherForecast> OnFindInDbAsync(string identity)
         {
@@ -144,10 +151,16 @@ namespace Ao.Cache.WebApi.Controllers
     }
     public class WeatherForecastDataFinder : RedisMessagePackDataFinder<string, WeatherForecast>
     {
-        public WeatherForecastDataFinder(IDatabase database) : base(database)
+        public WeatherForecastDataFinder(IDatabase database)
         {
+            Database = database;
         }
+        public IDatabase Database { get; }
 
+        protected override IDatabase GetDatabase()
+        {
+            return Database;
+        }
         protected override Task<WeatherForecast> OnFindInDbAsync(string identity)
         {
             return Task.FromResult(new WeatherForecast

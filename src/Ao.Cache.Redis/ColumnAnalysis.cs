@@ -21,7 +21,10 @@ namespace Ao.Cache.Redis
             IgnoreTypes = new HashSet<Type>();
             IgnoreProperties = new HashSet<PropertyInfo>();
             IgnoreNames = new HashSet<string>();
+            ConverterProviders = new List<IConverterProvider>();
         }
+
+        public List<IConverterProvider> ConverterProviders { get; }
 
         public HashSet<Type> IgnoreTypes { get; }
 
@@ -66,8 +69,16 @@ namespace Ao.Cache.Redis
             return KnowsCacheValueConverter.GetConverter(info.PropertyType);
         }
         protected readonly Dictionary<Type, ICacheValueConverter> convertTypeCache = new Dictionary<Type, ICacheValueConverter>();
-        protected virtual bool TryGetConverter(PropertyInfo info,out ICacheValueConverter converter)
+        protected virtual bool TryGetConverter(Type instanceType,PropertyInfo info,out ICacheValueConverter converter)
         {
+            foreach (var item in ConverterProviders)
+            {
+                converter = item.GetConverter(instanceType, info);
+                if (converter != null) 
+                {
+                    return true;
+                }
+            }
             var converterAttr = info.GetCustomAttribute<CacheValueConverterAttribute>();
             if (converterAttr == null)
             {
@@ -102,8 +113,17 @@ namespace Ao.Cache.Redis
             }
             return false;
         }
-        private ICacheColumn[] Analysis(Type type, string prefx)
+        protected virtual ICacheValueConverter ConverterNotFound(Type type,PropertyInfo property)
         {
+            ThrowConverterNotFound(type, property);
+            return null;
+        }
+        private void ThrowConverterNotFound(Type type,PropertyInfo property)
+        {
+            throw new InvalidOperationException($"Type {type.FullName} property {property.Name} can't get a converter");
+        }
+        private ICacheColumn[] Analysis(Type type, string prefx)
+        {            
             var columns = new List<ICacheColumn>();
             var props = type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
                 .Where(CanLookup);
@@ -112,9 +132,17 @@ namespace Ao.Cache.Redis
 
             foreach (var item in props)
             {
-                if(!TryGetConverter(item,out var converter))
+                if(!TryGetConverter(type,item,out var converter))
                 {
                     converter = CreateConverter(item);
+                }
+                if (converter==null)
+                {
+                    ConverterNotFound(type, item);
+                }
+                if (converter==null)
+                {
+                    ThrowConverterNotFound(type, item);
                 }
 
                 PropertyGetter getter = null;

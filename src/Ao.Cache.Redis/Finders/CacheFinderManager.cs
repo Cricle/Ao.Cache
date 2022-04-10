@@ -16,13 +16,13 @@ namespace Ao.Cache.Redis.Finders
         public IServiceScopeFactory ServiceScopeFactory { get; }
 
         public HashCacheFinder<TIdentity, TEntity> GetHashCacheFinder<TIdentity, TEntity, TWorkDataFinder>(IServiceScope scope)
-            where TWorkDataFinder : IWorkDataFinder<TIdentity, TEntity>
+            where TWorkDataFinder : IDataAccesstor<TIdentity, TEntity>
         {
             var finder = scope.ServiceProvider.GetRequiredService<TWorkDataFinder>();
             return GetHashCacheFinder(scope, finder);
         }
         public HashCacheFinder<TIdentity, TEntity> GetHashCacheFinder<TIdentity, TEntity>(IServiceScope scope,
-            IWorkDataFinder<TIdentity, TEntity> finder)
+            IDataAccesstor<TIdentity, TEntity> finder)
         {
             var db = scope.ServiceProvider.GetService<IDatabase>();
             if (db == null)
@@ -39,18 +39,18 @@ namespace Ao.Cache.Redis.Finders
 
         public HashCacheFinder<TIdentity, TEntity> GetHashCacheFinder<TIdentity, TEntity>(IServiceScope scope,
             IDatabase database,
-            IWorkDataFinder<TIdentity, TEntity> finder)
+            IDataAccesstor<TIdentity, TEntity> finder)
         {
             return new InternaHashCacheFinder<TIdentity, TEntity>(scope, database, finder);
         }
         public ListCacheFinder<TIdentity, TEntity> GetListCacheFinder<TIdentity, TEntity, TWorkDataFinder>(IServiceScope scope)
-            where TWorkDataFinder : IWorkDataFinder<TIdentity, TEntity>
+            where TWorkDataFinder : IDataAccesstor<TIdentity, TEntity>
         {
             var finder = scope.ServiceProvider.GetRequiredService<TWorkDataFinder>();
             return GetListCacheFinder(scope, finder);
         }
         public ListCacheFinder<TIdentity, TEntity> GetListCacheFinder<TIdentity, TEntity>(IServiceScope scope,
-            IWorkDataFinder<TIdentity, TEntity> finder)
+            IDataAccesstor<TIdentity, TEntity> finder)
         {
             var db = scope.ServiceProvider.GetService<IDatabase>();
             if (db == null)
@@ -69,7 +69,7 @@ namespace Ao.Cache.Redis.Finders
 
         public ListCacheFinder<TIdentity, TEntity> GetListCacheFinder<TIdentity, TEntity>(IServiceScope scope,
             IDatabase database,
-            IWorkDataFinder<TIdentity, TEntity> finder)
+            IDataAccesstor<TIdentity, TEntity> finder)
         {
             var f = new InternalListCacheFinder<TIdentity, TEntity>(scope, database, finder);
             f.Build();
@@ -77,11 +77,11 @@ namespace Ao.Cache.Redis.Finders
         }
         internal sealed class InternaHashCacheFinder<TIdentity, TEntity> : HashCacheFinder<TIdentity, TEntity>
         {
-            private readonly IWorkDataFinder<TIdentity, TEntity> finder;
+            private readonly IDataAccesstor<TIdentity, TEntity> finder;
             private readonly IServiceScope serviceScope;
             private readonly IDatabase database;
 
-            public InternaHashCacheFinder(IServiceScope scope, IDatabase database, IWorkDataFinder<TIdentity, TEntity> finder)
+            public InternaHashCacheFinder(IServiceScope scope, IDatabase database, IDataAccesstor<TIdentity, TEntity> finder)
             {
                 this.database = database;
                 Debug.Assert(finder != null);
@@ -106,11 +106,11 @@ namespace Ao.Cache.Redis.Finders
         }
         internal sealed class InternalListCacheFinder<TIdentity, TEntity> : ListCacheFinder<TIdentity, TEntity>
         {
-            private readonly IWorkDataFinder<TIdentity, TEntity> finder;
+            private readonly IDataAccesstor<TIdentity, TEntity> finder;
             private readonly IServiceScope serviceScope;
             private readonly IDatabase database;
 
-            public InternalListCacheFinder(IServiceScope scope, IDatabase database, IWorkDataFinder<TIdentity, TEntity> finder)
+            public InternalListCacheFinder(IServiceScope scope, IDatabase database, IDataAccesstor<TIdentity, TEntity> finder)
             {
                 Debug.Assert(finder != null);
                 this.database = database;

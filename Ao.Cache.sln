@@ -17,7 +17,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ao.Cache.WebApi", "samples\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ao.Cache.Redis", "src\Ao.Cache.Redis\Ao.Cache.Redis.csproj", "{DC07D77B-95BD-4DCC-9638-0C88117BB7F0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ao.Cache.TextJson.Redis", "src\Ao.Cache.TextJson.Redis\Ao.Cache.TextJson.Redis.csproj", "{946ECE0E-6EDC-4A7C-9A74-102A06D3E23B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ao.Cache.TextJson.Redis", "src\Ao.Cache.TextJson.Redis\Ao.Cache.TextJson.Redis.csproj", "{946ECE0E-6EDC-4A7C-9A74-102A06D3E23B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ao.Cache.DependencyInjection", "src\Ao.Cache.DependencyInjection\Ao.Cache.DependencyInjection.csproj", "{FEB865E7-0487-4470-9629-5E6D7B53B4CB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -49,6 +51,10 @@ Global
 		{946ECE0E-6EDC-4A7C-9A74-102A06D3E23B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{946ECE0E-6EDC-4A7C-9A74-102A06D3E23B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{946ECE0E-6EDC-4A7C-9A74-102A06D3E23B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FEB865E7-0487-4470-9629-5E6D7B53B4CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FEB865E7-0487-4470-9629-5E6D7B53B4CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FEB865E7-0487-4470-9629-5E6D7B53B4CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FEB865E7-0487-4470-9629-5E6D7B53B4CB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

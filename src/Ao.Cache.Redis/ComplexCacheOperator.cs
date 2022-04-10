@@ -9,7 +9,7 @@ namespace Ao.Cache.Redis
 {
     public abstract class ComplexCacheOperator
     {
-        protected static readonly CacheColumnAnalysis SharedAnalysis = new CacheColumnAnalysis();
+        public static readonly CacheColumnAnalysis SharedAnalysis = new CacheColumnAnalysis();
 
         protected ComplexCacheOperator(Type target, ICacheColumnAnalysis columnAnalysis)
         {

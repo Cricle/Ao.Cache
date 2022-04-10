@@ -9,16 +9,15 @@ namespace Ao.Cache.MessagePack.Redis
 {
     public abstract class RedisMessagePackDataFinder<TIdentity, TEntry> : MessagePackDataFinder<TIdentity, TEntry>
     {
-        protected RedisMessagePackDataFinder(IDatabase database)
+        protected RedisMessagePackDataFinder()
         {
-            Database = database ?? throw new ArgumentNullException(nameof(database));
         }
 
-        public IDatabase Database { get; }
+        protected abstract IDatabase GetDatabase();
 
         protected override async Task<TEntry> CoreFindInCacheAsync(string key, TIdentity identity)
         {
-            var val = await Database.StringGetAsync(key);
+            var val = await GetDatabase().StringGetAsync(key);
             if (val.HasValue)
             {
                 return ToEntry(val);
@@ -29,17 +28,17 @@ namespace Ao.Cache.MessagePack.Redis
         protected override Task<bool> WriteCacheAsync(string key, TIdentity identity, TEntry entity, TimeSpan? caheTime)
         {
             var buffer = ToBytes(entity);
-            return Database.StringSetAsync(key, buffer, caheTime);
+            return GetDatabase().StringSetAsync(key, buffer, caheTime);
         }
 
         public virtual Task<bool> ExistsCacheAsync(TIdentity identity)
         {
-            return Database.KeyExistsAsync(GetEntryKey(identity));
+            return GetDatabase().KeyExistsAsync(GetEntryKey(identity));
         }
 
         public virtual Task<bool> DeleteCahceAsync(TIdentity identity)
         {
-            return Database.KeyDeleteAsync(GetEntryKey(identity));
+            return GetDatabase().KeyDeleteAsync(GetEntryKey(identity));
         }
     }
 }
