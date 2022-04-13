@@ -33,11 +33,16 @@ namespace Ao.Cache.Redis.Converters
         private static readonly Type ByteArrayType = typeof(byte[]);
         private static readonly Type DateTimeType = typeof(DateTime);
         private static readonly Type NullableDateTimeType = typeof(DateTime?);
+        private static readonly Type VersionType = typeof(Version);
 
         public static ICacheValueConverter EndValueConverter { get; set; }
 
         public static ICacheValueConverter GetConverter(Type type)
         {
+            if (type.IsEnum)
+            {
+                return EnumCacheValueConverter.Instance;
+            }
             if (type.IsEquivalentTo(StringType))
             {
                 return StringCacheValueConverter.Instance;
@@ -119,7 +124,8 @@ namespace Ao.Cache.Redis.Converters
                 if (type.IsEquivalentTo(NullableDecimalType))
                 {
                     return NullableDecimalCacheValueConverter.Instance;
-                }                
+                }
+                return StructCacheValueConverter.Instance;
             }
             if (type.IsEquivalentTo(ByteArrayType))
             {
@@ -133,9 +139,9 @@ namespace Ao.Cache.Redis.Converters
             {
                 return NullableDateTimeCacheValueConverter.Instance;
             }
-            if (type.IsEnum)
+            if (type.IsEquivalentTo(VersionType))
             {
-                return EnumCacheValueConverter.Instance;
+                return VersionCacheValueConverter.Instance;
             }
 
             return EndValueConverter;

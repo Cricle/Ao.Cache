@@ -1,9 +1,9 @@
 ﻿using StackExchange.Redis;
-
+using System;
+using System.Collections.Generic;
 
 namespace Ao.Cache.Redis.Converters
 {
-
     public class CharCacheValueConverter : ICacheValueConverter
     {
         public static readonly CharCacheValueConverter Instance = new CharCacheValueConverter();

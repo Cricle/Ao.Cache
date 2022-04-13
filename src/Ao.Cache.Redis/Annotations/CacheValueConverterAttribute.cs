@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Ao.Cache.Redis.Annotations
 {
     [AttributeUsage(AttributeTargets.Property,AllowMultiple =false,Inherited =false)]
-    public sealed class CacheValueConverterAttribute:Attribute
+    public class CacheValueConverterAttribute:Attribute
     {
         private static readonly string CacheValueConverterName = typeof(ICacheValueConverter).FullName;
 

@@ -19,7 +19,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ao.Cache.Redis", "src\Ao.Ca
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ao.Cache.TextJson.Redis", "src\Ao.Cache.TextJson.Redis\Ao.Cache.TextJson.Redis.csproj", "{946ECE0E-6EDC-4A7C-9A74-102A06D3E23B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ao.Cache.DependencyInjection", "src\Ao.Cache.DependencyInjection\Ao.Cache.DependencyInjection.csproj", "{FEB865E7-0487-4470-9629-5E6D7B53B4CB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ao.Cache.DependencyInjection", "src\Ao.Cache.DependencyInjection\Ao.Cache.DependencyInjection.csproj", "{FEB865E7-0487-4470-9629-5E6D7B53B4CB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ao.Cache.Redis.Test", "test\Ao.Cache.Redis.Test\Ao.Cache.Redis.Test.csproj", "{CDD68E7B-E3E6-4E85-8EA9-9F56EA16919B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,6 +57,10 @@ Global
 		{FEB865E7-0487-4470-9629-5E6D7B53B4CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FEB865E7-0487-4470-9629-5E6D7B53B4CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FEB865E7-0487-4470-9629-5E6D7B53B4CB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CDD68E7B-E3E6-4E85-8EA9-9F56EA16919B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDD68E7B-E3E6-4E85-8EA9-9F56EA16919B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CDD68E7B-E3E6-4E85-8EA9-9F56EA16919B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CDD68E7B-E3E6-4E85-8EA9-9F56EA16919B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -62,6 +68,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{9DE195E7-9D8A-44F9-9349-1DE9DDEA5CBE} = {9CF6302B-4E03-4DD5-904E-47D661131202}
 		{3BD6F301-37AD-464C-9F2D-B34794F04B09} = {A52E7B5C-66EF-4377-847C-B1BA11168C56}
+		{CDD68E7B-E3E6-4E85-8EA9-9F56EA16919B} = {9CF6302B-4E03-4DD5-904E-47D661131202}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {55157C22-E7CC-4639-A568-1305AB03681E}
