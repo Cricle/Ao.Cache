@@ -7,7 +7,7 @@ namespace Ao.Cache.Redis.Finders
     public abstract class ColumnCacheFinder<TIdentity, TEntity,TValue> : IDataFinder<TIdentity, TEntity>,IDisposable
     {
         public static readonly TimeSpan DefaultCacheTime = TimeSpan.FromSeconds(3);
-        public static readonly string EntryFriendlyName = TypeNameHelper.GetFriendlyName(typeof(TEntity));
+        public static readonly string EntryFriendlyName = TypeNameHelper.GetFriendlyFullName(typeof(TEntity));
 
         protected static readonly bool IsNormalType = typeof(TEntity).IsPrimitive || typeof(TEntity) == typeof(string);
         protected static readonly bool IsArray = typeof(TEntity).IsArray;

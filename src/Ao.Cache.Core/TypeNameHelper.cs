@@ -5,6 +5,10 @@ namespace Ao.Cache
 {
     public static class TypeNameHelper
     {
+        public static string GetFriendlyFullName(Type type)
+        {
+            return string.Concat(type.FullName.Split('`')[0], GetFriendlyName(type));
+        }
         public static string GetFriendlyName(Type type)
         {
             if (type.IsGenericType)

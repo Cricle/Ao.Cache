@@ -9,7 +9,7 @@ namespace Ao.Cache
 
         public static readonly TimeSpan DefaultCacheTime = TimeSpan.FromSeconds(3);
         
-        public static readonly string EntryFriendlyName = TypeNameHelper.GetFriendlyName(typeof(TEntity));
+        public static readonly string EntryFriendlyName = TypeNameHelper.GetFriendlyFullName(typeof(TEntity));
 
         protected DataFinderBase()
         {

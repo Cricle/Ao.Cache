@@ -32,7 +32,7 @@ namespace Ao.Cache.MessagePack.Redis
 
         public override string GetHead()
         {
-            return DataAccesstor.GetHead();
+            return DataAccesstor.GetHead()??base.GetHead();
         }
         public override string GetPart(TIdentity identity)
         {
