@@ -67,7 +67,7 @@ namespace Ao.Cache.Redis
                     yield return Expression.Block(new ParameterExpression[] { val, value },
                         new Expression[] { valAssign, assignValue, doNothingCheck });
                 }
-                if (column.Nexts != null && column.Nexts.Count != 0)
+                if (column.Converter == null && column.Nexts != null && column.Nexts.Count != 0)
                 {
                     yield return Expression.Call(instance, column.Property.SetMethod, Expression.New(column.Property.PropertyType));
                     var nextInst = Expression.Call(instance, column.Property.GetMethod);

@@ -62,7 +62,8 @@ namespace Ao.Cache.Redis
             return !info.PropertyType.IsValueType && info.PropertyType != StringType &&
                 info.GetCustomAttribute<NotDeepAttribute>() == null &&
                 info.PropertyType.GetInterface(IListName) == null &&
-                info.PropertyType.GetInterface(IDictionaryName) == null;
+                info.PropertyType.GetInterface(IDictionaryName) == null &&
+                column.Converter == null;
         }
         protected virtual ICacheValueConverter CreateConverter(PropertyInfo info)
         {
@@ -115,12 +116,7 @@ namespace Ao.Cache.Redis
         }
         protected virtual ICacheValueConverter ConverterNotFound(Type type,PropertyInfo property)
         {
-            ThrowConverterNotFound(type, property);
             return null;
-        }
-        private void ThrowConverterNotFound(Type type,PropertyInfo property)
-        {
-            throw new InvalidOperationException($"Type {type.FullName} property {property.Name} can't get a converter");
         }
         private ICacheColumn[] Analysis(Type type, string prefx)
         {            
@@ -138,11 +134,7 @@ namespace Ao.Cache.Redis
                 }
                 if (converter==null)
                 {
-                    ConverterNotFound(type, item);
-                }
-                if (converter==null)
-                {
-                    ThrowConverterNotFound(type, item);
+                    converter = ConverterNotFound(type, item);
                 }
 
                 PropertyGetter getter = null;
