@@ -120,6 +120,9 @@ namespace Ao.Cache.Redis.Finders
         public virtual void Dispose()
         {
         }
+
+        public abstract Task<bool> DeleteAsync(TIdentity identity);
+        public abstract Task<bool> ExistsAsync(TIdentity identity);
     }
 
 }

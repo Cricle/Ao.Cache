@@ -31,14 +31,13 @@ namespace Ao.Cache.MessagePack.Redis
             return GetDatabase().StringSetAsync(key, buffer, caheTime);
         }
 
-        public virtual Task<bool> ExistsCacheAsync(TIdentity identity)
-        {
-            return GetDatabase().KeyExistsAsync(GetEntryKey(identity));
-        }
-
-        public virtual Task<bool> DeleteCahceAsync(TIdentity identity)
+        public override Task<bool> DeleteAsync(TIdentity identity)
         {
             return GetDatabase().KeyDeleteAsync(GetEntryKey(identity));
+        }
+        public override Task<bool> ExistsAsync(TIdentity identity)
+        {
+            return GetDatabase().KeyExistsAsync(GetEntryKey(identity));
         }
     }
 }

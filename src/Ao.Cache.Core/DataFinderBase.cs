@@ -59,6 +59,9 @@ namespace Ao.Cache
         {
             return DefaultCacheTime;
         }
+
+        public abstract Task<bool> DeleteAsync(TIdentity entity);
+        public abstract Task<bool> ExistsAsync(TIdentity identity);
     }
 
 }
