@@ -109,9 +109,9 @@ namespace Ao.Cache.Redis
                     }
                 }
                 convertTypeCache[converterAttr.ConvertType] = converter;
-                return true;
+                return converter != null;
             }
-            return false;
+            return converter != null;
         }
         protected virtual ICacheValueConverter ConverterNotFound(Type type,PropertyInfo property)
         {
