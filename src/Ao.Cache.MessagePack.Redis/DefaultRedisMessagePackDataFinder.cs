@@ -29,5 +29,14 @@ namespace Ao.Cache.MessagePack.Redis
         {
             return DataAccesstor.GetCacheTime(identity, entity);
         }
+
+        public override string GetHead()
+        {
+            return DataAccesstor.GetHead();
+        }
+        public override string GetPart(TIdentity identity)
+        {
+            return DataAccesstor.GetPart(identity);
+        }
     }
 }

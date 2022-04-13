@@ -30,6 +30,14 @@ namespace Ao.Cache.Redis.Finders
         {
             return Database;
         }
+        protected override string GetHead()
+        {
+            return DataAccesstor.GetHead()??base.GetHead();
+        }
+        protected override string GetPart(TIdentity identity)
+        {
+            return DataAccesstor.GetPart(identity);
+        }
     }
 
 }

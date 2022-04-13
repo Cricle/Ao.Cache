@@ -78,6 +78,10 @@ namespace Ao.Cache.Redis.Finders
             }
             return -1;
         }
+        protected override string GetHead()
+        {
+            return "List." + base.GetHead();
+        }
         protected override bool CheckColumn(TIdentity identity, ICacheColumn column)
         {
             return expressionCacher != null;

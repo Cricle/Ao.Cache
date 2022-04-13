@@ -2,11 +2,11 @@
 
 namespace Ao.Cache
 {
-    public interface ICacheFinder<TIdentity, TEntry>
+    public interface ICacheFinder<TIdentity, TEntity>
     {
-        Task<bool> SetInCahceAsync(TIdentity identity, TEntry entity);
+        Task<bool> SetInCahceAsync(TIdentity identity, TEntity entity);
 
-        Task<TEntry> FindInCahceAsync(TIdentity identity);
+        Task<TEntity> FindInCahceAsync(TIdentity identity);
 
     }
 

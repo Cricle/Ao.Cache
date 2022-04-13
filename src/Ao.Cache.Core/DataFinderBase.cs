@@ -9,11 +9,10 @@ namespace Ao.Cache
 
         public static readonly TimeSpan DefaultCacheTime = TimeSpan.FromSeconds(3);
         
-        private readonly Type currentType;
+        public static readonly string EntryFriendlyName = TypeNameHelper.GetFriendlyName(typeof(TEntity));
 
         protected DataFinderBase()
         {
-            currentType = GetType();
         }
 
         public Task<TEntity> FindInCahceAsync(TIdentity identity)
@@ -30,7 +29,7 @@ namespace Ao.Cache
         }
         public virtual string GetHead()
         {
-            return currentType.FullName;
+            return EntryFriendlyName;
         }
         public string GetEntryKey(TIdentity identity)
         {
