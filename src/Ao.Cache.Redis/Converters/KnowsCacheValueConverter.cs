@@ -142,10 +142,6 @@ namespace Ao.Cache.Redis.Converters
                 {
                     return NullableDecimalCacheValueConverter.Instance;
                 }
-                if (!type.IsPrimitive)
-                {
-                    return StructCacheValueConverter.Instance;
-                }
             }
             if (type.IsEquivalentTo(ByteArrayType))
             {
