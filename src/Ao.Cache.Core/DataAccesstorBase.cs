@@ -5,15 +5,27 @@ using System.Threading.Tasks;
 
 namespace Ao.Cache
 {
-    public abstract class DataAccesstorBase<TIdentity, TEntry> : IDataAccesstor<TIdentity, TEntry>
+    public abstract class DataAccesstorBase<TIdentity, TEntity> : IDataAccesstor<TIdentity, TEntity>
     {
         public static readonly TimeSpan DefaultCacheTime = TimeSpan.FromSeconds(3.0);
 
-        public abstract Task<TEntry> FindAsync(TIdentity identity);
+        public static readonly string EntryFriendlyName = TypeNameHelper.GetFriendlyFullName(typeof(TEntity));
 
-        public virtual TimeSpan? GetCacheTime(TIdentity identity, TEntry entity)
+        public abstract Task<TEntity> FindAsync(TIdentity identity);
+
+        public virtual TimeSpan? GetCacheTime(TIdentity identity, TEntity entity)
         {
             return DefaultCacheTime;
+        }
+
+        public virtual string GetHead()
+        {
+            return null;
+        }
+
+        public virtual string GetPart(TIdentity identity)
+        {
+           return identity?.ToString();
         }
     }
 }

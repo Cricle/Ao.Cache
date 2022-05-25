@@ -5,6 +5,16 @@ namespace Ao.Cache.Core.Test
 {
     internal class NullDataFinder : DataFinderBase<int, string>
     {
+        public override Task<bool> DeleteAsync(int entity)
+        {
+            return Task.FromResult(true);
+        }
+
+        public override Task<bool> ExistsAsync(int identity)
+        {
+            return Task.FromResult(identity != 0);
+        }
+
         protected override Task<string> CoreFindInCacheAsync(string key, int identity)
         {
             if (identity > 10)

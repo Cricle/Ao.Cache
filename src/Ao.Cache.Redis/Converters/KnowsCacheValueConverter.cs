@@ -1,10 +1,5 @@
 ﻿using StackExchange.Redis;
-
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Ao.Cache.Redis.Converters
 {
@@ -12,6 +7,10 @@ namespace Ao.Cache.Redis.Converters
     {
         private static readonly Type StringType = typeof(string);
         private static readonly Type RedisValueType = typeof(RedisValue);
+        private static readonly Type BooleanType = typeof(bool);
+        private static readonly Type NullableBooleanType = typeof(bool?);
+        private static readonly Type ByteType = typeof(byte);
+        private static readonly Type NullableByteType = typeof(byte?);
         private static readonly Type CharType = typeof(char);
         private static readonly Type NullableCharType = typeof(char?);
         private static readonly Type ShortType = typeof(short);
@@ -33,11 +32,18 @@ namespace Ao.Cache.Redis.Converters
         private static readonly Type ByteArrayType = typeof(byte[]);
         private static readonly Type DateTimeType = typeof(DateTime);
         private static readonly Type NullableDateTimeType = typeof(DateTime?);
+        private static readonly Type TimeSpanType = typeof(TimeSpan);
+        private static readonly Type NullableTimeSpanType = typeof(TimeSpan?);
+        private static readonly Type VersionType = typeof(Version);
 
         public static ICacheValueConverter EndValueConverter { get; set; }
 
         public static ICacheValueConverter GetConverter(Type type)
         {
+            if (type.IsEnum)
+            {
+                return EnumCacheValueConverter.Instance;
+            }
             if (type.IsEquivalentTo(StringType))
             {
                 return StringCacheValueConverter.Instance;
@@ -48,6 +54,22 @@ namespace Ao.Cache.Redis.Converters
             }
             if (type.IsValueType)
             {
+                if (type.IsEquivalentTo(BooleanType))
+                {
+                    return BoolCacheValueConverter.Instance;
+                }
+                if (type.IsEquivalentTo(NullableBooleanType))
+                {
+                    return NullableBoolCacheValueConverter.Instance;
+                }
+                if (type.IsEquivalentTo(ByteType))
+                {
+                    return ByteCacheValueConverter.Instance;
+                }
+                if (type.IsEquivalentTo(NullableByteType))
+                {
+                    return NullableByteCacheValueConverter.Instance;
+                }
                 if (type.IsEquivalentTo(CharType))
                 {
                     return CharCacheValueConverter.Instance;
@@ -119,7 +141,7 @@ namespace Ao.Cache.Redis.Converters
                 if (type.IsEquivalentTo(NullableDecimalType))
                 {
                     return NullableDecimalCacheValueConverter.Instance;
-                }                
+                }
             }
             if (type.IsEquivalentTo(ByteArrayType))
             {
@@ -133,9 +155,17 @@ namespace Ao.Cache.Redis.Converters
             {
                 return NullableDateTimeCacheValueConverter.Instance;
             }
-            if (type.IsEnum)
+            if (type.IsEquivalentTo(TimeSpanType))
             {
-                return EnumCacheValueConverter.Instance;
+                return TimeSpanCacheValueConverter.Instance;
+            }
+            if (type.IsEquivalentTo(NullableTimeSpanType))
+            {
+                return NullableTimeSpanCacheValueConverter.Instance;
+            }
+            if (type.IsEquivalentTo(VersionType))
+            {
+                return VersionCacheValueConverter.Instance;
             }
 
             return EndValueConverter;

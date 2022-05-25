@@ -2,9 +2,9 @@
 
 namespace Ao.Cache
 {
-    public interface IPhysicalFinder<TIdentity, TEntry>
+    public interface IPhysicalFinder<TIdentity, TEntity>
     {
-        Task<TEntry> FindInDbAsync(TIdentity identity, bool cache);
+        Task<TEntity> FindInDbAsync(TIdentity identity, bool cache);
     }
 
 }

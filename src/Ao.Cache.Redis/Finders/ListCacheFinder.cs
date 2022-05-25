@@ -78,11 +78,23 @@ namespace Ao.Cache.Redis.Finders
             }
             return -1;
         }
+        protected override string GetHead()
+        {
+            return "List." + base.GetHead();
+        }
         protected override bool CheckColumn(TIdentity identity, ICacheColumn column)
         {
             return expressionCacher != null;
         }
 
+        public override Task<bool> DeleteAsync(TIdentity identity)
+        {
+            return GetDatabase().KeyDeleteAsync(GetEntryKey(identity));
+        }
+        public override Task<bool> ExistsAsync(TIdentity identity)
+        {
+            return GetDatabase().KeyExistsAsync(GetEntryKey(identity));
+        }
         protected override async Task<bool> CoreSetInCacheAsync(TIdentity identity, TEntry entity, string key, RedisValue[] value, TimeSpan? cacheTime)
         {
             var db = GetDatabase();

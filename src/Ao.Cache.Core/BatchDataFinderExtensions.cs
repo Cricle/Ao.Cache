@@ -7,20 +7,20 @@ namespace Ao.Cache
 {
     public static class BatchDataFinderExtensions
     {
-        public static async Task<TEntry> FindAsync<TIdentity, TEntry>(this IDataFinder<TIdentity, TEntry> finder, TIdentity identity, bool cache = true)
+        public static async Task<TEntity> FindAsync<TIdentity, TEntity>(this IDataFinder<TIdentity, TEntity> finder, TIdentity identity, bool cache = true)
         {
             if (finder is null)
             {
                 throw new ArgumentNullException(nameof(finder));
             }
             var val = await finder.FindInCahceAsync(identity).ConfigureAwait(false);
-            if (ReferenceEquals(val, default(TEntry)))
+            if (ReferenceEquals(val, default(TEntity)))
             {
                 return await finder.FindInDbAsync(identity, cache).ConfigureAwait(false);
             }
             return val;
         }
-        public static async Task<IDictionary<TIdentity, TEntry>> FindAsync<TIdentity, TEntry>(this IBatchDataFinder<TIdentity, TEntry> finder, IEnumerable<TIdentity> identities, bool cache = true)
+        public static async Task<IDictionary<TIdentity, TEntity>> FindAsync<TIdentity, TEntity>(this IBatchDataFinder<TIdentity, TEntity> finder, IEnumerable<TIdentity> identities, bool cache = true)
         {
             if (finder is null)
             {

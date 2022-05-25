@@ -1,18 +1,17 @@
 ﻿using StackExchange.Redis;
-using System;
-using System.Collections.Generic;
+
 
 namespace Ao.Cache.Redis.Converters
 {
-    public class CharCacheValueConverter : ICacheValueConverter
+    public class NullableByteCacheValueConverter : ICacheValueConverter
     {
-        public static readonly CharCacheValueConverter Instance = new CharCacheValueConverter();
+        public static readonly NullableByteCacheValueConverter Instance = new NullableByteCacheValueConverter();
 
-        private CharCacheValueConverter() { }
+        private NullableByteCacheValueConverter() { }
 
         public RedisValue Convert(object instance, object value, ICacheColumn column)
         {
-            return (long)(char)value;
+            return (long?)(byte?)value;
         }
 
         public object ConvertBack(in RedisValue value, ICacheColumn column)
@@ -21,7 +20,7 @@ namespace Ao.Cache.Redis.Converters
             {
                 return CacheValueConverterConst.DoNothing;
             }
-            return (char)(long)value;
+            return (byte?)(long?)value;
         }
     }
 }

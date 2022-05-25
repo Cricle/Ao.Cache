@@ -17,6 +17,10 @@ namespace Ao.Cache.TextJson.Redis
             var options = GetOptions();
             return JsonSerializer.Deserialize<TEntry>(bytes.Span, options);
         }
+        public override string GetHead()
+        {
+            return "Json." + base.GetHead();
+        }
         protected virtual JsonSerializerOptions GetOptions()
         {
             return defaultOptions;

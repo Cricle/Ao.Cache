@@ -8,6 +8,10 @@ namespace Ao.Cache
         Task<TEntry> FindAsync(TIdentity identity);
 
         TimeSpan? GetCacheTime(TIdentity identity, TEntry entity);
+
+        string GetHead();
+
+        string GetPart(TIdentity identity);
     }
 
 }

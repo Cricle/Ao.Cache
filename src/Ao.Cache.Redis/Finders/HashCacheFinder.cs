@@ -60,6 +60,19 @@ namespace Ao.Cache.Redis.Finders
         {
             return expressionCacher != null;
         }
+        protected override string GetHead()
+        {
+            return "Hash." + base.GetHead();
+        }
+
+        public override Task<bool> DeleteAsync(TIdentity identity)
+        {
+            return GetDatabase().KeyDeleteAsync(GetEntryKey(identity));
+        }
+        public override Task<bool> ExistsAsync(TIdentity identity)
+        {
+            return GetDatabase().KeyExistsAsync(GetEntryKey(identity));
+        }
 
         protected override async Task<bool> CoreSetInCacheAsync(TIdentity identity, TEntity entity, string key, HashEntry[] value, TimeSpan? cacheTime)
         {

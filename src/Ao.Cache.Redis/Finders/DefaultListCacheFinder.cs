@@ -10,6 +10,7 @@ namespace Ao.Cache.Redis.Finders
         {
             Database = database ?? throw new ArgumentNullException(nameof(database));
             DataAccesstor = dataAccesstor ?? throw new ArgumentNullException(nameof(dataAccesstor));
+            Build();
         }
 
         public IDatabase Database { get; }
@@ -28,6 +29,14 @@ namespace Ao.Cache.Redis.Finders
         public override IDatabase GetDatabase()
         {
             return Database;
+        }
+        protected override string GetHead()
+        {
+            return DataAccesstor.GetHead()??base.GetHead();
+        }
+        protected override string GetPart(TIdentity identity)
+        {
+            return DataAccesstor.GetPart(identity);
         }
     }
 

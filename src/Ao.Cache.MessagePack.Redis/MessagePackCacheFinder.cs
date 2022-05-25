@@ -19,6 +19,10 @@ namespace Ao.Cache.MessagePack.Redis
             var options = GetOptions();
             return MP.MessagePackSerializer.Deserialize<TEntry>(bytes, options);
         }
+        public override string GetHead()
+        {
+            return "MessagePack." + base.GetHead();
+        }
         protected virtual MP.MessagePackSerializerOptions GetOptions()
         {
             return defaultOptions;

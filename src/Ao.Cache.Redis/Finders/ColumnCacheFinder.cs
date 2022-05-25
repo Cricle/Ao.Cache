@@ -7,6 +7,7 @@ namespace Ao.Cache.Redis.Finders
     public abstract class ColumnCacheFinder<TIdentity, TEntity,TValue> : IDataFinder<TIdentity, TEntity>,IDisposable
     {
         public static readonly TimeSpan DefaultCacheTime = TimeSpan.FromSeconds(3);
+        public static readonly string EntryFriendlyName = TypeNameHelper.GetFriendlyFullName(typeof(TEntity));
 
         protected static readonly bool IsNormalType = typeof(TEntity).IsPrimitive || typeof(TEntity) == typeof(string);
         protected static readonly bool IsArray = typeof(TEntity).IsArray;
@@ -65,7 +66,7 @@ namespace Ao.Cache.Redis.Finders
         }
         protected virtual string GetHead()
         {
-            return GetType().FullName;
+            return EntryFriendlyName;
         }
         protected string GetEntryKey(TIdentity identity)
         {
@@ -119,6 +120,9 @@ namespace Ao.Cache.Redis.Finders
         public virtual void Dispose()
         {
         }
+
+        public abstract Task<bool> DeleteAsync(TIdentity identity);
+        public abstract Task<bool> ExistsAsync(TIdentity identity);
     }
 
 }

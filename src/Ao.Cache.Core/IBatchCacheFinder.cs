@@ -3,10 +3,10 @@ using System.Threading.Tasks;
 
 namespace Ao.Cache
 {
-    public interface IBatchCacheFinder<TIdentity, TEntry>
+    public interface IBatchCacheFinder<TIdentity, TEntity>
     {
-        Task<bool> SetInCahceAsync(IEnumerable<KeyValuePair<TIdentity, TEntry>> pairs);
+        Task<bool> SetInCahceAsync(IEnumerable<KeyValuePair<TIdentity, TEntity>> pairs);
 
-        Task<IDictionary<TIdentity, TEntry>> FindInCahceAsync(IEnumerable<TIdentity> identity);
+        Task<IDictionary<TIdentity, TEntity>> FindInCahceAsync(IEnumerable<TIdentity> identity);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Ao.Cache.Redis.Finders;
 using Ao.Cache.TextJson.Redis;
 using Ao.Cache.MessagePack.Redis;
+using Ao.Cache.InMemory;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +23,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.Add(ServiceDescriptor.Describe(typeof(ListCacheFinder<,>), typeof(DefaultListCacheFinder<,>), finderLifeTime));
             services.Add(ServiceDescriptor.Describe(typeof(JsonDataFinder<,>), typeof(DefaultRedisJsonDataFinder<,>), finderLifeTime));
             services.Add(ServiceDescriptor.Describe(typeof(MessagePackDataFinder<,>), typeof(DefaultRedisMessagePackDataFinder<,>), finderLifeTime));
+            services.Add(ServiceDescriptor.Describe(typeof(InMemoryCacheFinder<,>), typeof(DefaultInMemoryCacheFinder<,>), finderLifeTime));
             return services;
         }
     }

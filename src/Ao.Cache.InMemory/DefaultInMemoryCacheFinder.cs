@@ -1,24 +1,24 @@
-﻿using StackExchange.Redis;
+﻿using Microsoft.Extensions.Caching.Memory;
 using System;
 using System.Threading.Tasks;
 
-namespace Ao.Cache.TextJson.Redis
+namespace Ao.Cache.InMemory
 {
-    public class DefaultRedisJsonDataFinder<TIdentity, TEntry> : RedisJsonDataFinder<TIdentity, TEntry>
+    public class DefaultInMemoryCacheFinder<TIdentity, TEntry> : InMemoryCacheFinder<TIdentity, TEntry>
     {
-        public DefaultRedisJsonDataFinder(IDatabase database, IDataAccesstor<TIdentity, TEntry> dataAccesstor)
+        public DefaultInMemoryCacheFinder(IMemoryCache memoryCache, IDataAccesstor<TIdentity, TEntry> dataAccesstor)
         {
-            Database = database ?? throw new ArgumentNullException(nameof(database));
+            MemoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
             DataAccesstor = dataAccesstor ?? throw new ArgumentNullException(nameof(dataAccesstor));
         }
 
-        public IDatabase Database { get; }
+        public IMemoryCache MemoryCache { get; }
 
         public IDataAccesstor<TIdentity, TEntry> DataAccesstor { get; }
 
-        protected override IDatabase GetDatabase()
+        protected override IMemoryCache GetMemoryCache()
         {
-            return Database;
+            return MemoryCache;
         }
 
         protected override Task<TEntry> OnFindInDbAsync(TIdentity identity)
@@ -39,5 +39,4 @@ namespace Ao.Cache.TextJson.Redis
             return DataAccesstor.GetPart(identity);
         }
     }
-
 }
