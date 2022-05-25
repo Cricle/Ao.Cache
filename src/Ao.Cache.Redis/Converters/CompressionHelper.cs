@@ -3,6 +3,7 @@ using Ao.Cache.Redis.Annotations;
 using System;
 using System.IO.Compression;
 using System.Reflection;
+using System.IO;
 
 namespace Ao.Cache.Redis.Converters
 {
@@ -20,7 +21,7 @@ namespace Ao.Cache.Redis.Converters
         }
         public static byte[] Gzip(byte[] buffer,int pos,int size, CompressionLevel level)
         {
-            using (var s1 = SharedMemoryStream.StreamManager.GetStream())
+            using (var s1 = new MemoryStream())
             using (var gs = new GZipStream(s1, level))
             {
                 gs.Write(buffer, pos, size);
@@ -34,8 +35,8 @@ namespace Ao.Cache.Redis.Converters
         }
         public static byte[] UnGzip(byte[] buffer, int pos, int size)
         {
-            using (var s = SharedMemoryStream.StreamManager.GetStream(buffer.AsSpan(pos,size)))
-            using (var s1 = SharedMemoryStream.StreamManager.GetStream())
+            using (var s = new MemoryStream(buffer,pos,size))
+            using (var s1 = new MemoryStream())
             using (var gs = new GZipStream(s, CompressionMode.Decompress))
             {
                 gs.CopyTo(s1);
@@ -49,7 +50,7 @@ namespace Ao.Cache.Redis.Converters
         }
         public static byte[] Deflate(byte[] buffer, int pos, int size, CompressionLevel level)
         {
-            using (var s1 = SharedMemoryStream.StreamManager.GetStream())
+            using (var s1 = new MemoryStream())
             using (var gs = new DeflateStream(s1, level))
             {
                 gs.Write(buffer, pos, size);
@@ -63,8 +64,8 @@ namespace Ao.Cache.Redis.Converters
         }
         public static byte[] UnDeflate(byte[] buffer, int pos, int size)
         {
-            using (var s = SharedMemoryStream.StreamManager.GetStream(buffer.AsSpan(pos, size)))
-            using (var s1 = SharedMemoryStream.StreamManager.GetStream())
+            using (var s = new MemoryStream(buffer,pos, size))
+            using (var s1 = new MemoryStream())
             using (var gs = new DeflateStream(s, CompressionMode.Decompress))
             {
                 gs.CopyTo(s1);

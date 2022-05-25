@@ -3,9 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using FastExpressionCompiler.LightExpression;
 using Ao.Cache.Redis.Converters;
 using StackExchange.Redis;
+using System.Linq.Expressions;
 
 namespace Ao.Cache.Redis
 {

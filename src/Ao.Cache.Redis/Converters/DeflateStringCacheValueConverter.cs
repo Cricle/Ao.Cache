@@ -1,5 +1,4 @@
 ﻿using StackExchange.Redis;
-using Microsoft.IO;
 using Ao.Cache.Redis.Annotations;
 
 using System;

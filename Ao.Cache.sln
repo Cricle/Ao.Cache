@@ -19,7 +19,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ao.Cache.Redis", "src\Ao.Ca
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ao.Cache.TextJson.Redis", "src\Ao.Cache.TextJson.Redis\Ao.Cache.TextJson.Redis.csproj", "{946ECE0E-6EDC-4A7C-9A74-102A06D3E23B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ao.Cache.DependencyInjection", "src\Ao.Cache.DependencyInjection\Ao.Cache.DependencyInjection.csproj", "{FEB865E7-0487-4470-9629-5E6D7B53B4CB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ao.Cache.DependencyInjection", "src\Ao.Cache.DependencyInjection\Ao.Cache.DependencyInjection.csproj", "{FEB865E7-0487-4470-9629-5E6D7B53B4CB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "eng", "eng", "{C8DB1C9E-812A-49C8-9838-558731242533}"
+	ProjectSection(SolutionItems) = preProject
+		eng\pkg.props = eng\pkg.props
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
