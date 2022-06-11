@@ -38,5 +38,20 @@ namespace Ao.Cache.InMemory
         {
             return DataAccesstor.GetPart(identity);
         }
+
+        public override Task<bool> RenewalAsync(TIdentity identity, TimeSpan? time)
+        {
+            var key = GetEntryKey(identity);
+            var val = MemoryCache.Get(key);
+            if (val == null)
+            {
+                return Task.FromResult(false);
+            }
+            MemoryCache.Set(GetEntryKey(identity), val, new MemoryCacheEntryOptions
+            {
+                SlidingExpiration = time,
+            });
+            return Task.FromResult(true);
+        }
     }
 }

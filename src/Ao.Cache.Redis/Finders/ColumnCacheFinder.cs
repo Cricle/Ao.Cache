@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Ao.Cache.Redis.Finders
 {
-    public abstract class ColumnCacheFinder<TIdentity, TEntity,TValue> : IDataFinder<TIdentity, TEntity>,IDisposable
+    public abstract class ColumnCacheFinder<TIdentity, TEntity, TValue> : IDataFinder<TIdentity, TEntity>, IRenewalable<TIdentity>, IDisposable
     {
         public static readonly TimeSpan DefaultCacheTime = TimeSpan.FromSeconds(3);
         public static readonly string EntryFriendlyName = TypeNameHelper.GetFriendlyFullName(typeof(TEntity));
@@ -39,15 +39,27 @@ namespace Ao.Cache.Redis.Finders
         public virtual async Task<TEntity> FindInCahceAsync(TIdentity identity)
         {
             var key = GetEntryKey(identity);
-            var data = await GetValueAsync(key,identity);
+            var data = await GetValueAsync(key, identity);
             if (data != null)
             {
-                return Write(identity, data);
+                var entity = Write(identity, data);
+                if (CanRenewal(identity, data))
+                {
+                    await RenewalAsync(identity, GetCacheTime(identity, entity));
+                }
+                return entity;
             }
             return default;
         }
-        protected abstract TEntity Write(TIdentity identity,TValue value);
-        protected abstract Task<TValue> GetValueAsync(string key,TIdentity identity);
+
+        protected virtual bool CanRenewal(TIdentity identity, TValue entity)
+        {
+            return true;
+        }
+
+        public abstract Task<bool> RenewalAsync(TIdentity identity, TimeSpan? time);
+        protected abstract TEntity Write(TIdentity identity, TValue value);
+        protected abstract Task<TValue> GetValueAsync(string key, TIdentity identity);
         protected virtual TEntity Create()
         {
             if (IsNormalType)
@@ -82,11 +94,11 @@ namespace Ao.Cache.Redis.Finders
             return entry;
         }
 
-        protected virtual bool CanCache(TIdentity identity,TEntity entry,bool cache)
+        protected virtual bool CanCache(TIdentity identity, TEntity entry, bool cache)
         {
             return entry != null && cache;
         }
-        
+
         protected abstract Task<object> CoreGetColumn(TIdentity identity, ICacheColumn column);
 
         protected virtual bool CheckColumn(TIdentity identity, ICacheColumn column)
@@ -95,7 +107,7 @@ namespace Ao.Cache.Redis.Finders
         }
         protected abstract Task<TEntity> OnFindInDbAsync(TIdentity identity);
 
-        public Task<object> GetColumnValueAsync(TIdentity identity,ICacheColumn column)
+        public Task<object> GetColumnValueAsync(TIdentity identity, ICacheColumn column)
         {
             if (!CheckColumn(identity, column))
             {
@@ -109,9 +121,9 @@ namespace Ao.Cache.Redis.Finders
             var key = GetEntryKey(identity);
             var h = @operator.As(entity);
             var cacheTime = GetCacheTime(identity, entity);
-            return CoreSetInCacheAsync(identity, entity, key, h,cacheTime);
+            return CoreSetInCacheAsync(identity, entity, key, h, cacheTime);
         }
-        protected abstract Task<bool> CoreSetInCacheAsync(TIdentity identity, TEntity entity, string key, TValue value,TimeSpan? cacheTime);
+        protected abstract Task<bool> CoreSetInCacheAsync(TIdentity identity, TEntity entity, string key, TValue value, TimeSpan? cacheTime);
         protected virtual TimeSpan? GetCacheTime(TIdentity identity, TEntity entity)
         {
             return DefaultCacheTime;
