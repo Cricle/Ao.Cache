@@ -53,5 +53,10 @@ namespace Ao.Cache.InMemory
             });
             return Task.FromResult(true);
         }
+        protected override bool CanRenewal(TIdentity identity, TEntry entity)
+        {
+            return DataAccesstor.CanRenewal(identity);
+        }
+
     }
 }

@@ -11,6 +11,11 @@ namespace Ao.Cache
 
         public static readonly string EntryFriendlyName = TypeNameHelper.GetFriendlyFullName(typeof(TEntity));
 
+        public bool CanRenewal(TIdentity identity)
+        {
+            return true;
+        }
+
         public abstract Task<TEntity> FindAsync(TIdentity identity);
 
         public virtual TimeSpan? GetCacheTime(TIdentity identity, TEntity entity)

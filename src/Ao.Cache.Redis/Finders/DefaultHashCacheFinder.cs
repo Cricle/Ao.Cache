@@ -38,6 +38,10 @@ namespace Ao.Cache.Redis.Finders
         {
             return DataAccesstor.GetPart(identity);
         }
+        protected override bool CanRenewal(TIdentity identity, HashEntry[] entity)
+        {
+            return DataAccesstor.CanRenewal(identity);
+        }
     }
 
 }
