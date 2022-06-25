@@ -37,18 +37,5 @@ namespace StackExchange.Redis
                 yield return ((RedisKey[])f[1]);
             } while (count != 0);
         }
-        private static RedisKey[] AsRedisKey(string[] keys)
-        {
-#if NET5_0_OR_GREATER
-            var val = GC.AllocateUninitializedArray<RedisKey>(keys.Length);
-#else
-            var val = new RedisKey[keys.Length];
-#endif
-            for (int i = 0; i < keys.Length; i++)
-            {
-                val[i] = keys[i];
-            }
-            return val;
-        }
     }
 }
