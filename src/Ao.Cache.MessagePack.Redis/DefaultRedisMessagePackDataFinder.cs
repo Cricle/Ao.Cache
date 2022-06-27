@@ -38,5 +38,9 @@ namespace Ao.Cache.MessagePack.Redis
         {
             return DataAccesstor.GetPart(identity);
         }
+        protected override bool CanRenewal(TIdentity identity, TEntry entity)
+        {
+            return DataAccesstor.CanRenewal(identity);
+        }
     }
 }

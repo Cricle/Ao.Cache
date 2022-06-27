@@ -15,6 +15,11 @@ namespace Ao.Cache.Core.Test
             return Task.FromResult(identity != 0);
         }
 
+        public override Task<bool> RenewalAsync(int identity, TimeSpan? time)
+        {
+            return Task.FromResult(true);
+        }
+
         protected override Task<string> CoreFindInCacheAsync(string key, int identity)
         {
             if (identity > 10)

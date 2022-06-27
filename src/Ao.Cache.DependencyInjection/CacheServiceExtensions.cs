@@ -3,10 +3,6 @@ using Ao.Cache.TextJson.Redis;
 using Ao.Cache.MessagePack.Redis;
 using Ao.Cache.InMemory;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Microsoft.Extensions.DependencyInjection
 {

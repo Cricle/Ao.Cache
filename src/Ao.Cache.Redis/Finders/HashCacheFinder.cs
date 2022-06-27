@@ -26,7 +26,10 @@ namespace Ao.Cache.Redis.Finders
         {
             expressionCacher = Operator as ExpressionHashCacheOperator;
         }
-
+        public override Task<bool> RenewalAsync(TIdentity identity, TimeSpan? time)
+        {
+            return GetDatabase().KeyExpireAsync(GetEntryKey(identity), time);
+        }
         protected override TEntity Write(TIdentity identity, HashEntry[] value)
         {
             if (value.Length == 0)

@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Ao.Cache
 {
-    public abstract class DataFinderBase<TIdentity, TEntity> : IDataFinder<TIdentity, TEntity>
+    public abstract class DataFinderBase<TIdentity, TEntity> : IDataFinder<TIdentity, TEntity>,IRenewalable<TIdentity>
     {
         protected static readonly Type EntityType = typeof(TEntity);
 
@@ -62,6 +62,13 @@ namespace Ao.Cache
 
         public abstract Task<bool> DeleteAsync(TIdentity entity);
         public abstract Task<bool> ExistsAsync(TIdentity identity);
+
+        protected virtual bool CanRenewal(TIdentity identity, TEntity entity)
+        {
+            return true;
+        }
+
+        public abstract Task<bool> RenewalAsync(TIdentity identity, TimeSpan? time);
     }
 
 }

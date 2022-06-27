@@ -30,6 +30,10 @@ namespace Ao.Cache.Redis.Finders
             expressionCacher = Operator as ExpressionListCacheOperator;
 
         }
+        public override Task<bool> RenewalAsync(TIdentity identity, TimeSpan? time)
+        {
+            return GetDatabase().KeyExpireAsync(GetEntryKey(identity), time);
+        }
 
         protected override TEntry Write(TIdentity identity, RedisValue[] value)
         {

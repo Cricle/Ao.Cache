@@ -39,5 +39,9 @@ namespace Ao.Cache.MessagePack.Redis
         {
             return GetDatabase().KeyExistsAsync(GetEntryKey(identity));
         }
+        public override Task<bool> RenewalAsync(TIdentity identity, TimeSpan? time)
+        {
+            return GetDatabase().KeyExpireAsync(GetEntryKey(identity), time);
+        }
     }
 }

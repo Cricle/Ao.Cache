@@ -38,6 +38,11 @@ namespace Ao.Cache.TextJson.Redis
         {
             return DataAccesstor.GetPart(identity);
         }
+        protected override bool CanRenewal(TIdentity identity, TEntry entity)
+        {
+            return DataAccesstor.CanRenewal(identity);
+        }
+
     }
 
 }

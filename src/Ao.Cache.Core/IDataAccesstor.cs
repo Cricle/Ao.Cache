@@ -12,6 +12,8 @@ namespace Ao.Cache
         string GetHead();
 
         string GetPart(TIdentity identity);
+
+        bool CanRenewal(TIdentity identity);
     }
 
 }

@@ -39,6 +39,10 @@ namespace Ao.Cache.TextJson.Redis
         {
             return GetDatabase().KeyDeleteAsync(GetEntryKey(identity));
         }
+        public override Task<bool> RenewalAsync(TIdentity identity, TimeSpan? time)
+        {
+            return GetDatabase().KeyExpireAsync(GetEntryKey(identity), time);
+        }
     }
 
 }
