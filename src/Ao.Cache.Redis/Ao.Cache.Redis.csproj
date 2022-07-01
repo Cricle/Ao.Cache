@@ -7,7 +7,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="StackExchange.Redis" Version="2.5.43" />
-		<PackageReference Include="Ao.ObjectDesign" Version="0.3.4" />
+		<PackageReference Include="Ao.ObjectDesign" Version="0.3.5" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
 	</ItemGroup>
 	<ItemGroup Condition="'$(TargetFramework)'!='net5.0'">

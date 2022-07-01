@@ -28,7 +28,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "eng", "eng", "{C8DB1C9E-812
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ao.Cache.Redis.Test", "test\Ao.Cache.Redis.Test\Ao.Cache.Redis.Test.csproj", "{CDD68E7B-E3E6-4E85-8EA9-9F56EA16919B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ao.Cache.InMemory", "src\Ao.Cache.InMemory\Ao.Cache.InMemory.csproj", "{B78373BF-E509-4D04-B9B7-0A74E8E1317B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ao.Cache.InMemory", "src\Ao.Cache.InMemory\Ao.Cache.InMemory.csproj", "{B78373BF-E509-4D04-B9B7-0A74E8E1317B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ao.Cache.InLitedb", "src\Ao.Cache.InLitedb\Ao.Cache.InLitedb.csproj", "{B48995D4-D40E-4E7A-9430-9DF3DFE9CDC1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ao.Cache.InLitedb.Cmd", "samples\Ao.Cache.InLitedb.Cmd\Ao.Cache.InLitedb.Cmd.csproj", "{CD0714BB-E548-4D1A-B0BE-34F6123DF0AE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ao.Cache.RWSeparation", "src\Ao.Cache.RWSeparation\Ao.Cache.RWSeparation.csproj", "{1189C98E-431E-48A7-ACDB-65E63A7465B7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -72,6 +78,18 @@ Global
 		{B78373BF-E509-4D04-B9B7-0A74E8E1317B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B78373BF-E509-4D04-B9B7-0A74E8E1317B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B78373BF-E509-4D04-B9B7-0A74E8E1317B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B48995D4-D40E-4E7A-9430-9DF3DFE9CDC1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B48995D4-D40E-4E7A-9430-9DF3DFE9CDC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B48995D4-D40E-4E7A-9430-9DF3DFE9CDC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B48995D4-D40E-4E7A-9430-9DF3DFE9CDC1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD0714BB-E548-4D1A-B0BE-34F6123DF0AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD0714BB-E548-4D1A-B0BE-34F6123DF0AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD0714BB-E548-4D1A-B0BE-34F6123DF0AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD0714BB-E548-4D1A-B0BE-34F6123DF0AE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1189C98E-431E-48A7-ACDB-65E63A7465B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1189C98E-431E-48A7-ACDB-65E63A7465B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1189C98E-431E-48A7-ACDB-65E63A7465B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1189C98E-431E-48A7-ACDB-65E63A7465B7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -80,6 +98,7 @@ Global
 		{9DE195E7-9D8A-44F9-9349-1DE9DDEA5CBE} = {9CF6302B-4E03-4DD5-904E-47D661131202}
 		{3BD6F301-37AD-464C-9F2D-B34794F04B09} = {A52E7B5C-66EF-4377-847C-B1BA11168C56}
 		{CDD68E7B-E3E6-4E85-8EA9-9F56EA16919B} = {9CF6302B-4E03-4DD5-904E-47D661131202}
+		{CD0714BB-E548-4D1A-B0BE-34F6123DF0AE} = {A52E7B5C-66EF-4377-847C-B1BA11168C56}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {55157C22-E7CC-4639-A568-1305AB03681E}
