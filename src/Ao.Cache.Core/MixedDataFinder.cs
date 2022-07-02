@@ -60,7 +60,7 @@ namespace Ao.Cache
             return DataFinder.SetInCahceAsync(identity, entity);
         }
 
-        public Task<bool> SetInCahceAsync(IDictionary<TIdentity, TEntity> pairs)
+        public Task<IDictionary<TIdentity,bool>> SetInCahceAsync(IDictionary<TIdentity, TEntity> pairs)
         {
             return BatchDataFinder.SetInCahceAsync(pairs);
         }

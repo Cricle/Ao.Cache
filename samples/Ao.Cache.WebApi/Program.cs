@@ -1,4 +1,4 @@
-using Ao.Cache.Redis.Finders;
+using Ao.Cache.InRedis.HashList.Finders;
 using Ao.Cache.WebApi.Controllers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;

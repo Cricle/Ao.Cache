@@ -1,4 +1,4 @@
-using Ao.Cache.Redis.Annotations;
+using Ao.Cache.InRedis.HashList.Annotations;
 using System;
 
 namespace Ao.Cache.WebApi

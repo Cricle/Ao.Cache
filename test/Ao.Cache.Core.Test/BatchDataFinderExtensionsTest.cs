@@ -10,18 +10,6 @@ namespace Ao.Cache.Core.Test
     [TestClass]
     public class BatchDataFinderExtensionsTest
     {
-        class Batch : IBatchCacheFinder<int, string>
-        {
-            public Task<IDictionary<int, string>> FindInCahceAsync(IEnumerable<int> identity)
-            {
-                throw new NotImplementedException();
-            }
-
-            public Task<bool> SetInCahceAsync(IEnumerable<KeyValuePair<int, string>> pairs)
-            {
-                throw new NotImplementedException();
-            }
-        }
         //[TestMethod]
         //public void GivenNullCall_MustThrowException()
         //{

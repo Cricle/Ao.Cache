@@ -4,9 +4,9 @@ using System.Text.Json;
 
 namespace Ao.Cache.InRedis.TextJson
 {
-    public class JsonEntityConvertor<TEntity> : JsonEntityConvertor,IEntityConvertor<TEntity>
+    public class TextJsonEntityConvertor<TEntity> : JsonEntityConvertor,IEntityConvertor<TEntity>
     {
-        public static new readonly JsonEntityConvertor<TEntity> Default = new JsonEntityConvertor<TEntity>();
+        public static new readonly TextJsonEntityConvertor<TEntity> Default = new TextJsonEntityConvertor<TEntity>();
 
         public byte[] ToBytes(TEntity entry)
         {

@@ -1,17 +1,18 @@
-﻿using StackExchange.Redis;
+﻿using Ao.Cache.InRedis;
+using StackExchange.Redis;
 using System;
 using System.Threading.Tasks;
 
-namespace Ao.Cache.InRedis.TextJson
+namespace Ao.Cache.InRedis.MessagePack
 {
-    public class DefaultRedisJsonDataFinder<TIdentity, TEntry> : BitRedisDataFinder<TIdentity, TEntry>
+    public class DefaultRedisMessagePackDataFinder<TIdentity, TEntry> : BitRedisDataFinder<TIdentity, TEntry>
     {
-        public DefaultRedisJsonDataFinder(IDatabase database,
+        public DefaultRedisMessagePackDataFinder(IDatabase database,
             IDataAccesstor<TIdentity, TEntry> dataAccesstor)
-            : this(database, dataAccesstor, TextJsonEntityConvertor<TEntry>.Default)
+            : this(database, dataAccesstor, MessagePackEntityConvertor<TEntry>.Default)
         {
         }
-        public DefaultRedisJsonDataFinder(IDatabase database, 
+        public DefaultRedisMessagePackDataFinder(IDatabase database, 
             IDataAccesstor<TIdentity, TEntry> dataAccesstor,
             IEntityConvertor<TEntry> entityConvertor)
             :base(entityConvertor)
@@ -34,5 +35,4 @@ namespace Ao.Cache.InRedis.TextJson
             return DataAccesstor.FindAsync(identity);
         }
     }
-
 }

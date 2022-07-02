@@ -1,12 +1,11 @@
-using Ao.Cache.MessagePack.Redis;
-using Ao.Cache.Redis.Finders;
-using Ao.Cache.TextJson.Redis;
+using Ao.Cache.InRedis;
+using Ao.Cache.InRedis.HashList.Finders;
+using Ao.Cache.InRedis.MessagePack;
+using Ao.Cache.InRedis.TextJson;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Memory;
 using StackExchange.Redis;
 using System;
 using System.Diagnostics;
-using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
@@ -123,19 +122,16 @@ namespace Ao.Cache.WebApi.Controllers
             });
         }
     }
-    [JsonSerializable(typeof(WeatherForecast))]
-    internal partial class WeatherForecastContext : JsonSerializerContext
-    {
-    }
-    public class WeatherForecastDataFinder3 : RedisJsonDataFinder<string, WeatherForecast>
+    public class WeatherForecastDataFinder3 : BitRedisDataFinder<string, WeatherForecast>
     {
         public WeatherForecastDataFinder3(IDatabase database)
+            :base(TextJsonEntityConvertor<WeatherForecast>.Default)
         {
             Database = database;
         }
         public IDatabase Database { get; }
 
-        protected override IDatabase GetDatabase()
+        public override IDatabase GetDatabase()
         {
             return Database;
         }
@@ -149,15 +145,16 @@ namespace Ao.Cache.WebApi.Controllers
             });
         }
     }
-    public class WeatherForecastDataFinder : RedisMessagePackDataFinder<string, WeatherForecast>
+    public class WeatherForecastDataFinder : BitRedisDataFinder<string, WeatherForecast>
     {
         public WeatherForecastDataFinder(IDatabase database)
+            : base(MessagePackEntityConvertor<WeatherForecast>.Default)
         {
             Database = database;
         }
         public IDatabase Database { get; }
 
-        protected override IDatabase GetDatabase()
+        public override IDatabase GetDatabase()
         {
             return Database;
         }

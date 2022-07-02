@@ -25,20 +25,6 @@ namespace Ao.Cache.InMemory
         {
             return DataAccesstor.FindAsync(identity);
         }
-        protected override TimeSpan? GetCacheTime(TIdentity identity, TEntry entity)
-        {
-            return DataAccesstor.GetCacheTime(identity, entity);
-        }
-
-        public override string GetHead()
-        {
-            return DataAccesstor.GetHead() ?? base.GetHead();
-        }
-        public override string GetPart(TIdentity identity)
-        {
-            return DataAccesstor.GetPart(identity);
-        }
-
         public override Task<bool> RenewalAsync(TIdentity identity, TimeSpan? time)
         {
             var key = GetEntryKey(identity);
@@ -53,10 +39,5 @@ namespace Ao.Cache.InMemory
             });
             return Task.FromResult(true);
         }
-        protected override bool CanRenewal(TIdentity identity, TEntry entity)
-        {
-            return DataAccesstor.CanRenewal(identity);
-        }
-
     }
 }

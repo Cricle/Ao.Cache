@@ -20,7 +20,7 @@ namespace Ao.Cache
             }
             return val;
         }
-        public static async Task<IDictionary<TIdentity, TEntity>> FindAsync<TIdentity, TEntity>(this IBatchDataFinder<TIdentity, TEntity> finder, IEnumerable<TIdentity> identities, bool cache = true)
+        public static async Task<IDictionary<TIdentity, TEntity>> FindAsync<TIdentity, TEntity>(this IBatchDataFinder<TIdentity, TEntity> finder, IReadOnlyList<TIdentity> identities, bool cache = true)
         {
             if (finder is null)
             {
@@ -39,7 +39,7 @@ namespace Ao.Cache
                 return cacheDatas;
             }
 
-            var dbDatas = await finder.FindInDbAsync(notIncludes, cache).ConfigureAwait(false);
+            var dbDatas = await finder.FindInDbAsync(notIncludes.ToList(), cache).ConfigureAwait(false);
 
             foreach (var item in dbDatas)
             {
