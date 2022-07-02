@@ -8,8 +8,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Ao.Cache.InMemory\Ao.Cache.InMemory.csproj" />
     <ProjectReference Include="..\Ao.Cache.MessagePack.Redis\Ao.Cache.MessagePack.Redis.csproj" />
-    <ProjectReference Include="..\Ao.Cache.Redis\Ao.Cache.Redis.csproj" />
-    <ProjectReference Include="..\Ao.Cache.TextJson.Redis\Ao.Cache.TextJson.Redis.csproj" />
   </ItemGroup>
 
 </Project>

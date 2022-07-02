@@ -6,7 +6,7 @@ namespace Ao.Cache
 {
     public interface IBatchRenewalable<TIdentity>
     {
-        Task<IDictionary<TIdentity,bool>> RenewalAsync(IReadOnlyDictionary<TIdentity,TimeSpan?> input);
+        Task<IDictionary<TIdentity,bool>> RenewalAsync(IDictionary<TIdentity,TimeSpan?> input);
     }
 
 }

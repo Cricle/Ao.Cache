@@ -1,17 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Ao.Cache
 {
-    public abstract class DataFinderBase<TIdentity, TEntity> : IDataFinder<TIdentity, TEntity>,IRenewalable<TIdentity>
+    public abstract class DataFinderBase<TIdentity, TEntity> : IdentityGenerater<TIdentity, TEntity>, IDataFinder<TIdentity, TEntity>,IRenewalable<TIdentity>
     {
-        protected static readonly Type EntityType = typeof(TEntity);
-
-        public static readonly TimeSpan DefaultCacheTime = TimeSpan.FromSeconds(3);
-        
-        public static readonly string EntryFriendlyName = TypeNameHelper.GetFriendlyFullName(typeof(TEntity));
-
         protected DataFinderBase()
         {
         }
@@ -24,18 +17,6 @@ namespace Ao.Cache
 
         protected abstract Task<TEntity> CoreFindInCacheAsync(string key, TIdentity identity);
 
-        public virtual string GetPart(TIdentity identity)
-        {
-            return identity?.ToString();
-        }
-        public virtual string GetHead()
-        {
-            return EntryFriendlyName;
-        }
-        public string GetEntryKey(TIdentity identity)
-        {
-            return string.Concat(GetHead(), ".", GetPart(identity));
-        }
         public async Task<TEntity> FindInDbAsync(TIdentity identity, bool cache = true)
         {
             var entry = await OnFindInDbAsync(identity);
@@ -58,7 +39,7 @@ namespace Ao.Cache
         
         protected virtual TimeSpan? GetCacheTime(TIdentity identity, TEntity entity)
         {
-            return DefaultCacheTime;
+            return DataFinderConst.DefaultCacheTime;
         }
 
         public abstract Task<bool> DeleteAsync(TIdentity entity);

@@ -1,10 +1,11 @@
-﻿using StackExchange.Redis;
+﻿using Ao.Cache.InRedis;
+using StackExchange.Redis;
 using System;
 using System.Threading.Tasks;
 
 namespace Ao.Cache.MessagePack.Redis
 {
-    public class DefaultRedisMessagePackDataFinder<TIdentity, TEntry> : RedisMessagePackDataFinder<TIdentity, TEntry>
+    public class DefaultRedisMessagePackDataFinder<TIdentity, TEntry> : BitRedisDataFinder<TIdentity, TEntry>
     {
         public DefaultRedisMessagePackDataFinder(IDatabase database, IDataAccesstor<TIdentity, TEntry> dataAccesstor)
         {

@@ -5,8 +5,8 @@ namespace Ao.Cache
 {
     public interface IBatchCacheFinder<TIdentity, TEntity>
     {
-        Task<bool> SetInCahceAsync(IEnumerable<KeyValuePair<TIdentity, TEntity>> pairs);
+        Task<IDictionary<TIdentity,bool>> SetInCahceAsync(IDictionary<TIdentity, TEntity> pairs);
 
-        Task<IDictionary<TIdentity, TEntity>> FindInCahceAsync(IEnumerable<TIdentity> identity);
+        Task<IDictionary<TIdentity, TEntity>> FindInCahceAsync(IReadOnlyList<TIdentity> identity);
     }
 }
