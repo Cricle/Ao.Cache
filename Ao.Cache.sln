@@ -24,7 +24,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ao.Cache.InLitedb", "src\Ao
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ao.Cache.InLitedb.Cmd", "samples\Ao.Cache.InLitedb.Cmd\Ao.Cache.InLitedb.Cmd.csproj", "{CD0714BB-E548-4D1A-B0BE-34F6123DF0AE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ao.Cache.InRedis", "src\Ao.Cache.InRedis\Ao.Cache.InRedis.csproj", "{E9980C74-617A-41CF-BA81-2447D6E4FC30}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ao.Cache.InRedis", "src\Ao.Cache.InRedis\Ao.Cache.InRedis.csproj", "{E9980C74-617A-41CF-BA81-2447D6E4FC30}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ao.Cache.InRedis.TextJson", "src\Ao.Cache.InRedis.TextJson\Ao.Cache.InRedis.TextJson.csproj", "{F14ACC42-4646-4FD3-AB82-009CE894A8F5}"
 EndProject
@@ -33,6 +33,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ao.Cache.InRedis.HashList.Test", "test\Ao.Cache.InRedis.HashList.Test\Ao.Cache.InRedis.HashList.Test.csproj", "{A2EB1A38-0138-4CBE-81E7-DACB8A26656A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ao.Cache.InRedis.HashList", "src\Ao.Cache.InRedis.HashList\Ao.Cache.InRedis.HashList.csproj", "{03A8CCE3-8D19-40C8-BB2C-8DF9EF57A827}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ao.Cache.CastleProxy", "src\Ao.Cache.CastleProxy\Ao.Cache.CastleProxy.csproj", "{BC4BF64A-BD8F-4E91-BEF5-44532EAFB86B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ao.Cache.CastleProxy.Sample", "samples\Ao.Cache.CastleProxy.Sample\Ao.Cache.CastleProxy.Sample.csproj", "{6930786B-EFC0-4C14-B1FC-582945D0E304}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -84,6 +88,14 @@ Global
 		{03A8CCE3-8D19-40C8-BB2C-8DF9EF57A827}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{03A8CCE3-8D19-40C8-BB2C-8DF9EF57A827}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{03A8CCE3-8D19-40C8-BB2C-8DF9EF57A827}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC4BF64A-BD8F-4E91-BEF5-44532EAFB86B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC4BF64A-BD8F-4E91-BEF5-44532EAFB86B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC4BF64A-BD8F-4E91-BEF5-44532EAFB86B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC4BF64A-BD8F-4E91-BEF5-44532EAFB86B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6930786B-EFC0-4C14-B1FC-582945D0E304}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6930786B-EFC0-4C14-B1FC-582945D0E304}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6930786B-EFC0-4C14-B1FC-582945D0E304}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6930786B-EFC0-4C14-B1FC-582945D0E304}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -93,6 +105,7 @@ Global
 		{3BD6F301-37AD-464C-9F2D-B34794F04B09} = {A52E7B5C-66EF-4377-847C-B1BA11168C56}
 		{CD0714BB-E548-4D1A-B0BE-34F6123DF0AE} = {A52E7B5C-66EF-4377-847C-B1BA11168C56}
 		{A2EB1A38-0138-4CBE-81E7-DACB8A26656A} = {9CF6302B-4E03-4DD5-904E-47D661131202}
+		{6930786B-EFC0-4C14-B1FC-582945D0E304} = {A52E7B5C-66EF-4377-847C-B1BA11168C56}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {55157C22-E7CC-4639-A568-1305AB03681E}

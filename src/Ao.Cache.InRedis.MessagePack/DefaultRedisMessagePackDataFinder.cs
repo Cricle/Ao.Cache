@@ -1,4 +1,5 @@
-﻿using Ao.Cache.InRedis;
+﻿using Ao.Cache;
+using Ao.Cache.InRedis;
 using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Ao.Cache.InRedis.MessagePack
 {
-    public class DefaultRedisMessagePackDataFinder<TIdentity, TEntry> : BitRedisDataFinder<TIdentity, TEntry>
+    public class DefaultRedisMessagePackDataFinder<TIdentity, TEntry> : BitRedisDataFinder<TIdentity, TEntry>, IWithDataAccesstorFinder<TIdentity, TEntry>
     {
         public DefaultRedisMessagePackDataFinder(IDatabase database,
             IDataAccesstor<TIdentity, TEntry> dataAccesstor)

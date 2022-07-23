@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Ao.Cache.InRedis.MessagePack
 {
-    public class DefaultBatchRedisMessagePackDataFinder<TIdentity, TEntry> : BitRedisBatchFinder<TIdentity, TEntry>
+    public class DefaultBatchRedisMessagePackDataFinder<TIdentity, TEntry> : BitRedisBatchFinder<TIdentity, TEntry>, IWithBatchDataAccesstorFinder<TIdentity, TEntry>
     {
         public DefaultBatchRedisMessagePackDataFinder(IDatabase database,
             IBatchDataAccesstor<TIdentity, TEntry> dataAccesstor)

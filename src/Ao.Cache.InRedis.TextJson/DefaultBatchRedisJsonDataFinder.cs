@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Ao.Cache.InRedis.TextJson
 {
-    public class DefaultBatchRedisJsonDataFinder<TIdentity, TEntry> : BitRedisBatchFinder<TIdentity, TEntry>
+    public class DefaultBatchRedisJsonDataFinder<TIdentity, TEntry> : BitRedisBatchFinder<TIdentity, TEntry>, IWithBatchDataAccesstorFinder<TIdentity, TEntry>
     {
         public DefaultBatchRedisJsonDataFinder(IDatabase database,
             IBatchDataAccesstor<TIdentity, TEntry> dataAccesstor)

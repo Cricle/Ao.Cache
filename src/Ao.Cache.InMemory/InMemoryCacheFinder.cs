@@ -24,6 +24,13 @@ namespace Ao.Cache.InMemory
             return Task.FromResult(r);
         }
 
+        protected virtual MemoryCacheEntryOptions GetMemoryCacheEntryOptions(TIdentity identity, TimeSpan? time)
+        {
+            return new MemoryCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = time
+            };
+        }
         protected override Task<TEntry> CoreFindInCacheAsync(string key, TIdentity identity)
         {
             if (GetMemoryCache().TryGetValue<TEntry>(key, out var data))
@@ -35,10 +42,8 @@ namespace Ao.Cache.InMemory
 
         protected override Task<bool> WriteCacheAsync(string key, TIdentity identity, TEntry entity, TimeSpan? caheTime)
         {
-            GetMemoryCache().Set(key, entity, new MemoryCacheEntryOptions
-            {
-                SlidingExpiration = caheTime,
-            });
+            var options = GetMemoryCacheEntryOptions(identity, caheTime);
+            GetMemoryCache().Set(key, entity, options);
             return trueTask;
         }
     }

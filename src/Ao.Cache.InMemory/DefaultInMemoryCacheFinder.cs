@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Ao.Cache.InMemory
 {
-    public class DefaultInMemoryCacheFinder<TIdentity, TEntry> : InMemoryCacheFinder<TIdentity, TEntry>
+    public class DefaultInMemoryCacheFinder<TIdentity, TEntry> : InMemoryCacheFinder<TIdentity, TEntry>, IWithDataAccesstorFinder<TIdentity, TEntry>
     {
         public DefaultInMemoryCacheFinder(IMemoryCache memoryCache, IDataAccesstor<TIdentity, TEntry> dataAccesstor)
         {
@@ -33,10 +33,8 @@ namespace Ao.Cache.InMemory
             {
                 return Task.FromResult(false);
             }
-            MemoryCache.Set(GetEntryKey(identity), val, new MemoryCacheEntryOptions
-            {
-                SlidingExpiration = time,
-            });
+            var options = GetMemoryCacheEntryOptions(identity, time);
+            MemoryCache.Set(GetEntryKey(identity), val, options);
             return Task.FromResult(true);
         }
     }
