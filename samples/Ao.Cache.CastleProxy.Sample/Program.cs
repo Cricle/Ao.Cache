@@ -28,8 +28,8 @@ namespace Ao.Cache.CastleProxy.Sample
             var gt = provider.GetRequiredService<GetTime>();
             for (int i = 0; i < 10; i++)
             {
-                Thread.Sleep(TimeSpan.FromMilliseconds(1000));
-                var n = gt.NowTime();
+                Thread.Sleep(TimeSpan.FromMilliseconds(300));
+                var n = gt.NowTime(i%3,i);
                 Console.WriteLine($"Data:{n.RawData!.Value:HH:mm:ss ffff}, Status:{n.Status}");
             }
         }
@@ -37,7 +37,7 @@ namespace Ao.Cache.CastleProxy.Sample
     public class GetTime
     {
         [AutoCache]
-        public virtual AutoCacheResult<DateTime?> NowTime()
+        public virtual AutoCacheResult<DateTime?> NowTime(int id,[AutoCacheSkipPart]long dd)
         {
             Console.WriteLine("yerp");
             return new AutoCacheResult<DateTime?> { RawData = DateTime.Now };

@@ -75,7 +75,7 @@ namespace Ao.Cache.CastleProxy.Interceptors
                             args[i] = invocation.Arguments[lst[i]];
                         }
                     }
-                    var winObj = new UnwindObject(invocation.Arguments, StringTransfer);
+                    var winObj = new UnwindObject(args, StringTransfer);
                     var res = await finder.FindInCahceAsync(winObj);
                     if (res == null)
                     {
