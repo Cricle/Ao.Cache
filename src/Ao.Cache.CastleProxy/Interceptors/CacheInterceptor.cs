@@ -86,14 +86,12 @@ namespace Ao.Cache.CastleProxy.Interceptors
                         await finder.SetInCahceAsync(winObj, res);
                         if (res is AutoCacheResultBase result)
                         {
-                            result.Args = args;
                             result.Status = AutoCacheStatus.MethodHit;
                         }
                         return res;
                     }
                     if (res is AutoCacheResultBase resultr)
                     {
-                        resultr.Args = args;
                         resultr.Status = AutoCacheStatus.CacheHit;
                     }
                     invocation.ReturnValue = res;

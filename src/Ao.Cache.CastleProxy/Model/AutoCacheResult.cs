@@ -9,8 +9,6 @@ namespace Ao.Cache.CastleProxy.Model
     public abstract class AutoCacheResultBase
     {
         public AutoCacheStatus Status { get; set; }
-
-        public object[] Args { get; set; }
     }
     public class AutoCacheResult<T> : AutoCacheResultBase
     {
