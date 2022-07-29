@@ -8,7 +8,7 @@
         }
         public virtual string GetHead()
         {
-            return FriendlyHelper<TEntity>.FriendlyName;
+            return FriendlyNameHelper<TEntity>.FriendlyName;
         }
         public virtual string GetEntryKey(TIdentity identity)
         {

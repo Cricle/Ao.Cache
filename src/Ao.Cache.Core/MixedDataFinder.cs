@@ -20,7 +20,7 @@ namespace Ao.Cache
             return DataFinder.DeleteAsync(identity);
         }
 
-        public Task<IDictionary<TIdentity, bool>> DeleteAsync(IReadOnlyList<TIdentity> identity)
+        public Task<long> DeleteAsync(IReadOnlyList<TIdentity> identity)
         {
             return BatchDataFinder.DeleteAsync(identity);
         }
@@ -60,7 +60,7 @@ namespace Ao.Cache
             return DataFinder.SetInCahceAsync(identity, entity);
         }
 
-        public Task<IDictionary<TIdentity,bool>> SetInCahceAsync(IDictionary<TIdentity, TEntity> pairs)
+        public Task<long> SetInCahceAsync(IDictionary<TIdentity, TEntity> pairs)
         {
             return BatchDataFinder.SetInCahceAsync(pairs);
         }

@@ -1,6 +1,6 @@
 ﻿namespace Ao.Cache
 {
-    public static class FriendlyHelper<T>
+    public static class FriendlyNameHelper<T>
     {
         public static readonly string FriendlyName = TypeNameHelper.GetFriendlyFullName(typeof(T));
     }

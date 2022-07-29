@@ -22,7 +22,7 @@ namespace Ao.Cache.InRedis
             return default;
         }
 
-        protected override Task<bool> WriteCacheAsync(string key, TIdentity identity, TEntity entity, TimeSpan? caheTime)
+        protected override Task<bool> SetInCahceAsync(string key, TIdentity identity, TEntity entity, TimeSpan? caheTime)
         {
             var bs = EntityConvertor.ToBytes(entity);
 

@@ -34,7 +34,7 @@ namespace Ao.Cache.Core.Test
             return Task.FromResult((identity % 10).ToString());
         }
 
-        protected override Task<bool> WriteCacheAsync(string key, int identity, string entity, TimeSpan? caheTime)
+        protected override Task<bool> SetInCahceAsync(string key, int identity, string entity, TimeSpan? caheTime)
         {
             return Task.FromResult(true);
         }

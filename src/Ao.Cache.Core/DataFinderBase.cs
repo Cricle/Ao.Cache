@@ -33,9 +33,9 @@ namespace Ao.Cache
         {
             var key = GetEntryKey(identity);
             var cacheTime = GetCacheTime(identity, entity);
-            return WriteCacheAsync(key, identity, entity, cacheTime);
+            return SetInCahceAsync(key, identity, entity, cacheTime);
         }
-        protected abstract Task<bool> WriteCacheAsync(string key, TIdentity identity, TEntity entity, TimeSpan? caheTime);
+        protected abstract Task<bool> SetInCahceAsync(string key, TIdentity identity, TEntity entity, TimeSpan? caheTime);
         
         protected virtual TimeSpan? GetCacheTime(TIdentity identity, TEntity entity)
         {

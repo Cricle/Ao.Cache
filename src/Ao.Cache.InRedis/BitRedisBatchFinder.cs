@@ -32,10 +32,11 @@ namespace Ao.Cache.InRedis
             return map;
         }
 
-        public override Task<IDictionary<TIdentity, bool>> SetInCahceAsync(IDictionary<TIdentity, TEntity> pairs)
+        public override async Task<long> SetInCahceAsync(IDictionary<TIdentity, TEntity> pairs)
         {
-            return DoInRedisAsync(pairs.Keys.ToList(), (batch, identity) =>
-                    batch.StringSetAsync(GetEntryKey(identity), EntityConvertor.ToBytes(pairs[identity])));
+            var res=await DoInRedisAsync(pairs.Keys.ToList(), (batch, identity) =>
+                    batch.StringSetAsync(GetEntryKey(identity), EntityConvertor.ToBytes(pairs[identity]), GetCacheTime(identity, pairs[identity])));
+            return res.Count;
         }
 
     }

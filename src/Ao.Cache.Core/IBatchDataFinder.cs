@@ -7,7 +7,7 @@ namespace Ao.Cache
     {
         Task<IDictionary<TIdentity, TEntity>> FindInDbAsync(IReadOnlyList<TIdentity> identity, bool cache);
         
-        Task<IDictionary<TIdentity,bool>> DeleteAsync(IReadOnlyList<TIdentity> identity);
+        Task<long> DeleteAsync(IReadOnlyList<TIdentity> identity);
 
         Task<IDictionary<TIdentity,bool>> ExistsAsync(IReadOnlyList<TIdentity> identity);
     }

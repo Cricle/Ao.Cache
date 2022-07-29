@@ -40,7 +40,7 @@ namespace Ao.Cache.InMemory
             return Task.FromResult<TEntry>(default);
         }
 
-        protected override Task<bool> WriteCacheAsync(string key, TIdentity identity, TEntry entity, TimeSpan? caheTime)
+        protected override Task<bool> SetInCahceAsync(string key, TIdentity identity, TEntry entity, TimeSpan? caheTime)
         {
             var options = GetMemoryCacheEntryOptions(identity, caheTime);
             GetMemoryCache().Set(key, entity, options);

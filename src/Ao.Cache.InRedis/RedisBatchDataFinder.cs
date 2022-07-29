@@ -49,9 +49,15 @@ namespace Ao.Cache.InRedis
             }
             return map;
         }
-        public override Task<IDictionary<TIdentity, bool>> DeleteAsync(IReadOnlyList<TIdentity> identities)
+        public override Task<long> DeleteAsync(IReadOnlyList<TIdentity> identities)
         {
-            return DoInRedisAsync(identities, (batch, identity) => batch.KeyDeleteAsync(GetEntryKey(identity)));
+            var db = GetDatabase();
+            var keys = new RedisKey[identities.Count];
+            for (int i = 0; i < identities.Count; i++)
+            {
+                keys[i] = GetEntryKey(identities[i]);
+            }
+            return db.KeyDeleteAsync(keys);
         }
 
         public override Task<IDictionary<TIdentity, bool>> ExistsAsync(IReadOnlyList<TIdentity> identities)
@@ -59,10 +65,12 @@ namespace Ao.Cache.InRedis
             return DoInRedisAsync(identities, (batch, identity) => batch.KeyExistsAsync(GetEntryKey(identity)));
         }
 
-        public override Task<IDictionary<TIdentity, bool>> RenewalAsync(IDictionary<TIdentity, TimeSpan?> input)
+        public override async Task<long> RenewalAsync(IDictionary<TIdentity, TimeSpan?> input)
         {
-            return DoInRedisAsync(input.Keys.ToList(),
+            var res=await DoInRedisAsync(input.Keys.ToList(),
                 (batch, identity) => batch.KeyExpireAsync(GetEntryKey(identity), input[identity]));
+
+            return res.Count;
         }
 
     }

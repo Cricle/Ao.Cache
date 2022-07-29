@@ -94,7 +94,7 @@ namespace Ao.Cache.InLitedb.Cmd
     public class CacheStudent:Student,ILiteCacheEntity
     {
         [BsonId]
-        public ObjectId BsonId { get; set; }
+        public ObjectId Id { get; set; }
 
         public DateTime Time { get; set; }
 

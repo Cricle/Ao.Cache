@@ -8,8 +8,4 @@ namespace Ao.Cache
     {
         IDataAccesstor<TIdentity, TEntry> DataAccesstor { get; }
     }
-    public interface IWithBatchDataAccesstorFinder<TIdentity, TEntry>
-    {
-        IBatchDataAccesstor<TIdentity, TEntry> DataAccesstor { get; }
-    }
 }
