@@ -10,8 +10,10 @@ using System.Threading.Tasks;
 
 namespace Ao.Cache.CastleProxy.Interceptors
 {
-    public class CacheInterceptor : AsyncInterceptorBase
+    public class CacheInterceptor : NamedInterceptor
     {
+        private static readonly object locker = new object();
+        private static readonly Dictionary<NamedInterceptorKey, NamedInterceptorValue> argCacheMap = new Dictionary<NamedInterceptorKey, NamedInterceptorValue>();
         public CacheInterceptor(IServiceScopeFactory serviceScopeFactory, IStringTransfer stringTransfer)
         {
             ServiceScopeFactory = serviceScopeFactory;
@@ -26,7 +28,6 @@ namespace Ao.Cache.CastleProxy.Interceptors
         {
             return proceed(invocation, proceedInfo);
         }
-        private static readonly Dictionary<Tuple<Type, MethodInfo>, List<int>> argCacheMap = new Dictionary<Tuple<Type, MethodInfo>, List<int>>();
         protected override async Task<TResult> InterceptAsync<TResult>(IInvocation invocation, IInvocationProceedInfo proceedInfo, Func<IInvocation, IInvocationProceedInfo, Task<TResult>> proceed)
         {
             if (GetAutoCache(invocation) == null)
@@ -43,38 +44,9 @@ namespace Ao.Cache.CastleProxy.Interceptors
                 var finder = scope.ServiceProvider.GetRequiredService<IDataFinder<UnwindObject, TResult>>();
                 if (finder is IWithDataAccesstorFinder<UnwindObject, TResult> f && f.DataAccesstor is CastleDataAccesstor<UnwindObject, TResult> unwinAccsstor)
                 {
-                    var key = new Tuple<Type, MethodInfo>(invocation.TargetType, invocation.Method);
-                    if (!argCacheMap.TryGetValue(key, out var lst))
-                    {
-                        var methodArgs = invocation.Method.GetParameters();
-                        var used = new List<int>();
-                        for (int i = 0; i < methodArgs.Length; i++)
-                        {
-                            var methodArg = methodArgs[i];
-                            if (methodArg.GetCustomAttribute<AutoCacheSkipPartAttribute>() == null)
-                            {
-                                used.Add(i);
-                            }
-                        }
-                        if (used.Count == methodArgs.Length)
-                        {
-                            argCacheMap[key] = null;
-                        }
-                        else
-                        {
-                            argCacheMap[key] = used;
-                            lst = used;
-                        }
-                    }
-                    var args = invocation.Arguments;
-                    if (lst != null)
-                    {
-                        args = new object[lst.Count];
-                        for (int i = 0; i < lst.Count; i++)
-                        {
-                            args[i] = invocation.Arguments[lst[i]];
-                        }
-                    }
+                    var key = new NamedInterceptorKey(invocation.TargetType, invocation.Method);
+                    var lst = GetArgIndexs(key, invocation.Method);
+                    var args = MakeArgsWithHeader(lst, invocation.Arguments);
                     var winObj = new UnwindObject(args, StringTransfer);
                     var res = await finder.FindInCahceAsync(winObj);
                     if (res == null)
@@ -114,5 +86,19 @@ namespace Ao.Cache.CastleProxy.Interceptors
             return invocation.TargetType.GetCustomAttribute<AutoCacheAttribute>() ?? invocation.Method.GetCustomAttribute<AutoCacheAttribute>();
         }
 
+        protected override Dictionary<NamedInterceptorKey, NamedInterceptorValue> GetCacheMap()
+        {
+            return argCacheMap;
+        }
+
+        protected override bool ParamterCanUse(ParameterInfo param)
+        {
+            return param.GetCustomAttribute<AutoCacheSkipPartAttribute>() == null;
+        }
+
+        protected override object GetLocker()
+        {
+            return locker;
+        }
     }
 }

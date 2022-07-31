@@ -7,6 +7,7 @@ namespace Ao.Cache.InMemory
     public class MemoryLockFactory : ILockerFactory
     {
         private readonly object syncRoot = new object();
+
         private readonly Dictionary<string, MemoryLocker> resourceMap = new Dictionary<string, MemoryLocker>();
 
         public ILocker CreateLock(string resource, TimeSpan expiryTime)
@@ -16,6 +17,7 @@ namespace Ao.Cache.InMemory
                 var now = DateTime.Now;
                 if (resourceMap.TryGetValue(resource, out var locker) && !locker.IsInvalid)
                 {
+                    resourceMap.Remove(resource);
                     return new MemoryLocker
                     {
                         CreateTime = now,

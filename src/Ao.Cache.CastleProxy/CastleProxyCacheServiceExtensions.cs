@@ -10,6 +10,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             services.AddSingleton<IStringTransfer>(DefaultStringTransfer.Instance);
             services.AddScoped<CacheInterceptor>();
+            services.AddScoped<LockInterceptor>();
             services.AddScoped(typeof(IDataAccesstor<,>),typeof(CastleDataAccesstor<,>));
             return services;
         }
