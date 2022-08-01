@@ -90,10 +90,6 @@ namespace Ao.Cache.CastleProxy.Interceptors
             var args = MakeArgs(lst, invocation.Arguments);
             var lockKey = KeyGenerator.Concat(lst.Header, args);
             var locker = await LockerFactory.CreateLockAsync(lockKey, attr.ExpireTime);
-            if (!locker.IsAcquired)
-            {
-
-            }
             return new RunLockResult(locker, RunLockResultTypes.InLocker);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

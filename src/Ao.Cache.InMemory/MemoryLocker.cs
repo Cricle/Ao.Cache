@@ -2,7 +2,7 @@
 
 namespace Ao.Cache.InMemory
 {
-    internal struct MemoryLocker : ILocker
+    internal class MemoryLocker : ILocker
     {
         public string Resource { get; set; }
 

@@ -7,6 +7,23 @@ using System.Threading.Tasks;
 
 namespace Ao.Cache.InLitedb
 {
+    public abstract class LitedbCacheBatchFinder<TIdentity, TEntry> : LitedbCacheBatchFinder<TIdentity, TEntry, TEntry>
+       where TEntry : ILiteCacheEntity, new()
+    {
+        protected LitedbCacheBatchFinder(ILiteCollection<TEntry> collection) : base(collection)
+        {
+        }
+
+        protected override Expression<Func<TEntry, TEntry>> GetSelect()
+        {
+            return x => x;
+        }
+
+        protected override TEntry ToCollectionEntity(TIdentity identity, TEntry entry)
+        {
+            return entry;
+        }
+    }
     public abstract class LitedbCacheBatchFinder<TIdentity, TEntry, TCollectionEntity> : BatchDataFinderBase<TIdentity, TEntry>
            where TCollectionEntity : TEntry, ILiteCacheEntity, new()
     {

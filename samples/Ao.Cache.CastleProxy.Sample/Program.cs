@@ -12,6 +12,7 @@ using StackExchange.Redis;
 using RedLockNet;
 using RedLockNet.SERedis;
 using RedLockNet.SERedis.Configuration;
+using System.Diagnostics;
 
 namespace Ao.Cache.CastleProxy.Sample
 {
@@ -23,17 +24,18 @@ namespace Ao.Cache.CastleProxy.Sample
             ser.AddSingleton<GetTime>();
             ser.AddSingleton<LockTime>();
             ser.AddCastleCacheProxy();
-            ser.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect("127.0.0.1:6379"));
-            ser.AddScoped(x => x.GetRequiredService<IConnectionMultiplexer>().GetDatabase());
-            ser.AddSingleton<IDistributedLockFactory>(p =>
-            new RedLockFactory(new RedLockConfiguration(new ExistingMultiplexersRedLockConnectionProvider
-            {
-                Multiplexers = new RedLockMultiplexer[]
-                  {
-                      new RedLockMultiplexer(p.GetRequiredService<IConnectionMultiplexer>())
-                  }
-            })));
-            ser.AddSingleton<ILockerFactory,InRedis.RedisLockFactory>();
+            //ser.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect("127.0.0.1:6379"));
+            //ser.AddScoped(x => x.GetRequiredService<IConnectionMultiplexer>().GetDatabase());
+            //ser.AddSingleton<IDistributedLockFactory>(p =>
+            //new RedLockFactory(new RedLockConfiguration(new ExistingMultiplexersRedLockConnectionProvider
+            //{
+            //    Multiplexers = new RedLockMultiplexer[]
+            //      {
+            //          new RedLockMultiplexer(p.GetRequiredService<IConnectionMultiplexer>())
+            //      }
+            //})));
+            //ser.AddSingleton<ILockerFactory,InRedis.RedisLockFactory>();
+            ser.AddSingleton<ILockerFactory, MemoryLockFactory>();
             ser.AddMemoryCache();
             ser.AddSingleton(typeof(IDataFinder<,>), typeof(DefaultInMemoryCacheFinder<,>));
 
@@ -42,34 +44,50 @@ namespace Ao.Cache.CastleProxy.Sample
             icon.AsyncIntercept(typeof(GetTime), typeof(CacheInterceptor));
             icon.AsyncIntercept(typeof(LockTime), typeof(LockInterceptor));
             var provider = icon.BuildServiceProvider();
-            var t = provider.GetRequiredService<LockTime>();
-            var tsk = new Task[100];
-            for (int i = 0; i < tsk.Length; i++)
+
+            RunLock(provider);
+        }
+        private static void RunCache(IServiceProvider provider)
+        {
+            var gt = provider.GetRequiredService<GetTime>();
+            for (int i = 0; i < 10; i++)
             {
-                tsk[i] = Task.Factory.StartNew(() =>
-                {
-                    t.Inc();
-                });
+                Thread.Sleep(TimeSpan.FromMilliseconds(300));
+                var n = gt.NowTime(i % 3, i);
+                Console.WriteLine($"Data:{n.RawData!.Value:HH:mm:ss ffff}, Status:{n.Status}");
             }
-            Task.WaitAll(tsk);
-            Console.WriteLine(t.A);
-            //var gt = provider.GetRequiredService<GetTime>();
-            //for (int i = 0; i < 10; i++)
-            //{
-            //    Thread.Sleep(TimeSpan.FromMilliseconds(300));
-            //    var n = gt.NowTime(i%3,i);
-            //    Console.WriteLine($"Data:{n.RawData!.Value:HH:mm:ss ffff}, Status:{n.Status}");
-            //}
+        }
+        private static void RunLock(IServiceProvider provider)
+        {
+            var t = provider.GetRequiredService<LockTime>();
+            for (int j = 0; j < 10; j++)
+            {
+                t.A = 0;
+                var tsk = new Task[20];
+                for (int i = 0; i < tsk.Length; i++)
+                {
+                    var q = i;
+                    tsk[i] = Task.Factory.StartNew(() =>
+                    {
+                        t.Inc(q*50);
+                    });
+                }
+                var sw = Stopwatch.GetTimestamp();
+                Task.WaitAll(tsk);
+                var ed = Stopwatch.GetTimestamp();
+                Console.WriteLine(new TimeSpan(ed - sw));
+                Console.WriteLine(t.A);
+            }
         }
     }
     public class LockTime
     {
-        public int A { get; set; }
+        public virtual int A { get; set; }
 
         [AutoLock]
-        public virtual void Inc()
+        public virtual void Inc([AutoLockSkipPart]int j)
         {
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < j; i++)
             {
                 A++;
             }

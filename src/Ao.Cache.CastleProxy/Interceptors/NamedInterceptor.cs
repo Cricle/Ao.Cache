@@ -46,7 +46,6 @@ namespace Ao.Cache.CastleProxy.Interceptors
         protected NamedInterceptorValue GetArgIndexs(in NamedInterceptorKey key,MethodInfo method)
         {
             var map = GetCacheMap();
-            var locker = GetLocker();
             if (!map.TryGetValue(key, out var val))
             {
                 var methodArgs = method.GetParameters();
@@ -60,9 +59,9 @@ namespace Ao.Cache.CastleProxy.Interceptors
                     }
                 }
                 var name = TypeNameHelper.GetFriendlyFullName(key.TargetType) + "." + key.Method.Name;
-                //used.Count == methodArgs.Length
                 IReadOnlyList<int> argIndexs = used.Count == methodArgs.Length ? null : used.ToArray();
                 val = new NamedInterceptorValue(argIndexs, name);
+                var locker = GetLocker();
                 lock (locker)
                 {
                     map[key] = val;
