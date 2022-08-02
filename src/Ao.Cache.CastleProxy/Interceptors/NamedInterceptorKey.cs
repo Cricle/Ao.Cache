@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace Ao.Cache.CastleProxy.Interceptors
 {
-    public struct NamedInterceptorKey:IEquatable<NamedInterceptorKey>
+    public readonly struct NamedInterceptorKey : IEquatable<NamedInterceptorKey>
     {
         public NamedInterceptorKey(Type targetType, MethodInfo method)
         {
@@ -23,7 +23,7 @@ namespace Ao.Cache.CastleProxy.Interceptors
         }
         public override bool Equals(object obj)
         {
-            return Equals((NamedInterceptorKey)obj );
+            return Equals((NamedInterceptorKey)obj);
         }
 
         public bool Equals(NamedInterceptorKey other)

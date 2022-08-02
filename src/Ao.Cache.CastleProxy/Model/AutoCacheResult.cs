@@ -6,13 +6,15 @@ using System.Threading.Tasks;
 
 namespace Ao.Cache.CastleProxy.Model
 {
-    public abstract class AutoCacheResultBase
+    public interface IAutoCacheResultBase
     {
-        public AutoCacheStatus Status { get; set; }
+        AutoCacheStatus Status { get; set; }
     }
-    public class AutoCacheResult<T> : AutoCacheResultBase
+    public class AutoCacheResult<T> : IAutoCacheResultBase
     {
         public T RawData { get; set; }
+
+        public AutoCacheStatus Status {get; set; }
     }
     [Flags]
     public enum AutoCacheStatus

@@ -45,7 +45,8 @@ namespace Ao.Cache.CastleProxy.Sample
             icon.AsyncIntercept(typeof(LockTime), typeof(LockInterceptor));
             var provider = icon.BuildServiceProvider();
 
-            RunLock(provider);
+            RunCache(provider);
+            //RunLock(provider);
         }
         private static void RunCache(IServiceProvider provider)
         {
@@ -53,8 +54,11 @@ namespace Ao.Cache.CastleProxy.Sample
             for (int i = 0; i < 10; i++)
             {
                 Thread.Sleep(TimeSpan.FromMilliseconds(300));
+                var sw = Stopwatch.GetTimestamp();
                 var n = gt.NowTime(i % 3, i);
-                Console.WriteLine($"Data:{n.RawData!.Value:HH:mm:ss ffff}, Status:{n.Status}");
+                var ed = Stopwatch.GetTimestamp();
+                Console.WriteLine(new TimeSpan(ed-sw));
+                //Console.WriteLine($"Data:{n.RawData!.Value:HH:mm:ss ffff}, Status:{n.Status}");
             }
         }
         private static void RunLock(IServiceProvider provider)
@@ -96,10 +100,11 @@ namespace Ao.Cache.CastleProxy.Sample
     public class GetTime
     {
         [AutoCache]
-        public virtual AutoCacheResult<DateTime?> NowTime(int id,[AutoCacheSkipPart]long dd)
+        public virtual AutoCacheResult<DateTime?> NowTime(int id,long dd)
         {
             Console.WriteLine("yerp");
             return new AutoCacheResult<DateTime?> { RawData = DateTime.Now };
         }
     }
 }
+

@@ -33,7 +33,7 @@ namespace Ao.Cache.CastleProxy.Interceptors
             if (GetAutoCache(invocation) == null)
             {
                 var res = await proceed(invocation, proceedInfo);
-                if (res is AutoCacheResultBase result)
+                if (res is IAutoCacheResultBase result)
                 {
                     result.Status = AutoCacheStatus.Skip;
                 }
@@ -56,13 +56,13 @@ namespace Ao.Cache.CastleProxy.Interceptors
                         unwinAccsstor.ProceedInfo = proceedInfo;
                         unwinAccsstor.Proceed = proceed;
                         await finder.SetInCahceAsync(winObj, res);
-                        if (res is AutoCacheResultBase result)
+                        if (res is IAutoCacheResultBase result)
                         {
                             result.Status = AutoCacheStatus.MethodHit;
                         }
                         return res;
                     }
-                    if (res is AutoCacheResultBase resultr)
+                    if (res is IAutoCacheResultBase resultr)
                     {
                         resultr.Status = AutoCacheStatus.CacheHit;
                     }
@@ -72,7 +72,7 @@ namespace Ao.Cache.CastleProxy.Interceptors
                 else
                 {
                     var res = await proceed(invocation, proceedInfo);
-                    if (res is AutoCacheResultBase result)
+                    if (res is IAutoCacheResultBase result)
                     {
                         result.Status = AutoCacheStatus.NotSupportFinderOrAccesstor;
                     }

@@ -3,13 +3,12 @@ using System.Threading.Tasks;
 
 namespace Ao.Cache
 {
-    public abstract class DataFinderGroup<TIdentity, TEntity> :List<IDataFinder<TIdentity, TEntity>>, IDataFinder<TIdentity, TEntity>
+    public class DataFinderGroup<TIdentity, TEntity> : List<IDataFinder<TIdentity, TEntity>>, IDataFinder<TIdentity, TEntity>
     {
-        public async Task<bool> DeleteAsync(TIdentity identity)
+        public virtual async Task<bool> DeleteAsync(TIdentity identity)
         {
-            var count = Count;
-            var tasks = new Task[count];
-            for (int i = 0; i < count; i++)
+            var tasks = new Task[Count];
+            for (int i = 0; i < tasks.Length; i++)
             {
                 tasks[i] = this[i].DeleteAsync(identity);
             }
@@ -17,10 +16,9 @@ namespace Ao.Cache
             return true;
         }
 
-        public async Task<bool> ExistsAsync(TIdentity identity)
+        public virtual async Task<bool> ExistsAsync(TIdentity identity)
         {
-            var count = Count;
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < Count; i++)
             {
                 var entity = this[i];
                 var data = await entity.ExistsAsync(identity);
@@ -32,10 +30,9 @@ namespace Ao.Cache
             return false;
         }
 
-        public async Task<TEntity> FindInCahceAsync(TIdentity identity)
+        public virtual async Task<TEntity> FindInCahceAsync(TIdentity identity)
         {
-            var count = Count;
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < Count; i++)
             {
                 var entity = this[i];
                 var data = await entity.FindInCahceAsync(identity);
@@ -47,13 +44,28 @@ namespace Ao.Cache
             return default;
         }
 
-        public abstract Task<TEntity> FindInDbAsync(TIdentity identity, bool cache);
+        public virtual async Task<TEntity> FindInDbAsync(TIdentity identity, bool cache)
+        {
+            for (int i = 0; i < Count; i++)
+            {
+                var entity = this[i];
+                var data = await entity.FindInDbAsync(identity, false);
+                if (IsHit(data))
+                {
+                    if (cache)
+                    {
+                        await SetInCahceAsync(identity, data);
+                    }
+                    return data;
+                }
+            }
+            return default;
+        }
 
         public virtual async Task<bool> SetInCahceAsync(TIdentity identity, TEntity entity)
         {
-            var count = Count;
-            var tasks = new Task[count];
-            for (int i = 0; i < count; i++)
+            var tasks = new Task[Count];
+            for (int i = 0; i < tasks.Length; i++)
             {
                 tasks[i] = this[i].SetInCahceAsync(identity, entity);
             }

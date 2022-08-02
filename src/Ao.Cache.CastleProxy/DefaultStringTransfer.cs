@@ -1,16 +1,4 @@
-﻿
-/* 项目“Ao.Cache.CastleProxy (net5.0)”的未合并的更改
-在此之前:
-using System.Runtime.CompilerServices;
-在此之后:
-using Ao;
-using Ao.Cache;
-using Ao.Cache.CastleProxy;
-using Ao.Cache.CastleProxy;
-using Ao.Cache.CastleProxy.Interceptors;
-using System.Runtime.CompilerServices;
-*/
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 
 namespace Ao.Cache.CastleProxy
 {
@@ -18,18 +6,16 @@ namespace Ao.Cache.CastleProxy
     {
         public const string DefaultSpliter = ".";
 
-        public static readonly DefaultStringTransfer Instance = new DefaultStringTransfer();
+        public static readonly DefaultStringTransfer Default = new DefaultStringTransfer(DefaultSpliter);
 
-        private DefaultStringTransfer() { }
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private string CaseString(object val)
+        public DefaultStringTransfer(string spliter) 
         {
-            if (val == null)
-            {
-                return string.Empty;
-            }
-            return val.ToString();
+            Spliter = spliter ?? throw new System.ArgumentNullException(nameof(spliter));
         }
+
+
+        public string Spliter { get; }
+
         public string Combine(params object[] args)
         {
             switch (args.Length)
@@ -37,14 +23,15 @@ namespace Ao.Cache.CastleProxy
                 case 0:
                     return string.Empty;
                 case 1:
-                    return CaseString(args[0]);
+                    return ToString(args[0]);
                 case 2:
-                    return string.Concat(CaseString(args[0]), DefaultSpliter, CaseString(args[1]));
+                    return string.Concat(ToString(args[0]), Spliter, ToString(args[1]));
                 default:
-                    return string.Join(DefaultSpliter, args);
+                    return string.Join(Spliter, args);
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public string ToString(object data)
         {
             return data?.ToString() ?? string.Empty;

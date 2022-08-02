@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Ao.Cache.CastleProxy
 {
-    public class CastleDataAccesstor<TKey, TEntity>:IDataAccesstor<TKey, TEntity>
+    public class CastleDataAccesstor<TKey, TEntity> : IDataAccesstor<TKey, TEntity>
     {
         public IInvocation Invocation { get; set; }
 

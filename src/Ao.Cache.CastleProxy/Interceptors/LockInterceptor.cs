@@ -10,12 +10,12 @@ namespace Ao.Cache.CastleProxy.Interceptors
 {
     public class LockInterceptor: NamedInterceptor
     {
-        enum RunLockResultTypes
+        protected enum RunLockResultTypes
         {
             SkipNoLocker,
             InLocker,
         }
-        readonly struct RunLockResult : IDisposable
+        protected readonly struct RunLockResult : IDisposable
         {
             public readonly ILocker Locker;
 
@@ -50,6 +50,7 @@ namespace Ao.Cache.CastleProxy.Interceptors
         protected override async Task InterceptAsync(IInvocation invocation, IInvocationProceedInfo proceedInfo, Func<IInvocation, IInvocationProceedInfo, Task> proceed)
         {
             var locker = await RunLockAsync(invocation, proceedInfo);
+            await OnGotLockResultAsync(invocation, proceedInfo, locker);
             if (locker.Type == RunLockResultTypes.InLocker)
             {
                 using (locker.Locker)
@@ -62,10 +63,18 @@ namespace Ao.Cache.CastleProxy.Interceptors
                 await proceed(invocation, proceedInfo);
             }
         }
-
+        protected virtual Task OnGotLockResultAsync(IInvocation invocation, IInvocationProceedInfo proceedInfo,RunLockResult result)
+        {
+#if NET452
+            return Task.FromResult(false);
+#else
+            return Task.CompletedTask;
+#endif
+        }
         protected override async Task<TResult> InterceptAsync<TResult>(IInvocation invocation, IInvocationProceedInfo proceedInfo, Func<IInvocation, IInvocationProceedInfo, Task<TResult>> proceed)
         {
             var locker = await RunLockAsync(invocation, proceedInfo);
+            await OnGotLockResultAsync(invocation, proceedInfo, locker);
             if (locker.Type == RunLockResultTypes.InLocker)
             {
                 using (locker.Locker)
@@ -88,9 +97,13 @@ namespace Ao.Cache.CastleProxy.Interceptors
             var key = new NamedInterceptorKey(invocation.TargetType, invocation.Method);
             var lst = GetArgIndexs(key, invocation.Method);
             var args = MakeArgs(lst, invocation.Arguments);
-            var lockKey = KeyGenerator.Concat(lst.Header, args);
+            var lockKey = GenerateKey(lst.Header, args);
             var locker = await LockerFactory.CreateLockAsync(lockKey, attr.ExpireTime);
             return new RunLockResult(locker, RunLockResultTypes.InLocker);
+        }
+        protected virtual string GenerateKey(string header, object[] args)
+        {
+            return KeyGenerator.Concat(header, args);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static AutoLockAttribute GetLockAttr(IInvocation invocation)
@@ -111,5 +124,6 @@ namespace Ao.Cache.CastleProxy.Interceptors
         {
             return locker;
         }
+
     }
 }
