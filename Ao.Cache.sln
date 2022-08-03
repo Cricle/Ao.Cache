@@ -34,9 +34,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ao.Cache.InRedis.HashList.T
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ao.Cache.InRedis.HashList", "src\Ao.Cache.InRedis.HashList\Ao.Cache.InRedis.HashList.csproj", "{03A8CCE3-8D19-40C8-BB2C-8DF9EF57A827}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ao.Cache.CastleProxy", "src\Ao.Cache.CastleProxy\Ao.Cache.CastleProxy.csproj", "{BC4BF64A-BD8F-4E91-BEF5-44532EAFB86B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ao.Cache.CastleProxy", "src\Ao.Cache.CastleProxy\Ao.Cache.CastleProxy.csproj", "{BC4BF64A-BD8F-4E91-BEF5-44532EAFB86B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ao.Cache.CastleProxy.Sample", "samples\Ao.Cache.CastleProxy.Sample\Ao.Cache.CastleProxy.Sample.csproj", "{6930786B-EFC0-4C14-B1FC-582945D0E304}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ao.Cache.CastleProxy.Sample", "samples\Ao.Cache.CastleProxy.Sample\Ao.Cache.CastleProxy.Sample.csproj", "{6930786B-EFC0-4C14-B1FC-582945D0E304}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ao.Cache.Benchmarks", "test\Ao.Cache.Benchmarks\Ao.Cache.Benchmarks.csproj", "{77E5EC84-F058-4F2E-9768-BD80C7646886}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -96,6 +98,10 @@ Global
 		{6930786B-EFC0-4C14-B1FC-582945D0E304}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6930786B-EFC0-4C14-B1FC-582945D0E304}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6930786B-EFC0-4C14-B1FC-582945D0E304}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77E5EC84-F058-4F2E-9768-BD80C7646886}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77E5EC84-F058-4F2E-9768-BD80C7646886}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77E5EC84-F058-4F2E-9768-BD80C7646886}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77E5EC84-F058-4F2E-9768-BD80C7646886}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -106,6 +112,7 @@ Global
 		{CD0714BB-E548-4D1A-B0BE-34F6123DF0AE} = {A52E7B5C-66EF-4377-847C-B1BA11168C56}
 		{A2EB1A38-0138-4CBE-81E7-DACB8A26656A} = {9CF6302B-4E03-4DD5-904E-47D661131202}
 		{6930786B-EFC0-4C14-B1FC-582945D0E304} = {A52E7B5C-66EF-4377-847C-B1BA11168C56}
+		{77E5EC84-F058-4F2E-9768-BD80C7646886} = {9CF6302B-4E03-4DD5-904E-47D661131202}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {55157C22-E7CC-4639-A568-1305AB03681E}

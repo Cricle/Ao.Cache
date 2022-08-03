@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Ao.Cache
 {
-    public abstract class DataFinderBase<TIdentity, TEntity> : IdentityGenerater<TIdentity, TEntity>, IDataFinder<TIdentity, TEntity>,IRenewalable<TIdentity>
+    public abstract class DataFinderBase<TIdentity, TEntity> : IdentityGenerater<TIdentity, TEntity>, IDataFinder<TIdentity, TEntity>,IRenewalable<TIdentity>, IDataFinder,IRenewalable
     {
         protected DataFinderBase()
         {
@@ -51,6 +51,38 @@ namespace Ao.Cache
         }
 
         public abstract Task<bool> RenewalAsync(TIdentity identity, TimeSpan? time);
+
+        Task<bool> IDataFinder.DeleteAsync(object identity)
+        {
+            return DeleteAsync((TIdentity)identity);
+        }
+
+        Task<bool> IDataFinder.ExistsAsync(object identity)
+        {
+            return ExistsAsync((TIdentity)identity);
+        }
+
+        Task<bool> ICacheFinder.SetInCahceAsync(object identity, object entity)
+        {
+            return SetInCahceAsync((TIdentity)identity,(TEntity)entity);
+        }
+
+        async Task<object> ICacheFinder.FindInCahceAsync(object identity)
+        {
+            var res=await FindInCahceAsync((TIdentity)identity);
+            return res;
+        }
+
+        async Task<object> IPhysicalFinder.FindInDbAsync(object identity, bool cache)
+        {
+            var res = await FindInDbAsync((TIdentity)identity);
+            return res;
+        }
+
+        Task<bool> IRenewalable.RenewalAsync(object identity, TimeSpan? time)
+        {
+            return RenewalAsync((TIdentity)identity, time);
+        }
     }
 
 }

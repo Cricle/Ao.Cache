@@ -4,6 +4,12 @@ using System.Threading.Tasks;
 
 namespace Ao.Cache
 {
+    public interface IBatchCacheFinder
+    {
+        Task<long> SetInCahceAsync(IDictionary pairs);
+
+        Task<IDictionary> FindInCahceAsync(IList identity);
+    }
     public interface IBatchCacheFinder<TIdentity, TEntity>
     {
         Task<long> SetInCahceAsync(IDictionary<TIdentity, TEntity> pairs);

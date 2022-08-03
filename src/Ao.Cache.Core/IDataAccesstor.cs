@@ -7,5 +7,4 @@ namespace Ao.Cache
     {
         Task<TEntry> FindAsync(TIdentity identity);
     }
-
 }

@@ -100,10 +100,17 @@ namespace Ao.Cache.CastleProxy.Sample
     public class GetTime
     {
         [AutoCache]
-        public virtual AutoCacheResult<DateTime?> NowTime(int id,long dd)
+        public virtual AutoCacheResult<DateTime?> NowTime(int id,[AutoCacheSkipPart]long dd)
         {
             Console.WriteLine("yerp");
             return new AutoCacheResult<DateTime?> { RawData = DateTime.Now };
+        }
+
+        [AutoCache]
+        public virtual DateTime? NowTime1(int id, long dd)
+        {
+            Console.WriteLine("yerp");
+            return DateTime.Now;
         }
     }
 }

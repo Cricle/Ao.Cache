@@ -1,12 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Ao.Cache
 {
-    public interface IBatchDataFinder<TIdentity, TEntity> : IBatchCacheFinder<TIdentity, TEntity>
+    public interface IBatchDataFinder: IBatchCacheFinder, IBatchPhysicalFinder
     {
-        Task<IDictionary<TIdentity, TEntity>> FindInDbAsync(IReadOnlyList<TIdentity> identity, bool cache);
-        
+        Task<long> DeleteAsync(IList identity);
+
+        Task<IDictionary<object, bool>> ExistsAsync(IList identity);
+    }
+    public interface IBatchDataFinder<TIdentity, TEntity> : IBatchCacheFinder<TIdentity, TEntity>, IBatchPhysicalFinder<TIdentity, TEntity>
+    {        
         Task<long> DeleteAsync(IReadOnlyList<TIdentity> identity);
 
         Task<IDictionary<TIdentity,bool>> ExistsAsync(IReadOnlyList<TIdentity> identity);
