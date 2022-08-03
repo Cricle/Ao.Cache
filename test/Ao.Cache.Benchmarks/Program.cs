@@ -12,7 +12,7 @@ namespace Ao.Cache.Benchmarks
             //r.Times = 10000;
             //r.Setup();
 
-            //r.HasResult();
+            //r.UseProvider().GetAwaiter().GetResult();
             BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run();
         }
     }

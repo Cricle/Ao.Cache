@@ -48,7 +48,7 @@ namespace Ao.Cache.CastleProxy.Interceptors
                     if (!actualTypes.TryGetValue(type, out t))
                     {
                         t = new ActualTypeInfos { ActualType = type };
-                        if (type.GetGenericTypeDefinition() == typeof(AutoCacheResult<>))
+                        if (type.IsGenericType&&type.GetGenericTypeDefinition() == typeof(AutoCacheResult<>))
                         {
                             t.ActualType = type.GenericTypeArguments[0];
                             t.Method = CompileMethod(type, t.ActualType);
@@ -99,36 +99,25 @@ namespace Ao.Cache.CastleProxy.Interceptors
             var rr = new AutoCacheResult<TResult>();
             using (var scope = ServiceScopeFactory.CreateScope())
             {
-                var finder = scope.ServiceProvider.GetRequiredService<IDataFinder<UnwindObject, TResult>>();
-                if (finder is IWithDataAccesstorFinder<UnwindObject, TResult> f &&
-                    f.DataAccesstor is CastleDataAccesstor<UnwindObject, TResult> unwinAccsstor)
+                var finderFactory = scope.ServiceProvider.GetRequiredService<IDataFinderFactory<UnwindObject, TResult>>();
+                var finder= finderFactory.Create(new CastleDataAccesstor<UnwindObject, TResult> { Proceed = proceed });
+                var key = new NamedInterceptorKey(invocation.TargetType, invocation.Method);
+                var lst = GetArgIndexs(key, invocation.Method);
+                var args = MakeArgsWithHeader(lst, invocation.Arguments);
+                var winObj = new UnwindObject(args, StringTransfer);
+                var res = await finder.FindInCahceAsync(winObj);
+                if (res == null)
                 {
-                    var key = new NamedInterceptorKey(invocation.TargetType, invocation.Method);
-                    var lst = GetArgIndexs(key, invocation.Method);
-                    var args = MakeArgsWithHeader(lst, invocation.Arguments);
-                    var winObj = new UnwindObject(args, StringTransfer);
-                    var res = await finder.FindInCahceAsync(winObj);
-                    if (res == null)
-                    {
-                        res = await proceed();
-                        unwinAccsstor.Proceed = proceed;
-                        await finder.SetInCahceAsync(winObj, res);
-                        rr.RawData = res;
-                        rr.Status = AutoCacheStatus.MethodHit;
-                        return rr;
-                    }
-                    rr.Status = AutoCacheStatus.CacheHit;
+                    res = await proceed();
+                    await finder.SetInCahceAsync(winObj, res);
                     rr.RawData = res;
-                    invocation.ReturnValue = res;
+                    rr.Status = AutoCacheStatus.MethodHit;
                     return rr;
                 }
-                else
-                {
-                    var res = await proceed();
-                    rr.RawData = res;
-                    rr.Status = AutoCacheStatus.NotSupportFinderOrAccesstor;
-                    return rr;
-                }
+                rr.Status = AutoCacheStatus.CacheHit;
+                rr.RawData = res;
+                invocation.ReturnValue = res;
+                return rr;
             }
         }
         private static readonly object hasAutoCacheLocker = new object();

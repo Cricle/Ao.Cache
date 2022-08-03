@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BenchmarkDotNet;
 using BenchmarkDotNet.Attributes;
+using Ao.Cache.CastleProxy;
 
 namespace Ao.Cache.Benchmarks.Actions
 {
@@ -21,24 +22,28 @@ namespace Ao.Cache.Benchmarks.Actions
         [Params(10, 1000, 50000)]
         public int Times { get; set; }
 
+        IServiceProvider provider;
+
         GetTime getTime;
         [GlobalSetup]
         public void Setup()
         {
             var ser = new ServiceCollection();
             ser.AddSingleton<GetTime>();
+            ser.AddSingleton<IDataAccesstor<int, int>,AAccesstor>();
             ser.AddCastleCacheProxy();
             ser.AddSingleton<ILockerFactory, MemoryLockFactory>();
             ser.AddMemoryCache();
+            ser.AddSingleton(typeof(IDataFinderFactory<,>), typeof(InMemoryCacheFinderFactory<,>));
             ser.AddSingleton(typeof(IDataFinder<,>), typeof(DefaultInMemoryCacheFinder<,>));
 
             var icon = new Container(Rules.MicrosoftDependencyInjectionRules)
                 .WithDependencyInjectionAdapter(ser, null, RegistrySharing.CloneAndDropCache);
             icon.AsyncIntercept(typeof(GetTime), typeof(CacheInterceptor));
-            var provider = icon.BuildServiceProvider();
+            provider = icon.BuildServiceProvider();
             getTime = provider.GetService<GetTime>();
             Raw();
-            NowTime1();
+            NoResult();
             HasResult();
         }
         [Benchmark(Baseline = true)]
@@ -50,7 +55,7 @@ namespace Ao.Cache.Benchmarks.Actions
             }
         }
         [Benchmark]
-        public void NowTime1()
+        public void NoResult()
         {
             for (int i = 0; i < Times; i++)
             {
@@ -65,25 +70,62 @@ namespace Ao.Cache.Benchmarks.Actions
                 getTime.NowTime(i % 5, i);
             }
         }
+        [Benchmark]
+        public async Task UseProvider()
+        {
+            for (int i = 0; i < Times; i++)
+            {
+                using (var scope = provider.CreateScope())
+                {
+                    var finder = scope.ServiceProvider.GetRequiredService<IDataFinder<int, int>>();
+                    await finder.FindAsync(i % 5);
+                }
+            }
+        }
     }
+    public class AAccesstor : IDataAccesstor<int, int>
+    {
+        public AAccesstor(GetTime gt)
+        {
+            Gt = gt;
+        }
 
-
+        public GetTime Gt { get; set; }
+        public Task<int> FindAsync(int identity)
+        {
+            return Task.FromResult(Gt.Raw(identity,0));
+        }
+    }
     public class GetTime
     {
         [AutoCache]
-        public virtual AutoCacheResult<DateTime?> NowTime(int id, [AutoCacheSkipPart] long dd)
+        public virtual AutoCacheResult<int> NowTime(int id, [AutoCacheSkipPart] long dd)
         {
-            return new AutoCacheResult<DateTime?> { RawData = DateTime.Now };
+            return new AutoCacheResult<int> { RawData = Raw(id, dd)};
         }
 
         [AutoCache]
-        public virtual DateTime? NowTime1(int id, [AutoCacheSkipPart] long dd)
+        public virtual int NowTime1(int id, [AutoCacheSkipPart] long dd)
         {
-            return DateTime.Now;
+            return Raw(id, dd);   
         }
-        public DateTime? Raw(int id, long dd)
+
+        public int Raw(int id, long dd)
         {
-            return DateTime.Now;
+            var lst = new List<int>();
+            for (int j = 0; j < id; j++)
+            {
+                for (int q = 0; q < id; q++)
+                {
+                    lst.Add(j + q);
+                }
+            }
+            if (lst.Count / 2 == 0)
+            {
+                return lst.Sum(x => x);
+            }
+            lst.Sort();
+            return lst.FirstOrDefault();
         }
     }
 }

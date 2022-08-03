@@ -16,4 +16,12 @@ namespace Ao.Cache
 
         Task<IDictionary<TIdentity,bool>> ExistsAsync(IReadOnlyList<TIdentity> identity);
     }
+    public interface IDataFinderFactory<TIdentity, TEntity>
+    {
+        IDataFinder<TIdentity, TEntity> Create(IDataAccesstor<TIdentity,TEntity> accesstor);
+    }
+    public interface IBatchDataFinderFactory<TIdentity, TEntity>
+    {
+        IBatchDataFinder<TIdentity, TEntity> Create(IBatchDataAccesstor<TIdentity, TEntity> accesstor);
+    }
 }

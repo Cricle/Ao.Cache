@@ -6,6 +6,20 @@ using System.Threading.Tasks;
 
 namespace Ao.Cache.InMemory
 {
+    public class InMemoryCacheFinderFactory<TIdentity, TEntry> : IDataFinderFactory<TIdentity, TEntry>
+    {
+        public InMemoryCacheFinderFactory(IMemoryCache memoryCache)
+        {
+            MemoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
+        }
+
+        public IMemoryCache MemoryCache { get; }
+
+        public IDataFinder<TIdentity, TEntry> Create(IDataAccesstor<TIdentity, TEntry> accesstor)
+        {
+            return new DefaultInMemoryCacheFinder<TIdentity, TEntry>(MemoryCache, accesstor);
+        }
+    }
     public abstract class InMemoryCacheFinder<TIdentity, TEntry> : DataFinderBase<TIdentity, TEntry>
     {
         private static readonly Task<bool> trueTask = Task.FromResult(true);

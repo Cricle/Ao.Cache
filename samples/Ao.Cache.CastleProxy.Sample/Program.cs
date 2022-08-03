@@ -36,6 +36,7 @@ namespace Ao.Cache.CastleProxy.Sample
             //})));
             //ser.AddSingleton<ILockerFactory,InRedis.RedisLockFactory>();
             ser.AddSingleton<ILockerFactory, MemoryLockFactory>();
+            ser.AddSingleton(typeof(IDataFinderFactory<,>),typeof(InMemoryCacheFinderFactory<,>));
             ser.AddMemoryCache();
             ser.AddSingleton(typeof(IDataFinder<,>), typeof(DefaultInMemoryCacheFinder<,>));
 

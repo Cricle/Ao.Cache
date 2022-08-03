@@ -44,8 +44,6 @@ namespace Ao.Cache.CastleProxy.Model
     {
         Skip = 0,
         MethodHit = 1,
-        CacheHit = 2,
-        NotSupportFinderOrAccesstor = 3,
-        Unknow = 4,
+        CacheHit = 2
     }
 }
