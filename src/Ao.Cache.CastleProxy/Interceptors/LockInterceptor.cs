@@ -47,6 +47,8 @@ namespace Ao.Cache.CastleProxy.Interceptors
 
         public ILockerFactory LockerFactory { get; }
 
+        protected override Dictionary<NamedInterceptorKey, NamedInterceptorValue> CacheMap => argCacheMap;
+
         protected override async Task InterceptAsync(IInvocation invocation, IInvocationProceedInfo proceedInfo, Func<IInvocation, IInvocationProceedInfo, Task> proceed)
         {
             var locker = await RunLockAsync(invocation, proceedInfo);
@@ -110,10 +112,6 @@ namespace Ao.Cache.CastleProxy.Interceptors
         {
             return invocation.TargetType.GetCustomAttribute<AutoLockAttribute>() ?? 
                 invocation.Method.GetCustomAttribute<AutoLockAttribute>();
-        }
-        protected override Dictionary<NamedInterceptorKey, NamedInterceptorValue> GetCacheMap()
-        {
-            return argCacheMap;
         }
         protected override bool ParamterCanUse(ParameterInfo param)
         {

@@ -25,6 +25,8 @@ namespace Ao.Cache.CastleProxy.Interceptors
 
         public IStringTransfer StringTransfer { get; }
 
+        protected override Dictionary<NamedInterceptorKey, NamedInterceptorValue> CacheMap => argCacheMap;
+
         protected override Task InterceptAsync(IInvocation invocation, IInvocationProceedInfo proceedInfo, Func<IInvocation, IInvocationProceedInfo, Task> proceed)
         {
             return proceed(invocation, proceedInfo);
@@ -132,7 +134,6 @@ namespace Ao.Cache.CastleProxy.Interceptors
                     {
                         b = (invocation.TargetType.GetCustomAttribute<AutoCacheAttribute>() ??
                             invocation.Method.GetCustomAttribute<AutoCacheAttribute>()) != null;
-
                     }
                 }
             }
@@ -169,12 +170,6 @@ namespace Ao.Cache.CastleProxy.Interceptors
         {
             return invocation.TargetType.GetCustomAttribute<AutoCacheAttribute>() ?? invocation.Method.GetCustomAttribute<AutoCacheAttribute>();
         }
-
-        protected override Dictionary<NamedInterceptorKey, NamedInterceptorValue> GetCacheMap()
-        {
-            return argCacheMap;
-        }
-
         protected override bool ParamterCanUse(ParameterInfo param)
         {
             return param.GetCustomAttribute<AutoCacheSkipPartAttribute>() == null;

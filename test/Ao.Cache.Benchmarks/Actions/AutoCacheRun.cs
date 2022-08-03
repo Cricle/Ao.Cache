@@ -45,6 +45,7 @@ namespace Ao.Cache.Benchmarks.Actions
             Raw();
             NoResult();
             HasResult();
+            UseProvider().GetAwaiter().GetResult();
         }
         [Benchmark(Baseline = true)]
         public void Raw()

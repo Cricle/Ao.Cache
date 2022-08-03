@@ -10,7 +10,7 @@ namespace Ao.Cache.CastleProxy.Interceptors
     {
         protected abstract object GetLocker();
 
-        protected abstract Dictionary<NamedInterceptorKey, NamedInterceptorValue> GetCacheMap();
+        protected abstract Dictionary<NamedInterceptorKey, NamedInterceptorValue> CacheMap { get; }
 
         protected object[] MakeArgs(NamedInterceptorValue value, object[] args)
         {
@@ -62,7 +62,7 @@ namespace Ao.Cache.CastleProxy.Interceptors
         }
         protected NamedInterceptorValue GetArgIndexs(in NamedInterceptorKey key,MethodInfo method)
         {
-            var map = GetCacheMap();
+            var map = CacheMap;
             if (!map.TryGetValue(key, out var val))
             {
                 var methodArgs = method.GetParameters();
