@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 
 namespace Ao.Cache.CastleProxy
 {
-    public class CastleDataAccesstor<TKey, TEntity> : IDataAccesstor<TKey, TEntity>
+    public struct CastleDataAccesstor<TKey, TEntity> : IDataAccesstor<TKey, TEntity>
     {
-        public Func<Task<TEntity>> Proceed { get; set; }
+        public Func<Task<TEntity>> Proceed;
 
         public Task<TEntity> FindAsync(TKey identity)
         {

@@ -19,7 +19,7 @@ namespace Ao.Cache.Benchmarks.Actions
     [MemoryDiagnoser]
     public class AutoCacheRun
     {
-        [Params(10, 1000, 50000)]
+        [Params(50000)]
         public int Times { get; set; }
 
         IServiceProvider provider;
@@ -30,7 +30,7 @@ namespace Ao.Cache.Benchmarks.Actions
         {
             var ser = new ServiceCollection();
             ser.AddSingleton<GetTime>();
-            ser.AddSingleton<IDataAccesstor<int, int>,AAccesstor>();
+            ser.AddSingleton<IDataAccesstor<int, int?>,AAccesstor>();
             ser.AddCastleCacheProxy();
             ser.AddSingleton<ILockerFactory, MemoryLockFactory>();
             ser.AddMemoryCache();
@@ -78,13 +78,13 @@ namespace Ao.Cache.Benchmarks.Actions
             {
                 using (var scope = provider.CreateScope())
                 {
-                    var finder = scope.ServiceProvider.GetRequiredService<IDataFinder<int, int>>();
+                    var finder = scope.ServiceProvider.GetRequiredService<IDataFinder<int, int?>>();
                     await finder.FindAsync(i % 5);
                 }
             }
         }
     }
-    public class AAccesstor : IDataAccesstor<int, int>
+    public class AAccesstor : IDataAccesstor<int, int?>
     {
         public AAccesstor(GetTime gt)
         {
@@ -92,9 +92,9 @@ namespace Ao.Cache.Benchmarks.Actions
         }
 
         public GetTime Gt { get; set; }
-        public Task<int> FindAsync(int identity)
+        public Task<int?> FindAsync(int identity)
         {
-            return Task.FromResult(Gt.Raw(identity,0));
+            return Task.FromResult<int?>(Gt.Raw(identity,0));
         }
     }
     public class GetTime
@@ -120,6 +120,7 @@ namespace Ao.Cache.Benchmarks.Actions
                 {
                     lst.Add(j + q);
                 }
+                lst.Add(j - 1);
             }
             if (lst.Count / 2 == 0)
             {

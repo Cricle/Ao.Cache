@@ -27,7 +27,7 @@ namespace Ao.Cache.CastleProxy.Interceptors
             return retArgs;
         }
 
-        protected object[] MakeArgsWithHeader(NamedInterceptorValue value,object[] args)
+        protected virtual object[] MakeArgsWithHeader(NamedInterceptorValue value,object[] args)
         {
             var indexs = value.ArgIndexs;
             if (indexs == null)

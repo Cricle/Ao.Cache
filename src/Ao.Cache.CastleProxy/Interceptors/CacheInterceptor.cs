@@ -40,6 +40,7 @@ namespace Ao.Cache.CastleProxy.Interceptors
             public Func<CacheInterceptor, IInvocation, IInvocationProceedInfo, object, object> Method { get; set; }
         }
         private static readonly object actionTypeLocker = new object();
+
         private static readonly Dictionary<Type, ActualTypeInfos> actualTypes = new Dictionary<Type, ActualTypeInfos>();
         private static ActualTypeInfos GetActionType(Type type)
         {
@@ -50,7 +51,7 @@ namespace Ao.Cache.CastleProxy.Interceptors
                     if (!actualTypes.TryGetValue(type, out t))
                     {
                         t = new ActualTypeInfos { ActualType = type };
-                        if (type.IsGenericType&&type.GetGenericTypeDefinition() == typeof(AutoCacheResult<>))
+                        if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(AutoCacheResult<>))
                         {
                             t.ActualType = type.GenericTypeArguments[0];
                             t.Method = CompileMethod(type, t.ActualType);
@@ -84,6 +85,7 @@ namespace Ao.Cache.CastleProxy.Interceptors
             return Expression.Lambda<Func<CacheInterceptor, IInvocation, IInvocationProceedInfo, object, object>>(body,
                 par0, par1, par2, par3).Compile();
         }
+
         private static Func<Task<TOut>> Case<TResult, TOut>(IInvocation invocation, IInvocationProceedInfo proceedInfo, Func<IInvocation, IInvocationProceedInfo, Task<TResult>> proceed)
         {
             return async () =>
@@ -134,12 +136,12 @@ namespace Ao.Cache.CastleProxy.Interceptors
                     {
                         b = (invocation.TargetType.GetCustomAttribute<AutoCacheAttribute>() ??
                             invocation.Method.GetCustomAttribute<AutoCacheAttribute>()) != null;
+                        hasAutoCache[tuple] = b;
                     }
                 }
             }
             return b;
         }
-
         protected override async Task<TResult> InterceptAsync<TResult>(IInvocation invocation, IInvocationProceedInfo proceedInfo, Func<IInvocation, IInvocationProceedInfo, Task<TResult>> proceed)
         {
             var originType = typeof(TResult);
@@ -152,17 +154,15 @@ namespace Ao.Cache.CastleProxy.Interceptors
                 }
                 return res;
             }
-            var actualTypeInfo = GetActionType(typeof(TResult));
+            var actualTypeInfo = GetActionType(originType);
             if (originType == actualTypeInfo.ActualType)
             {
-                var res= await CoreInterceptAsync(invocation, proceedInfo, () => proceed(invocation, proceedInfo));
+                var res = await CoreInterceptAsync(invocation, proceedInfo, () => proceed(invocation, proceedInfo));
                 return res.RawData;
             }
-            dynamic rr = actualTypeInfo.Method(this, invocation, proceedInfo, proceed);
-            await rr;
-            var r = rr.Result;
-            invocation.ReturnValue = r;
-            return r;
+            var rr =await (Task<TResult>)actualTypeInfo.Method(this, invocation, proceedInfo, proceed);
+            invocation.ReturnValue = rr;
+            return rr;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

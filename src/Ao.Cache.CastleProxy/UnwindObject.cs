@@ -2,7 +2,7 @@
 
 namespace Ao.Cache.CastleProxy
 {
-    public struct UnwindObject : IUnwindObject,IEquatable<UnwindObject>
+    public readonly struct UnwindObject : IEquatable<UnwindObject>
     {
         public UnwindObject(object[] objects, IStringTransfer objectTransfer)
         {
@@ -10,9 +10,9 @@ namespace Ao.Cache.CastleProxy
             ObjectTransfer = objectTransfer ?? throw new ArgumentNullException(nameof(objectTransfer));
         }
 
-        public object[] Objects { get; }
+        public readonly object[] Objects;
 
-        public IStringTransfer ObjectTransfer { get; }
+        public readonly IStringTransfer ObjectTransfer;
 
         public override string ToString()
         {
