@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Ao.Cache
 {
-    public abstract class DataFinderBase<TIdentity, TEntity> : IIdentityGenerater<TIdentity>, IDataFinder<TIdentity, TEntity>, IRenewalable<TIdentity>, IDataFinder, IRenewalable, IDataFinderOptions<TIdentity, TEntity>
+    public abstract class DataFinderBase<TIdentity, TEntity> : IIdentityGenerater<TIdentity>, IDataFinder<TIdentity, TEntity>, IDataFinder, IDataFinderOptions<TIdentity, TEntity>
     {
         protected DataFinderBase()
         {

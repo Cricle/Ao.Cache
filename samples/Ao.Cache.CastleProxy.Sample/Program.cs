@@ -60,13 +60,17 @@ namespace Ao.Cache.CastleProxy.Sample
             var finderFc = provider.GetRequiredService<AutoCacheService<DateTime?>>();
             for (int i = 0; i < 10; i++)
             {
-                Thread.Sleep(TimeSpan.FromMilliseconds(300));
+                Thread.Sleep(TimeSpan.FromMilliseconds(1000));
                 var sw = Stopwatch.GetTimestamp();
-                var n = gt.NowTime1(i % 3, i);
+                var n = gt.NowTime(i % 3, i);
                 var ed = Stopwatch.GetTimestamp();
                 Console.WriteLine(new TimeSpan(ed-sw));
-                //var obj = nx.GetUnwindObject(new NamedInterceptorKey(typeof(GetTime), typeof(GetTime).GetMethod("NowTime")), new object[] { i % 3 });
-                //var ok=await finderFc.DeleteAsync(obj);
+                if (i % 3 == 0)
+                {
+                    var obj = nx.GetUnwindObject<GetTime>("NowTime", i % 3);
+                    var finder = finderFc.GetEmpty();
+                    var ok = await finderFc.DeleteAsync(obj);
+                }
             }
         }
         private static void RunLock(IServiceProvider provider)

@@ -4,13 +4,13 @@ using System.Threading.Tasks;
 
 namespace Ao.Cache
 {
-    public interface IBatchDataFinder: IBatchCacheFinder, IBatchPhysicalFinder
+    public interface IBatchDataFinder: IBatchCacheFinder, IBatchPhysicalFinder, IBatchRenewalable
     {
         Task<long> DeleteAsync(IList identity);
 
         Task<IDictionary<object, bool>> ExistsAsync(IList identity);
     }
-    public interface IBatchDataFinder<TIdentity, TEntity> : IBatchCacheFinder<TIdentity, TEntity>, IBatchPhysicalFinder<TIdentity, TEntity>
+    public interface IBatchDataFinder<TIdentity, TEntity> : IBatchCacheFinder<TIdentity, TEntity>, IBatchPhysicalFinder<TIdentity, TEntity>, IBatchRenewalable<TIdentity>
     {        
         Task<long> DeleteAsync(IReadOnlyList<TIdentity> identity);
 

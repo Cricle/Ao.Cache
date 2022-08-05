@@ -56,7 +56,7 @@ namespace Ao.Cache.CastleProxy
         {
             return param.GetCustomAttribute<KeySkipPartAttribute>() == null;
         }
-        public UnwindObject GetUnwindObject(in NamedInterceptorKey key, object[] args)
+        public UnwindObject GetUnwindObject(in NamedInterceptorKey key, params object[] args)
         {
             var lst = GetArgIndexs(key);
             var objs = MakeArgsWithHeader(lst, args);
