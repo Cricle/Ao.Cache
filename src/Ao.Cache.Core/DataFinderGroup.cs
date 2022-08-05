@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Ao.Cache
@@ -60,6 +61,17 @@ namespace Ao.Cache
                 }
             }
             return default;
+        }
+
+        public async Task<bool> RenewalAsync(TIdentity identity, TimeSpan? time)
+        {
+            var tasks = new Task[Count];
+            for (int i = 0; i < tasks.Length; i++)
+            {
+                tasks[i] = this[i].RenewalAsync(identity, time);
+            }
+            await Task.WhenAll(tasks);
+            return true;
         }
 
         public virtual async Task<bool> SetInCahceAsync(TIdentity identity, TEntity entity)

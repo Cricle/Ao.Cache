@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Ao.Cache
@@ -53,6 +54,16 @@ namespace Ao.Cache
         public Task<IDictionary<TIdentity, TEntity>> FindInDbAsync(IReadOnlyList<TIdentity> identity, bool cache)
         {
             return BatchDataFinder.FindInDbAsync(identity,cache);
+        }
+
+        public Task<bool> RenewalAsync(TIdentity identity, TimeSpan? time)
+        {
+            return DataFinder.RenewalAsync(identity, time);
+        }
+
+        public Task<long> RenewalAsync(IDictionary<TIdentity, TimeSpan?> input)
+        {
+            return BatchDataFinder.RenewalAsync(input);
         }
 
         public Task<bool> SetInCahceAsync(TIdentity identity, TEntity entity)
