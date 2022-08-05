@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Ao.Cache
 {
-    public class MixedDataFinder<TIdentity, TEntity>:IMixedDataFinder<TIdentity, TEntity>
+    public class MixedDataFinder<TIdentity, TEntity> : IMixedDataFinder<TIdentity, TEntity>
     {
         public MixedDataFinder(IDataFinder<TIdentity, TEntity> dataFinder, IBatchDataFinder<TIdentity, TEntity> batchDataFinder)
         {
@@ -11,7 +12,7 @@ namespace Ao.Cache
             BatchDataFinder = batchDataFinder ?? throw new System.ArgumentNullException(nameof(batchDataFinder));
         }
 
-        public IDataFinder<TIdentity,TEntity> DataFinder { get; }
+        public IDataFinder<TIdentity, TEntity> DataFinder { get; }
 
         public IBatchDataFinder<TIdentity, TEntity> BatchDataFinder { get; }
 
@@ -47,12 +48,22 @@ namespace Ao.Cache
 
         public Task<TEntity> FindInDbAsync(TIdentity identity, bool cache)
         {
-            return DataFinder.FindInDbAsync(identity,cache);
+            return DataFinder.FindInDbAsync(identity, cache);
         }
 
         public Task<IDictionary<TIdentity, TEntity>> FindInDbAsync(IReadOnlyList<TIdentity> identity, bool cache)
         {
-            return BatchDataFinder.FindInDbAsync(identity,cache);
+            return BatchDataFinder.FindInDbAsync(identity, cache);
+        }
+
+        public Task<bool> RenewalAsync(TIdentity identity, TimeSpan? time)
+        {
+            return DataFinder.RenewalAsync(identity, time);
+        }
+
+        public Task<long> RenewalAsync(IDictionary<TIdentity, TimeSpan?> input)
+        {
+            return BatchDataFinder.RenewalAsync(input);
         }
 
         public Task<bool> SetInCahceAsync(TIdentity identity, TEntity entity)

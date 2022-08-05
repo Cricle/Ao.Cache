@@ -25,17 +25,5 @@ namespace Ao.Cache.InMemory
         {
             return DataAccesstor.FindAsync(identity);
         }
-        public override Task<bool> RenewalAsync(TIdentity identity, TimeSpan? time)
-        {
-            var key = GetEntryKey(identity);
-            var val = MemoryCache.Get(key);
-            if (val == null)
-            {
-                return Task.FromResult(false);
-            }
-            var options = GetMemoryCacheEntryOptions(identity, time);
-            MemoryCache.Set(GetEntryKey(identity), val, options);
-            return Task.FromResult(true);
-        }
     }
 }
