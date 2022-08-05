@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace Ao.Cache.CastleProxy.Interceptors
 {
-    public abstract class NamedInterceptor : AsyncInterceptorBase
+    public abstract class NamedInterceptor : AsyncInterceptorBase,IInterceptor
     {
         protected abstract object GetLocker();
 
@@ -32,12 +32,16 @@ namespace Ao.Cache.CastleProxy.Interceptors
             var indexs = value.ArgIndexs;
             if (indexs == null)
             {
-                return args;
+                var arr = new object[args.Length + 1];
+                arr[0] = value.Header;
+                Array.Copy(args, 0, arr, 1, args.Length);
+                return arr;
             }
-            var retArgs = new object[indexs.Count];
+            var retArgs = new object[indexs.Count + 1];
+            retArgs[0] = value.Header;
             for (int i = 0; i < indexs.Count; i++)
             {
-                retArgs[i] = args[indexs[i]];
+                retArgs[i+1] = args[indexs[i]];
             }
             return retArgs;
         }
@@ -60,12 +64,12 @@ namespace Ao.Cache.CastleProxy.Interceptors
             }
             return GetDefaultStringTransfer(key);
         }
-        protected NamedInterceptorValue GetArgIndexs(in NamedInterceptorKey key,MethodInfo method)
+        protected NamedInterceptorValue GetArgIndexs(in NamedInterceptorKey key)
         {
             var map = CacheMap;
             if (!map.TryGetValue(key, out var val))
             {
-                var methodArgs = method.GetParameters();
+                var methodArgs = key.Method.GetParameters();
                 var used = new List<int>();
                 for (int i = 0; i < methodArgs.Length; i++)
                 {
@@ -86,6 +90,11 @@ namespace Ao.Cache.CastleProxy.Interceptors
                 }
             }
             return val;
+        }
+
+        public void Intercept(IInvocation invocation)
+        {
+            InterceptSynchronous(invocation);
         }
     }
 }

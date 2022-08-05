@@ -13,6 +13,8 @@ using RedLockNet;
 using RedLockNet.SERedis;
 using RedLockNet.SERedis.Configuration;
 using System.Diagnostics;
+using Ao.Cache.InRedis;
+using Ao.Cache.InRedis.TextJson;
 
 namespace Ao.Cache.CastleProxy.Sample
 {
@@ -24,21 +26,23 @@ namespace Ao.Cache.CastleProxy.Sample
             ser.AddSingleton<GetTime>();
             ser.AddSingleton<LockTime>();
             ser.AddCastleCacheProxy();
-            //ser.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect("127.0.0.1:6379"));
-            //ser.AddScoped(x => x.GetRequiredService<IConnectionMultiplexer>().GetDatabase());
-            //ser.AddSingleton<IDistributedLockFactory>(p =>
-            //new RedLockFactory(new RedLockConfiguration(new ExistingMultiplexersRedLockConnectionProvider
-            //{
-            //    Multiplexers = new RedLockMultiplexer[]
-            //      {
-            //          new RedLockMultiplexer(p.GetRequiredService<IConnectionMultiplexer>())
-            //      }
-            //})));
-            //ser.AddSingleton<ILockerFactory,InRedis.RedisLockFactory>();
-            ser.AddSingleton<ILockerFactory, MemoryLockFactory>();
-            ser.AddSingleton(typeof(IDataFinderFactory<,>),typeof(InMemoryCacheFinderFactory<,>));
-            ser.AddMemoryCache();
-            ser.AddSingleton(typeof(IDataFinder<,>), typeof(DefaultInMemoryCacheFinder<,>));
+            ser.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect("127.0.0.1:6379"));
+            ser.AddScoped(x => x.GetRequiredService<IConnectionMultiplexer>().GetDatabase());
+            ser.AddSingleton<IDistributedLockFactory>(p =>
+            new RedLockFactory(new RedLockConfiguration(new ExistingMultiplexersRedLockConnectionProvider
+            {
+                Multiplexers = new RedLockMultiplexer[]
+                  {
+                      new RedLockMultiplexer(p.GetRequiredService<IConnectionMultiplexer>())
+                  }
+            })));
+            ser.AddSingleton<ILockerFactory, RedisLockFactory>();
+            ser.AddSingleton(typeof(IDataFinderFactory<,>), typeof(RedisTextJsonPackCacheFinderFactory<,>));
+
+            //ser.AddSingleton<ILockerFactory, MemoryLockFactory>();
+            //ser.AddSingleton(typeof(IDataFinderFactory<,>),typeof(InMemoryCacheFinderFactory<,>));
+            //ser.AddMemoryCache();
+            //ser.AddSingleton(typeof(IDataFinder<,>), typeof(DefaultInMemoryCacheFinder<,>));
 
             var icon = new Container(Rules.MicrosoftDependencyInjectionRules)
                 .WithDependencyInjectionAdapter(ser, null, RegistrySharing.CloneAndDropCache);
@@ -101,7 +105,7 @@ namespace Ao.Cache.CastleProxy.Sample
     public class GetTime
     {
         [AutoCache]
-        public virtual AutoCacheResult<DateTime?> NowTime(int id,[AutoCacheSkipPart]long dd)
+        public virtual AutoCacheResult<DateTime?> NowTime(int id,[AutoCacheSkipPart]double dd)
         {
             Console.WriteLine("yerp");
             return new AutoCacheResult<DateTime?> { RawData = DateTime.Now };

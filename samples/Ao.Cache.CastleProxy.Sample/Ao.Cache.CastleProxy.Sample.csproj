@@ -15,6 +15,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Ao.Cache.CastleProxy\Ao.Cache.CastleProxy.csproj" />
     <ProjectReference Include="..\..\src\Ao.Cache.InMemory\Ao.Cache.InMemory.csproj" />
+    <ProjectReference Include="..\..\src\Ao.Cache.InRedis.TextJson\Ao.Cache.InRedis.TextJson.csproj" />
     <ProjectReference Include="..\..\src\Ao.Cache.InRedis\Ao.Cache.InRedis.csproj" />
   </ItemGroup>
 

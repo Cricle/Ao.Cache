@@ -97,7 +97,7 @@ namespace Ao.Cache.CastleProxy.Interceptors
                 return new RunLockResult(RunLockResultTypes.SkipNoLocker);
             }
             var key = new NamedInterceptorKey(invocation.TargetType, invocation.Method);
-            var lst = GetArgIndexs(key, invocation.Method);
+            var lst = GetArgIndexs(key);
             var args = MakeArgs(lst, invocation.Arguments);
             var lockKey = GenerateKey(lst.Header, args);
             var locker = await LockerFactory.CreateLockAsync(lockKey, attr.ExpireTime);

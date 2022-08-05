@@ -104,9 +104,13 @@ namespace Ao.Cache.CastleProxy.Interceptors
             using (var scope = ServiceScopeFactory.CreateScope())
             {
                 var finderFactory = scope.ServiceProvider.GetRequiredService<IDataFinderFactory<UnwindObject, TResult>>();
-                var finder= finderFactory.Create(new CastleDataAccesstor<UnwindObject, TResult> { Proceed = proceed });
+                var finder = finderFactory.Create(new CastleDataAccesstor<UnwindObject, TResult> { Proceed = proceed });
+                if (finder is IIdentityGenerater<UnwindObject> idGen)
+                {
+                    idGen.IgnoreHead = true;
+                }
                 var key = new NamedInterceptorKey(invocation.TargetType, invocation.Method);
-                var lst = GetArgIndexs(key, invocation.Method);
+                var lst = GetArgIndexs(key);
                 var args = MakeArgsWithHeader(lst, invocation.Arguments);
                 var winObj = new UnwindObject(args, StringTransfer);
                 var res = await finder.FindInCahceAsync(winObj);
