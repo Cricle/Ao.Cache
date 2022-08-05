@@ -49,21 +49,24 @@ namespace Ao.Cache.CastleProxy.Sample
             icon.AsyncIntercept(typeof(GetTime), typeof(CacheInterceptor));
             icon.AsyncIntercept(typeof(LockTime), typeof(LockInterceptor));
             var provider = icon.BuildServiceProvider();
-
-            RunCache(provider);
+            var scope = provider.CreateScope();
+            RunCache(scope.ServiceProvider).GetAwaiter().GetResult();
             //RunLock(provider);
         }
-        private static void RunCache(IServiceProvider provider)
+        private static async Task RunCache(IServiceProvider provider)
         {
             var gt = provider.GetRequiredService<GetTime>();
+            var nx = provider.GetRequiredService<ICacheNamedHelper>();
+            var finderFc = provider.GetRequiredService<AutoCacheService<DateTime?>>();
             for (int i = 0; i < 10; i++)
             {
                 Thread.Sleep(TimeSpan.FromMilliseconds(300));
                 var sw = Stopwatch.GetTimestamp();
-                var n = gt.NowTime(i % 3, i);
+                var n = gt.NowTime1(i % 3, i);
                 var ed = Stopwatch.GetTimestamp();
                 Console.WriteLine(new TimeSpan(ed-sw));
-                //Console.WriteLine($"Data:{n.RawData!.Value:HH:mm:ss ffff}, Status:{n.Status}");
+                //var obj = nx.GetUnwindObject(new NamedInterceptorKey(typeof(GetTime), typeof(GetTime).GetMethod("NowTime")), new object[] { i % 3 });
+                //var ok=await finderFc.DeleteAsync(obj);
             }
         }
         private static void RunLock(IServiceProvider provider)
@@ -112,7 +115,7 @@ namespace Ao.Cache.CastleProxy.Sample
         }
 
         [AutoCache]
-        public virtual DateTime? NowTime1(int id, long dd)
+        public virtual DateTime? NowTime1(int id, [AutoCacheSkipPart] long dd)
         {
             Console.WriteLine("yerp");
             return DateTime.Now;

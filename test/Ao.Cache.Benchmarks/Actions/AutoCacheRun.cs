@@ -19,8 +19,11 @@ namespace Ao.Cache.Benchmarks.Actions
     [MemoryDiagnoser]
     public class AutoCacheRun
     {
-        [Params(50000)]
+        [Params(7_000,3_000_000)]
         public int Times { get; set; }
+
+        [Params(100,800)]
+        public int Concurrent { get; set; }
 
         IServiceProvider provider;
 
@@ -47,41 +50,68 @@ namespace Ao.Cache.Benchmarks.Actions
             HasResult();
             UseProvider().GetAwaiter().GetResult();
         }
-        [Benchmark(Baseline = true)]
-        public void Raw()
+
+        private Task Run(Action<int> action)
         {
-            for (int i = 0; i < Times; i++)
+            var tasks = new Task[Concurrent];
+            var ts = Times / Concurrent;
+            for (int i = 0; i < Concurrent; i++)
+            {
+                tasks[i] = Task.Factory.StartNew(() =>
+                {
+                    for (int j = 0; j < ts; j++)
+                    {
+                        action(j);
+                    }
+                });
+            }
+            return Task.WhenAll(tasks);
+        }
+
+        [Benchmark(Baseline = true)]
+        public Task Raw()
+        {
+            return Run(i =>
             {
                 getTime.Raw(i % 5, i);
-            }
+            });
         }
         [Benchmark]
-        public void NoResult()
+        public Task NoResult()
         {
-            for (int i = 0; i < Times; i++)
+            return Run(i =>
             {
                 getTime.NowTime1(i % 5, i);
-            }
+            });
         }
         [Benchmark]
-        public void HasResult()
+        public Task HasResult()
         {
-            for (int i = 0; i < Times; i++)
+            return Run(i =>
             {
                 getTime.NowTime(i % 5, i);
-            }
+            });
         }
         [Benchmark]
         public async Task UseProvider()
         {
-            for (int i = 0; i < Times; i++)
+            var tasks = new Task[Concurrent];
+            var ts = Times / Concurrent;
+            for (int i = 0; i < Concurrent; i++)
             {
-                using (var scope = provider.CreateScope())
+                tasks[i] =await Task.Factory.StartNew(async() =>
                 {
-                    var finder = scope.ServiceProvider.GetRequiredService<IDataFinder<int, int?>>();
-                    await finder.FindAsync(i % 5);
-                }
+                    for (int j = 0; j < ts; j++)
+                    {
+                        using (var scope = provider.CreateScope())
+                        {
+                            var finder = scope.ServiceProvider.GetRequiredService<IDataFinder<int, int?>>();
+                            await finder.FindAsync(i % 5);
+                        }
+                    }
+                });
             }
+            await Task.WhenAll(tasks);
         }
     }
     public class AAccesstor : IDataAccesstor<int, int?>

@@ -37,17 +37,16 @@ namespace Ao.Cache.CastleProxy.Interceptors
                 Locker?.Dispose();
             }
         }
-        private static readonly object locker = new object();
-        private static readonly Dictionary<NamedInterceptorKey, NamedInterceptorValue> argCacheMap = new Dictionary<NamedInterceptorKey, NamedInterceptorValue>();
 
-        public LockInterceptor(ILockerFactory lockerFactory)
+        public LockInterceptor(ILockerFactory lockerFactory, ICacheNamedHelper namedHelper)
         {
             LockerFactory = lockerFactory ?? throw new ArgumentNullException(nameof(lockerFactory));
+            NamedHelper = namedHelper;
         }
 
         public ILockerFactory LockerFactory { get; }
 
-        protected override Dictionary<NamedInterceptorKey, NamedInterceptorValue> CacheMap => argCacheMap;
+        public ICacheNamedHelper NamedHelper { get; }
 
         protected override async Task InterceptAsync(IInvocation invocation, IInvocationProceedInfo proceedInfo, Func<IInvocation, IInvocationProceedInfo, Task> proceed)
         {
@@ -97,8 +96,8 @@ namespace Ao.Cache.CastleProxy.Interceptors
                 return new RunLockResult(RunLockResultTypes.SkipNoLocker);
             }
             var key = new NamedInterceptorKey(invocation.TargetType, invocation.Method);
-            var lst = GetArgIndexs(key);
-            var args = MakeArgs(lst, invocation.Arguments);
+            var lst = NamedHelper.GetArgIndexs(key);
+            var args = NamedHelper.MakeArgs(lst, invocation.Arguments);
             var lockKey = GenerateKey(lst.Header, args);
             var locker = await LockerFactory.CreateLockAsync(lockKey, attr.ExpireTime);
             return new RunLockResult(locker, RunLockResultTypes.InLocker);
@@ -113,15 +112,5 @@ namespace Ao.Cache.CastleProxy.Interceptors
             return invocation.TargetType.GetCustomAttribute<AutoLockAttribute>() ?? 
                 invocation.Method.GetCustomAttribute<AutoLockAttribute>();
         }
-        protected override bool ParamterCanUse(ParameterInfo param)
-        {
-            return param.GetCustomAttribute<AutoLockSkipPartAttribute>() == null;
-        }
-
-        protected override object GetLocker()
-        {
-            return locker;
-        }
-
     }
 }

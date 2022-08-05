@@ -35,5 +35,15 @@ namespace Ao.Cache.CastleProxy.Interceptors
         {
             return $"{{TargetType: {TargetType}, Method: {Method}}}";
         }
+
+        public static bool operator ==(NamedInterceptorKey left, NamedInterceptorKey right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(NamedInterceptorKey left, NamedInterceptorKey right)
+        {
+            return !(left == right);
+        }
     }
 }

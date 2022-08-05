@@ -13,19 +13,20 @@ namespace Ao.Cache.CastleProxy.Interceptors
 {
     public class CacheInterceptor : NamedInterceptor
     {
-        private static readonly object locker = new object();
-        private static readonly Dictionary<NamedInterceptorKey, NamedInterceptorValue> argCacheMap = new Dictionary<NamedInterceptorKey, NamedInterceptorValue>();
-        public CacheInterceptor(IServiceScopeFactory serviceScopeFactory, IStringTransfer stringTransfer)
+        public CacheInterceptor(IServiceScopeFactory serviceScopeFactory, 
+            IStringTransfer stringTransfer,
+            ICacheNamedHelper cacheNamedHelper)
         {
             ServiceScopeFactory = serviceScopeFactory;
             StringTransfer = stringTransfer;
+            NamedHelper = cacheNamedHelper;
         }
 
         public IServiceScopeFactory ServiceScopeFactory { get; }
 
         public IStringTransfer StringTransfer { get; }
 
-        protected override Dictionary<NamedInterceptorKey, NamedInterceptorValue> CacheMap => argCacheMap;
+        public ICacheNamedHelper NamedHelper { get; }
 
         protected override Task InterceptAsync(IInvocation invocation, IInvocationProceedInfo proceedInfo, Func<IInvocation, IInvocationProceedInfo, Task> proceed)
         {
@@ -98,6 +99,7 @@ namespace Ao.Cache.CastleProxy.Interceptors
                 return (TOut)(object)res;
             };
         }
+       
         protected async Task<AutoCacheResult<TResult>> CoreInterceptAsync<TResult>(IInvocation invocation, IInvocationProceedInfo proceedInfo, Func<Task<TResult>> proceed)
         {
             var rr = new AutoCacheResult<TResult>();
@@ -105,14 +107,12 @@ namespace Ao.Cache.CastleProxy.Interceptors
             {
                 var finderFactory = scope.ServiceProvider.GetRequiredService<IDataFinderFactory<UnwindObject, TResult>>();
                 var finder = finderFactory.Create(new CastleDataAccesstor<UnwindObject, TResult> { Proceed = proceed });
-                if (finder is IIdentityGenerater<UnwindObject> idGen)
+                if (finder is DataFinderBase<UnwindObject,TResult> idGen)
                 {
-                    idGen.IgnoreHead = true;
+                    idGen.Options = IgnoreHeadDataFinderOptions<TResult>.Options;
                 }
                 var key = new NamedInterceptorKey(invocation.TargetType, invocation.Method);
-                var lst = GetArgIndexs(key);
-                var args = MakeArgsWithHeader(lst, invocation.Arguments);
-                var winObj = new UnwindObject(args, StringTransfer);
+                var winObj = NamedHelper.GetUnwindObject(key, invocation.Arguments);
                 var res = await finder.FindInCahceAsync(winObj);
                 if (res == null)
                 {
@@ -173,15 +173,6 @@ namespace Ao.Cache.CastleProxy.Interceptors
         private static AutoCacheAttribute GetAutoCache(IInvocation invocation)
         {
             return invocation.TargetType.GetCustomAttribute<AutoCacheAttribute>() ?? invocation.Method.GetCustomAttribute<AutoCacheAttribute>();
-        }
-        protected override bool ParamterCanUse(ParameterInfo param)
-        {
-            return param.GetCustomAttribute<AutoCacheSkipPartAttribute>() == null;
-        }
-
-        protected override object GetLocker()
-        {
-            return locker;
         }
     }
 }
