@@ -36,7 +36,7 @@ namespace Ao.Cache.InRedis
         public override async Task<long> SetInCahceAsync(IDictionary<TIdentity, TEntity> pairs)
         {
             var res = await DoInRedisAsync(pairs.Keys.ToList(), (batch, identity) =>
-                    batch.StringSetAsync(GetEntryKey(identity), EntityConvertor.ToBytes(pairs[identity]), GetCacheTime(identity, pairs[identity])));
+                    batch.StringSetAsync(GetEntryKey(identity), EntityConvertor.ToBytes(pairs[identity]), GetCacheTime(identity)));
             return res.Count;
         }
 

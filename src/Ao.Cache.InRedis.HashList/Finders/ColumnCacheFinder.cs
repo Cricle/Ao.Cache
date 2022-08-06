@@ -20,6 +20,14 @@ namespace Ao.Cache.InRedis.HashList.Finders
 
         public ICacheOperator<TValue> Operator => @operator;
 
+        private IDataFinderOptions<TIdentity, TEntity> options = DefaultDataFinderOptions<TIdentity, TEntity>.Default;
+
+        public IDataFinderOptions<TIdentity, TEntity> Options
+        {
+            get => options;
+            set => options = value ?? DefaultDataFinderOptions<TIdentity, TEntity>.Default;
+        }
+
         public void Build()
         {
             if (!IsNormalType)
@@ -43,16 +51,16 @@ namespace Ao.Cache.InRedis.HashList.Finders
             if (data != null)
             {
                 var entity = Write(identity, data);
-                if (CanRenewal(identity, data))
+                if (CanRenewal(identity))
                 {
-                    await RenewalAsync(identity, GetCacheTime(identity, entity));
+                    await RenewalAsync(identity, GetCacheTime(identity));
                 }
                 return entity;
             }
             return default;
         }
 
-        protected virtual bool CanRenewal(TIdentity identity, TValue entity)
+        public virtual bool CanRenewal(TIdentity identity)
         {
             return true;
         }
@@ -120,11 +128,11 @@ namespace Ao.Cache.InRedis.HashList.Finders
         {
             var key = GetEntryKey(identity);
             var h = @operator.As(entity);
-            var cacheTime = GetCacheTime(identity, entity);
+            var cacheTime = GetCacheTime(identity);
             return CoreSetInCacheAsync(identity, entity, key, h, cacheTime);
         }
         protected abstract Task<bool> CoreSetInCacheAsync(TIdentity identity, TEntity entity, string key, TValue value, TimeSpan? cacheTime);
-        protected virtual TimeSpan? GetCacheTime(TIdentity identity, TEntity entity)
+        protected virtual TimeSpan? GetCacheTime(TIdentity identity)
         {
             return DefaultCacheTime;
         }
@@ -135,6 +143,11 @@ namespace Ao.Cache.InRedis.HashList.Finders
 
         public abstract Task<bool> DeleteAsync(TIdentity identity);
         public abstract Task<bool> ExistsAsync(TIdentity identity);
+
+        public Task<bool> RenewalAsync(TIdentity identity)
+        {
+            return RenewalAsync(identity, GetCacheTime(identity));
+        }
     }
 
 }

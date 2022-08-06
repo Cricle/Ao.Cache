@@ -10,12 +10,12 @@ namespace Ao.Cache
 
         public TimeSpan? CacheTime { get; set; }= DataFinderConst.DefaultCacheTime;
 
-        public virtual bool CanRenewal(TIdentity identity, TEntity entity)
+        public virtual bool CanRenewal(TIdentity identity)
         {
             return IsCanRenewal;
         }
 
-        public virtual TimeSpan? GetCacheTime(TIdentity identity, TEntity entity)
+        public TimeSpan? GetCacheTime(TIdentity identity)
         {
             return CacheTime;
         }

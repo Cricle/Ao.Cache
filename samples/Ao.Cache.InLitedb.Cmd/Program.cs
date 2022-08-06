@@ -34,7 +34,7 @@ namespace Ao.Cache.InLitedb.Cmd
         public StudentLitedbCacheFinder(ILiteCollection<CacheStudent> collection) : base(collection)
         {
         }
-        public override TimeSpan? GetCacheTime(long identity, Student entity)
+        public override TimeSpan? GetCacheTime(long identity)
         {
             return TimeSpan.FromSeconds(2);
         }

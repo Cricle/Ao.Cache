@@ -36,8 +36,8 @@ namespace Ao.Cache.CastleProxy.Sample
                   }
             })));
             ser.AddSingleton<ILockerFactory, RedisLockFactory>();
-            ser.AddSingleton<IEntityConvertor, ApexEntityConvertor>();
-            ser.AddSingleton(typeof(IEntityConvertor<>),typeof(ApexEntityConvertor<>));
+            ser.AddSingleton<IEntityConvertor, SpanJsonEntityConvertor>();
+            ser.AddSingleton(typeof(IEntityConvertor<>),typeof(SpanJsonEntityConvertor<>));
             ser.AddSingleton(typeof(IDataFinderFactory<,>), typeof(RedisDataFinderFactory<,>));
 
             //ser.AddSingleton<ILockerFactory, MemoryLockFactory>();

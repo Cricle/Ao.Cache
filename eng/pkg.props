@@ -1,8 +1,8 @@
 <Project>
   <PropertyGroup>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Version>1.2.0-preview.9</Version>
-    <Authors>Cricle</Authors>
+    <Version>1.2.0-preview.10</Version>
+    <Authors>HCricle</Authors>
     <Description>A cache model</Description>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Release'">

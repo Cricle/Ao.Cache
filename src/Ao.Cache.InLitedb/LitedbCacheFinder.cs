@@ -117,7 +117,7 @@ namespace Ao.Cache.InLitedb
             foreach (var item in notIn)
             {
                 var entity = pairs[item];
-                var time = GetCacheTime(item, entity);
+                var time = GetCacheTime(item);
                 var exprTime = GetExpirationTime(time);
                 var row = ToCollectionEntity(item, entity);
                 row.ExpirationTime = exprTime;
@@ -126,7 +126,7 @@ namespace Ao.Cache.InLitedb
             ok += Collection.InsertBulk(inserts);
             foreach (var item in ds)
             {
-                var time = GetCacheTime(GetIdentity(item), item);
+                var time = GetCacheTime(GetIdentity(item));
                 var exprTime = GetExpirationTime(time);
                 item.ExpirationTime = exprTime;
             }

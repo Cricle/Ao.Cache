@@ -110,7 +110,7 @@ namespace Ao.Cache.CastleProxy.Interceptors
                 var attr = invocation.Method.GetCustomAttribute<AutoCacheOptionsAttribute>();
                 var opt = IgnoreHeadDataFinderOptions<TResult>.Options;
 
-                if (attr!=null)
+                if (attr != null)
                 {
                     opt.CacheTime = attr.CacheTime;
                     opt.IsCanRenewal = attr.CanRenewal;
@@ -127,6 +127,10 @@ namespace Ao.Cache.CastleProxy.Interceptors
                     rr.RawData = res;
                     rr.Status = AutoCacheStatus.MethodHit;
                     return rr;
+                }
+                if (attr != null && attr.Renewal)
+                {
+                    await finder.RenewalAsync(winObj);
                 }
                 rr.Status = AutoCacheStatus.CacheHit;
                 rr.RawData = res;

@@ -4,9 +4,9 @@ namespace Ao.Cache
 {
     public interface IDataFinderOptions<TIdentity, TEntity> : IIdentityGenerater<TIdentity>
     {
-        TimeSpan? GetCacheTime(TIdentity identity, TEntity entity);
+        TimeSpan? GetCacheTime(TIdentity identity);
 
-        bool CanRenewal(TIdentity identity, TEntity entity);
+        bool CanRenewal(TIdentity identity);
     }
 
 }

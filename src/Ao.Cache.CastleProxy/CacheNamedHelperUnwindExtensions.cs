@@ -30,6 +30,18 @@ namespace Ao.Cache.CastleProxy
                 return dele;
             }
         }
+        public static Task<bool> ExistsAsync<T, TEntity>(this AutoCacheService<TEntity> service, Expression<Action<T>> call, bool cacheCall = true)
+        {
+            var winObj = GetUnwindObject(service, call, cacheCall);
+            var finder = service.GetEmpty();
+            return finder.ExistsAsync(winObj);
+        }
+        public static Task<bool> SetInCahceAsync<T, TEntity>(this AutoCacheService<TEntity> service,TEntity entity, Expression<Action<T>> call, bool cacheCall = true)
+        {
+            var winObj = GetUnwindObject(service, call, cacheCall);
+            var finder = service.GetEmpty();
+            return finder.SetInCahceAsync(winObj, entity);
+        }
         public static Task<bool> DeleteAsync<T,TEntity>(this AutoCacheService<TEntity> service, Expression<Action<T>> call, bool cacheCall = true)
         {
             var winObj = GetUnwindObject(service, call, cacheCall);
@@ -83,6 +95,18 @@ namespace Ao.Cache.CastleProxy
                 return helper.GetUnwindObject(new NamedInterceptorKey(tt, exp.Method), args);
             }
             throw new NotSupportedException(call.Body.ToString());
+        }
+        public static Task<bool> ExistsAsync<TEntity>(this AutoCacheService<TEntity> service, Type targetType, string methodName, params object[] args)
+        {
+            var winObj = GetUnwindObject(service, targetType, methodName, args);
+            var finder = service.GetEmpty();
+            return finder.ExistsAsync(winObj);
+        }
+        public static Task<bool> SetInCahceAsync<TEntity>(this AutoCacheService<TEntity> service,TEntity entity, Type targetType, string methodName, params object[] args)
+        {
+            var winObj = GetUnwindObject(service, targetType, methodName, args);
+            var finder = service.GetEmpty();
+            return finder.SetInCahceAsync(winObj, entity);
         }
         public static Task<bool> DeleteAsync<TEntity>(this AutoCacheService<TEntity> service, Type targetType, string methodName, params object[] args)
         {

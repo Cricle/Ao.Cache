@@ -41,22 +41,22 @@ namespace Ao.Cache
         public Task<bool> SetInCahceAsync(TIdentity identity, TEntity entity)
         {
             var key = GetEntryKey(identity);
-            var cacheTime = GetCacheTime(identity, entity);
+            var cacheTime = GetCacheTime(identity);
             return SetInCahceAsync(key, identity, entity, cacheTime);
         }
         protected abstract Task<bool> SetInCahceAsync(string key, TIdentity identity, TEntity entity, TimeSpan? caheTime);
 
-        public virtual TimeSpan? GetCacheTime(TIdentity identity, TEntity entity)
+        public virtual TimeSpan? GetCacheTime(TIdentity identity)
         {
-            return Options.GetCacheTime(identity, entity);
+            return Options.GetCacheTime(identity);
         }
 
         public abstract Task<bool> DeleteAsync(TIdentity entity);
         public abstract Task<bool> ExistsAsync(TIdentity identity);
 
-        public virtual bool CanRenewal(TIdentity identity, TEntity entity)
+        public virtual bool CanRenewal(TIdentity identity)
         {
-            return Options.CanRenewal(identity, entity);
+            return Options.CanRenewal(identity);
         }
 
         public abstract Task<bool> RenewalAsync(TIdentity identity, TimeSpan? time);
@@ -106,6 +106,16 @@ namespace Ao.Cache
         Task<bool> IRenewalable.RenewalAsync(object identity, TimeSpan? time)
         {
             return RenewalAsync((TIdentity)identity, time);
+        }
+
+        public Task<bool> RenewalAsync(TIdentity identity)
+        {
+            return RenewalAsync(identity, GetCacheTime(identity));
+        }
+
+        Task<bool> IRenewalable.RenewalAsync(object identity)
+        {
+            return RenewalAsync((TIdentity)identity, GetCacheTime((TIdentity)identity));
         }
     }
 

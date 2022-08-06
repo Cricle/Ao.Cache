@@ -40,13 +40,13 @@ namespace Ao.Cache
 
         public abstract Task<long> SetInCahceAsync(IDictionary<TIdentity, TEntity> pairs);
 
-        public virtual TimeSpan? GetCacheTime(TIdentity identity, TEntity entity)
+        public virtual TimeSpan? GetCacheTime(TIdentity identity)
         {
-            return Options.GetCacheTime(identity, entity);
+            return Options.GetCacheTime(identity);
         }
-        public virtual bool CanRenewal(TIdentity identity, TEntity entity)
+        public virtual bool CanRenewal(TIdentity identity)
         {
-            return Options.CanRenewal(identity, entity);
+            return Options.CanRenewal(identity);
         }
 
         protected abstract Task<IDictionary<TIdentity, TEntity>> OnFindInDbAsync(IReadOnlyList<TIdentity> identities);
@@ -111,6 +111,28 @@ namespace Ao.Cache
         Task<long> IBatchRenewalable.RenewalAsync(IDictionary<object, TimeSpan?> input)
         {
             var map = input.ToDictionary(x => (TIdentity)x.Key, x => x.Value);
+            return RenewalAsync(map);
+        }
+
+        public Task<long> RenewalAsync(IReadOnlyList<TIdentity> input)
+        {
+            var map = new Dictionary<TIdentity, TimeSpan?>(input.Count);
+            foreach (var item in input)
+            {
+                var time=GetCacheTime(item);
+                map[item] = time;
+            }
+            return RenewalAsync(map);
+        }
+
+        Task<long> IBatchRenewalable.RenewalAsync(IReadOnlyList<object> input)
+        {
+            var map = new Dictionary<TIdentity, TimeSpan?>(input.Count);
+            foreach (var item in input)
+            {
+                var time = GetCacheTime((TIdentity)item);
+                map[(TIdentity)item] = time;
+            }
             return RenewalAsync(map);
         }
     }

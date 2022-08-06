@@ -9,21 +9,19 @@ namespace Ao.Cache.CastleProxy.Annotations
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
     public class AutoCacheOptionsAttribute : Attribute
     {
-        public AutoCacheOptionsAttribute(bool canRenewal, string cacheTimeStr)
+        public AutoCacheOptionsAttribute()
         {
-            CanRenewal = canRenewal;
-            CacheTime = TimeSpan.Parse(cacheTimeStr);
         }
+
         public AutoCacheOptionsAttribute(string cacheTimeStr)
         {
             CacheTime = TimeSpan.Parse(cacheTimeStr);
         }
-        public AutoCacheOptionsAttribute(bool canRenewal)
-        {
-            CanRenewal = canRenewal;
-        }
-        public bool CanRenewal { get; }
 
-        public TimeSpan CacheTime { get; }
+        public bool CanRenewal { get; set; }
+
+        public TimeSpan? CacheTime { get; }
+
+        public bool Renewal { get; set; }
     }
 }

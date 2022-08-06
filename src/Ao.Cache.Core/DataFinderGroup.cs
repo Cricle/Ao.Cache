@@ -80,6 +80,17 @@ namespace Ao.Cache
             return true;
         }
 
+        public async Task<bool> RenewalAsync(TIdentity identity)
+        {
+            var tasks = new Task[Count];
+            for (int i = 0; i < tasks.Length; i++)
+            {
+                tasks[i] = this[i].RenewalAsync(identity);
+            }
+            await Task.WhenAll(tasks);
+            return true;
+        }
+
         public virtual async Task<bool> SetInCahceAsync(TIdentity identity, TEntity entity)
         {
             var tasks = new Task[Count];

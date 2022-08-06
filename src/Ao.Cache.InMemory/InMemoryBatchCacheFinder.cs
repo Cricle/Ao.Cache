@@ -97,7 +97,7 @@ namespace Ao.Cache.InMemory
             var mem = GetMemoryCache();
             foreach (var item in pairs)
             {
-                var time = GetCacheTime(item.Key, item.Value);
+                var time = GetCacheTime(item.Key);
                 var options = GetMemoryCacheEntryOptions(item.Key, time);
                 var key = GetEntryKey(item.Key);
                 mem.Set(key, item.Value, options);
