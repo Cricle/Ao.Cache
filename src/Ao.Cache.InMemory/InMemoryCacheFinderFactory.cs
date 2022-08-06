@@ -3,7 +3,7 @@ using System;
 
 namespace Ao.Cache.InMemory
 {
-    public class InMemoryCacheFinderFactory<TIdentity, TEntry> : IDataFinderFactory<TIdentity, TEntry>,IBatchDataFinderFactory<TIdentity,TEntry>
+    public class InMemoryCacheFinderFactory<TIdentity, TEntry> : IDataFinderFactory<TIdentity, TEntry>, IBatchDataFinderFactory<TIdentity, TEntry>
     {
         public InMemoryCacheFinderFactory(IMemoryCache memoryCache)
         {

@@ -1,10 +1,9 @@
-﻿using Ao.Cache.InRedis;
-using System;
+﻿using System;
 using System.Text.Json;
 
 namespace Ao.Cache.InRedis.TextJson
 {
-    public class TextJsonEntityConvertor<TEntity> : JsonEntityConvertor,IEntityConvertor<TEntity>
+    public class TextJsonEntityConvertor<TEntity> : JsonEntityConvertor, IEntityConvertor<TEntity>
     {
         public static new readonly TextJsonEntityConvertor<TEntity> Default = new TextJsonEntityConvertor<TEntity>();
 
@@ -25,7 +24,7 @@ namespace Ao.Cache.InRedis.TextJson
         public static readonly JsonEntityConvertor Default = new JsonEntityConvertor();
 
         public JsonEntityConvertor()
-            :this(defaultOptions)
+            : this(defaultOptions)
         {
         }
 
@@ -38,7 +37,7 @@ namespace Ao.Cache.InRedis.TextJson
 
         public byte[] ToBytes(object entry, Type type)
         {
-            return JsonSerializer.SerializeToUtf8Bytes(entry,type, Options);
+            return JsonSerializer.SerializeToUtf8Bytes(entry, type, Options);
         }
 
         public object ToEntry(in ReadOnlyMemory<byte> bytes, Type type)

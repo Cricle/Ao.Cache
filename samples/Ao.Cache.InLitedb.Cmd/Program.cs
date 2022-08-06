@@ -1,6 +1,5 @@
 ﻿using LiteDB;
 using System;
-using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
@@ -26,7 +25,7 @@ namespace Ao.Cache.InLitedb.Cmd
                     var ds = await finder.FindAsync(100);
                     Console.WriteLine(ds.ToString());
                     await Task.Delay(1000);
-                }               
+                }
             }
         }
     }
@@ -35,11 +34,11 @@ namespace Ao.Cache.InLitedb.Cmd
         public StudentLitedbCacheFinder(ILiteCollection<CacheStudent> collection) : base(collection)
         {
         }
-        protected override TimeSpan? GetCacheTime(long identity, Student entity)
+        public override TimeSpan? GetCacheTime(long identity, Student entity)
         {
             return TimeSpan.FromSeconds(2);
         }
-        protected override Expression<Func<CacheStudent,Student>> GetSelect(long identity)
+        protected override Expression<Func<CacheStudent, Student>> GetSelect(long identity)
         {
             return x => new CacheStudent
             {
@@ -60,7 +59,7 @@ namespace Ao.Cache.InLitedb.Cmd
             var rand = new Random();
             return Task.FromResult(new Student
             {
-                Class = "c"+rand.Next(10000,9999999),
+                Class = "c" + rand.Next(10000, 9999999),
                 Idx = identity,
                 Name = "aaa" + rand.Next(10000, 9999999)
             });
@@ -91,7 +90,7 @@ namespace Ao.Cache.InLitedb.Cmd
             return $"{Idx},{Name},{Class}";
         }
     }
-    public class CacheStudent:Student,ILiteCacheEntity
+    public class CacheStudent : Student, ILiteCacheEntity
     {
         [BsonId]
         public ObjectId Id { get; set; }

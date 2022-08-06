@@ -3,7 +3,7 @@ using System.Buffers;
 
 namespace Ao.Cache.InRedis.HashList.Converters
 {
-    public readonly struct PoolBuffer:IDisposable
+    public readonly struct PoolBuffer : IDisposable
     {
         public readonly ArrayPool<byte> Pool;
 

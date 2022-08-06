@@ -1,7 +1,5 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Ao.Cache.InMemory
@@ -20,7 +18,7 @@ namespace Ao.Cache.InMemory
 
         public override Task<bool> ExistsAsync(TIdentity identity)
         {
-            var r = GetMemoryCache().TryGetValue(GetEntryKey(identity),out _);
+            var r = GetMemoryCache().TryGetValue(GetEntryKey(identity), out _);
             return Task.FromResult(r);
         }
 

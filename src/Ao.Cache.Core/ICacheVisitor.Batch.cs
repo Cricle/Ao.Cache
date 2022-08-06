@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Ao.Cache
@@ -23,7 +22,7 @@ namespace Ao.Cache
 
         Task<IDictionary<string, string>> GetStringAsync(IReadOnlyList<string> keys);
 
-        IDictionary<string,bool> SetString(KeyValuePair<string, string>[] datas, TimeSpan? cacheTime, CacheSetIf cacheSetIf = CacheSetIf.Always);
+        IDictionary<string, bool> SetString(KeyValuePair<string, string>[] datas, TimeSpan? cacheTime, CacheSetIf cacheSetIf = CacheSetIf.Always);
 
         Task<IDictionary<string, bool>> SetStringAsync(KeyValuePair<string, string>[] datas, TimeSpan? cacheTime, CacheSetIf cacheSetIf = CacheSetIf.Always);
 

@@ -3,7 +3,7 @@ using System;
 
 namespace Ao.Cache.InRedis.TextJson
 {
-    public class RedisTextJsonPackCacheFinderFactory<TIdentity, TEntry> : IBatchDataFinderFactory<TIdentity, TEntry>,IDataFinderFactory<TIdentity,TEntry>
+    public class RedisTextJsonPackCacheFinderFactory<TIdentity, TEntry> : IBatchDataFinderFactory<TIdentity, TEntry>, IDataFinderFactory<TIdentity, TEntry>
     {
         public RedisTextJsonPackCacheFinderFactory(IDatabase database)
         {

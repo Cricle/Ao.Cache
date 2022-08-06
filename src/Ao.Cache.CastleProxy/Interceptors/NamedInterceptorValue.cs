@@ -20,7 +20,7 @@ namespace Ao.Cache.CastleProxy.Interceptors
 
         public override int GetHashCode()
         {
-            var h1 = ArgIndexs?.GetHashCode()??0;
+            var h1 = ArgIndexs?.GetHashCode() ?? 0;
             var h2 = Header.GetHashCode();
             var h3 = StringTransfer.GetHashCode();
             unchecked
@@ -43,8 +43,8 @@ namespace Ao.Cache.CastleProxy.Interceptors
                 return false;
             }
             return other.ArgIndexs == ArgIndexs &&
-                other.Header == Header&&
-                other.StringTransfer==StringTransfer;
+                other.Header == Header &&
+                other.StringTransfer == StringTransfer;
         }
         public override string ToString()
         {

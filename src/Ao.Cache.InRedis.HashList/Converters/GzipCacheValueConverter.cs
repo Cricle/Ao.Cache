@@ -1,13 +1,4 @@
 ﻿using StackExchange.Redis;
-using Ao.Cache.InRedis.HashList.Annotations;
-
-using System;
-using System.Collections.Generic;
-using System.IO.Compression;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Ao.Cache.InRedis.HashList.Converters
 {
@@ -21,7 +12,7 @@ namespace Ao.Cache.InRedis.HashList.Converters
         public RedisValue Convert(object instance, object value, ICacheColumn column)
         {
             var attr = CompressionHelper.GetAttribute(column);
-            var buffer=(byte[])value;
+            var buffer = (byte[])value;
             return CompressionHelper.Gzip(buffer, attr.Level);
         }
 
@@ -31,7 +22,7 @@ namespace Ao.Cache.InRedis.HashList.Converters
             {
                 return CacheValueConverterConst.DoNothing;
             }
-            var buffer= (byte[])value;
+            var buffer = (byte[])value;
             return CompressionHelper.UnGzip(buffer);
         }
     }

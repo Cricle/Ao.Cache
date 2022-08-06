@@ -5,11 +5,11 @@ namespace Ao.Cache.CastleProxy
 {
     public static class CacheNamedHelperUnwindExtensions
     {
-        public static UnwindObject GetUnwindObject<T>(this ICacheNamedHelper helper,string methodName, params object[] args)
+        public static UnwindObject GetUnwindObject<T>(this ICacheNamedHelper helper, string methodName, params object[] args)
         {
             return GetUnwindObject(helper, typeof(T), methodName, args);
         }
-        public static UnwindObject GetUnwindObject(this ICacheNamedHelper helper,Type targetType,string methodName,params object[] args)
+        public static UnwindObject GetUnwindObject(this ICacheNamedHelper helper, Type targetType, string methodName, params object[] args)
         {
             return helper.GetUnwindObject(new NamedInterceptorKey(targetType, targetType.GetMethod(methodName)), args);
         }

@@ -1,11 +1,5 @@
 ﻿using Ao.Cache.InRedis.HashList.Converters;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Ao.Cache.InRedis.HashList.Test.Converters
 {
@@ -21,7 +15,7 @@ namespace Ao.Cache.InRedis.HashList.Test.Converters
     }
     [TestClass]
     public class StructCacheValueConverterTest
-    {       
+    {
         [TestMethod]
         public void ConvertWithBytes()
         {
@@ -32,7 +26,7 @@ namespace Ao.Cache.InRedis.HashList.Test.Converters
             {
                 Property = typeof(Box).GetProperty("Student")
             });
-            Assert.AreNotEqual(0,val.Length());
+            Assert.AreNotEqual(0, val.Length());
 
             var entry = inst.ConvertBack(val, new CacheColumn
             {

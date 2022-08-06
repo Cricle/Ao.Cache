@@ -5,7 +5,7 @@ namespace Ao.Cache.InRedis
 {
     internal readonly struct RedisLocker : ILocker
     {
-        public RedisLocker(IRedLock locker,in DateTime createTime, in TimeSpan expireTime)
+        public RedisLocker(IRedLock locker, in DateTime createTime, in TimeSpan expireTime)
         {
             Locker = locker;
             CreateTime = createTime;

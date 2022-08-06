@@ -12,7 +12,7 @@ namespace Ao.Cache.InRedis.HashList.Converters
         public RedisValue Convert(object instance, object value, ICacheColumn column)
         {
             var dt = (TimeSpan?)value;
-            if (dt==null)
+            if (dt == null)
             {
                 return RedisValue.EmptyString;
             }

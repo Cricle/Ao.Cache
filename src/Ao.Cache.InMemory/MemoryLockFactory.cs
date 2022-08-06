@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Ao.Cache.InMemory
 {
-    public class MemoryLockFactory : ILockerFactory,IDisposable
+    public class MemoryLockFactory : ILockerFactory, IDisposable
     {
-        private readonly SemaphoreSlim slim = new SemaphoreSlim(1,1);
+        private readonly SemaphoreSlim slim = new SemaphoreSlim(1, 1);
 
         private readonly Dictionary<string, MemoryLocker> resourceMap = new Dictionary<string, MemoryLocker>();
 

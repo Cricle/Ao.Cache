@@ -1,9 +1,7 @@
-﻿using StackExchange.Redis;
-using Ao.Cache.InRedis.HashList.Annotations;
-using System;
+﻿using Ao.Cache.InRedis.HashList.Annotations;
+using System.IO;
 using System.IO.Compression;
 using System.Reflection;
-using System.IO;
 
 namespace Ao.Cache.InRedis.HashList.Converters
 {
@@ -19,7 +17,7 @@ namespace Ao.Cache.InRedis.HashList.Converters
         {
             return Gzip(buffer, 0, buffer.Length, level);
         }
-        public static byte[] Gzip(byte[] buffer,int pos,int size, CompressionLevel level)
+        public static byte[] Gzip(byte[] buffer, int pos, int size, CompressionLevel level)
         {
             using (var s1 = new MemoryStream())
             using (var gs = new GZipStream(s1, level))
@@ -35,7 +33,7 @@ namespace Ao.Cache.InRedis.HashList.Converters
         }
         public static byte[] UnGzip(byte[] buffer, int pos, int size)
         {
-            using (var s = new MemoryStream(buffer,pos,size))
+            using (var s = new MemoryStream(buffer, pos, size))
             using (var s1 = new MemoryStream())
             using (var gs = new GZipStream(s, CompressionMode.Decompress))
             {
@@ -64,7 +62,7 @@ namespace Ao.Cache.InRedis.HashList.Converters
         }
         public static byte[] UnDeflate(byte[] buffer, int pos, int size)
         {
-            using (var s = new MemoryStream(buffer,pos, size))
+            using (var s = new MemoryStream(buffer, pos, size))
             using (var s1 = new MemoryStream())
             using (var gs = new DeflateStream(s, CompressionMode.Decompress))
             {

@@ -29,10 +29,10 @@ namespace Ao.Cache.InRedis.HashList.Converters
                 return null;
             }
             var buffer = (byte[])value;
-            return FromBytes(buffer,column.Property.PropertyType);
+            return FromBytes(buffer, column.Property.PropertyType);
         }
 
-        private static ReadOnlyMemory<byte> GetBytes(object val,Type type)
+        private static ReadOnlyMemory<byte> GetBytes(object val, Type type)
         {
             var size = Marshal.SizeOf(type);
             var buffer = ArrayPool<byte>.Shared.Rent(size);
@@ -54,9 +54,9 @@ namespace Ao.Cache.InRedis.HashList.Converters
             {
                 ArrayPool<byte>.Shared.Return(buffer);
             }
-            
+
         }
-        private static object FromBytes(byte[] arr,Type type)
+        private static object FromBytes(byte[] arr, Type type)
         {
             var size = Marshal.SizeOf(type);
             var ptr = Marshal.AllocHGlobal(size);

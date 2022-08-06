@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Ao.Cache
 {
-    public abstract class BatchDataFinderBase<TIdentity, TEntity> : IdentityGenerater<TIdentity,TEntity>, IBatchDataFinder<TIdentity, TEntity>, IBatchRenewalable<TIdentity>, IBatchDataFinder, IBatchRenewalable
+    public abstract class BatchDataFinderBase<TIdentity, TEntity> : IdentityGenerater<TIdentity, TEntity>, IBatchDataFinder<TIdentity, TEntity>, IBatchRenewalable<TIdentity>, IBatchDataFinder, IBatchRenewalable
     {
         public abstract Task<long> DeleteAsync(IReadOnlyList<TIdentity> identity);
         public abstract Task<IDictionary<TIdentity, bool>> ExistsAsync(IReadOnlyList<TIdentity> identity);
@@ -36,7 +36,7 @@ namespace Ao.Cache
             return true;
         }
 
-        protected abstract Task<IDictionary<TIdentity,TEntity>> OnFindInDbAsync(IReadOnlyList<TIdentity> identities);
+        protected abstract Task<IDictionary<TIdentity, TEntity>> OnFindInDbAsync(IReadOnlyList<TIdentity> identities);
 
         Task<long> IBatchDataFinder.DeleteAsync(IList identity)
         {
@@ -73,7 +73,7 @@ namespace Ao.Cache
 
         async Task<IDictionary> IBatchPhysicalFinder.FindInDbAsync(IList identity, bool cache)
         {
-            var res = await FindInDbAsync(identity.Cast<TIdentity>().ToList(),cache);
+            var res = await FindInDbAsync(identity.Cast<TIdentity>().ToList(), cache);
             if (res is IDictionary map)
             {
                 return map;

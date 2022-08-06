@@ -1,14 +1,13 @@
 ﻿using Ao.Cache.CastleProxy.Annotations;
 using Castle.DynamicProxy;
 using System;
-using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace Ao.Cache.CastleProxy.Interceptors
 {
-    public class LockInterceptor: NamedInterceptor
+    public class LockInterceptor : NamedInterceptor
     {
         protected enum RunLockResultTypes
         {
@@ -64,7 +63,7 @@ namespace Ao.Cache.CastleProxy.Interceptors
                 await proceed(invocation, proceedInfo);
             }
         }
-        protected virtual Task OnGotLockResultAsync(IInvocation invocation, IInvocationProceedInfo proceedInfo,RunLockResult result)
+        protected virtual Task OnGotLockResultAsync(IInvocation invocation, IInvocationProceedInfo proceedInfo, RunLockResult result)
         {
 #if NET452
             return Task.FromResult(false);
@@ -109,7 +108,7 @@ namespace Ao.Cache.CastleProxy.Interceptors
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static AutoLockAttribute GetLockAttr(IInvocation invocation)
         {
-            return invocation.TargetType.GetCustomAttribute<AutoLockAttribute>() ?? 
+            return invocation.TargetType.GetCustomAttribute<AutoLockAttribute>() ??
                 invocation.Method.GetCustomAttribute<AutoLockAttribute>();
         }
     }

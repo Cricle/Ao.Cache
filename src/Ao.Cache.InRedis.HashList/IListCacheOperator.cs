@@ -2,7 +2,7 @@
 
 namespace Ao.Cache.InRedis.HashList
 {
-    public interface IListCacheOperator: ICacheOperator<RedisValue[]>
+    public interface IListCacheOperator : ICacheOperator<RedisValue[]>
     {
     }
 }

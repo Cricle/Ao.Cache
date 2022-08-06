@@ -18,7 +18,7 @@ namespace Ao.Cache.InRedis.HashList.Converters
         {
             if (!value.HasValue)
             {
-                return null; 
+                return null;
             }
             if (value.TryParse(out int val))
             {

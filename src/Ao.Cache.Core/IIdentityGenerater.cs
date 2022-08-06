@@ -1,6 +1,6 @@
 ﻿namespace Ao.Cache
 {
-    public interface IWithHeaderIdentityGenerater<TIdentity>: IIdentityGenerater<TIdentity>
+    public interface IWithHeaderIdentityGenerater<TIdentity> : IIdentityGenerater<TIdentity>
     {
         bool IgnoreHead { get; set; }
 

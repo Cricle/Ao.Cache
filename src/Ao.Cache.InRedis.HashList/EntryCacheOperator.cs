@@ -1,12 +1,11 @@
 ﻿using Ao.ObjectDesign;
-using Ao.Cache.InRedis.HashList.Converters;
+using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
-using StackExchange.Redis;
 
 namespace Ao.Cache.InRedis.HashList
 {
-    public abstract class EntryCacheOperator : IHashCacheOperator, IAutoWriteCache, IEntryCacheOperator,IListCacheOperator
+    public abstract class EntryCacheOperator : IHashCacheOperator, IAutoWriteCache, IEntryCacheOperator, IListCacheOperator
     {
         public static readonly RedisValue defaultName = new RedisValue("Default");
 
@@ -61,7 +60,7 @@ namespace Ao.Cache.InRedis.HashList
             Write(ref instance, value);
             return instance;
         }
-        protected abstract void WriteCore(ref object instance,in RedisValue entry);
+        protected abstract void WriteCore(ref object instance, in RedisValue entry);
         protected abstract RedisValue AsCore(object value);
 
         protected virtual object CreateInstance()

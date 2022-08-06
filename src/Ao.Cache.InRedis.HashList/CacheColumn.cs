@@ -1,7 +1,6 @@
-﻿using StackExchange.Redis;
+﻿using Ao.Cache.InRedis.HashList.Converters;
 using Ao.ObjectDesign;
-using Ao.Cache.InRedis.HashList;
-using Ao.Cache.InRedis.HashList.Converters;
+using StackExchange.Redis;
 using System.Collections.Generic;
 using System.Reflection;
 
@@ -21,7 +20,7 @@ namespace Ao.Cache.InRedis.HashList
 
         public RedisValue NameRedis { get; set; }
 
-        public string Path{get; set;}
+        public string Path { get; set; }
 
         IReadOnlyList<ICacheColumn> ICacheColumn.Nexts => Nexts;
 

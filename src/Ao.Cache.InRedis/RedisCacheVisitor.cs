@@ -1,6 +1,5 @@
 ﻿using StackExchange.Redis;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Ao.Cache.InRedis
@@ -71,7 +70,7 @@ namespace Ao.Cache.InRedis
         public bool Set<T>(string key, T value, TimeSpan? cacheTime, CacheSetIf cacheSetIf = CacheSetIf.Always)
         {
             var buffer = ObjectTransfer.Transfer(value);
-            return Database.StringSet(key, buffer, cacheTime,(When)cacheSetIf,CommandFlags.None);
+            return Database.StringSet(key, buffer, cacheTime, (When)cacheSetIf, CommandFlags.None);
         }
 
         public Task<bool> SetAsync<T>(string key, T value, TimeSpan? cacheTime, CacheSetIf cacheSetIf = CacheSetIf.Always)

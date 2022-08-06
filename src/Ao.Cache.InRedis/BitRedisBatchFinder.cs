@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Ao.Cache.InRedis
 {
-    public abstract class BitRedisBatchFinder<TIdentity, TEntity>: RedisBatchDataFinder<TIdentity, TEntity>
+    public abstract class BitRedisBatchFinder<TIdentity, TEntity> : RedisBatchDataFinder<TIdentity, TEntity>
     {
         protected BitRedisBatchFinder(IEntityConvertor<TEntity> entityConvertor)
         {
@@ -34,7 +34,7 @@ namespace Ao.Cache.InRedis
 
         public override async Task<long> SetInCahceAsync(IDictionary<TIdentity, TEntity> pairs)
         {
-            var res=await DoInRedisAsync(pairs.Keys.ToList(), (batch, identity) =>
+            var res = await DoInRedisAsync(pairs.Keys.ToList(), (batch, identity) =>
                     batch.StringSetAsync(GetEntryKey(identity), EntityConvertor.ToBytes(pairs[identity]), GetCacheTime(identity, pairs[identity])));
             return res.Count;
         }

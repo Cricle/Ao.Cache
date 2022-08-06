@@ -8,7 +8,7 @@ namespace Ao.Cache.CastleProxy
 
         public static readonly DefaultStringTransfer Default = new DefaultStringTransfer(DefaultSpliter);
 
-        public DefaultStringTransfer(string spliter) 
+        public DefaultStringTransfer(string spliter)
         {
             Spliter = spliter ?? throw new System.ArgumentNullException(nameof(spliter));
         }

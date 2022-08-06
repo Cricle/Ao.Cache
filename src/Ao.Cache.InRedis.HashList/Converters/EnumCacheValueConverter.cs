@@ -21,7 +21,7 @@ namespace Ao.Cache.InRedis.HashList.Converters
         {
             var val = value.ToString();
             var helper = EnumHelper.GetEnumHelper(column.Property.PropertyType);
-            if (helper.TryConvert(val,out var enumVal))
+            if (helper.TryConvert(val, out var enumVal))
             {
                 return enumVal;
             }
@@ -29,7 +29,7 @@ namespace Ao.Cache.InRedis.HashList.Converters
         }
         class EnumHelper
         {
-            private static readonly Dictionary<Type,EnumHelper> enumHelpers = new Dictionary<Type,EnumHelper>();
+            private static readonly Dictionary<Type, EnumHelper> enumHelpers = new Dictionary<Type, EnumHelper>();
 
             public static EnumHelper GetEnumHelper(Type type)
             {
@@ -37,10 +37,10 @@ namespace Ao.Cache.InRedis.HashList.Converters
                 {
                     throw new ArgumentException($"Type {type} is not enum");
                 }
-                if (!enumHelpers.TryGetValue(type,out var helper))
+                if (!enumHelpers.TryGetValue(type, out var helper))
                 {
                     helper = new EnumHelper(type);
-                    enumHelpers[type]=helper;
+                    enumHelpers[type] = helper;
                 }
                 return helper;
             }
@@ -50,7 +50,7 @@ namespace Ao.Cache.InRedis.HashList.Converters
                 map = Enum.GetNames(target).ToDictionary(x => x,
                     x => Enum.Parse(target, x), StringComparer.OrdinalIgnoreCase);
                 FirstValue = map.Values.FirstOrDefault();
-                if (FirstValue==null)
+                if (FirstValue == null)
                 {
                     FirstValue = 0;
                 }
@@ -60,7 +60,7 @@ namespace Ao.Cache.InRedis.HashList.Converters
 
             public object FirstValue { get; }
 
-            public bool TryConvert(string name,out object value)
+            public bool TryConvert(string name, out object value)
             {
                 return map.TryGetValue(name, out value);
             }

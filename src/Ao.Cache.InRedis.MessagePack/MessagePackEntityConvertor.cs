@@ -1,5 +1,4 @@
-﻿using Ao.Cache.InRedis;
-using MessagePack.Resolvers;
+﻿using MessagePack.Resolvers;
 using System;
 using MP = MessagePack;
 
@@ -45,7 +44,7 @@ namespace Ao.Cache.InRedis.MessagePack
 
         public object ToEntry(in ReadOnlyMemory<byte> bytes, Type type)
         {
-            return MP.MessagePackSerializer.Deserialize(type,bytes, Options);
+            return MP.MessagePackSerializer.Deserialize(type, bytes, Options);
         }
     }
 }

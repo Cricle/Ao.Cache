@@ -97,7 +97,7 @@ namespace Ao.Cache.InMemory
 
         public Task<bool> SetAsync<T>(string key, T value, TimeSpan? cacheTime, CacheSetIf cacheSetIf = CacheSetIf.Always)
         {
-            Set(key, value, cacheTime,cacheSetIf);
+            Set(key, value, cacheTime, cacheSetIf);
             return Task.FromResult(true);
         }
 

@@ -1,5 +1,4 @@
-﻿using Ao.Cache;
-using Ao.Cache.CastleProxy;
+﻿using Ao.Cache.CastleProxy;
 using Ao.Cache.CastleProxy.Interceptors;
 
 namespace Microsoft.Extensions.DependencyInjection

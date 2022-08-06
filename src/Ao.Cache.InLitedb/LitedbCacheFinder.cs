@@ -93,8 +93,8 @@ namespace Ao.Cache.InLitedb
             foreach (var item in input)
             {
                 var t = GetExpirationTime(item.Value);
-                var c=Collection.UpdateMany(x =>new TCollectionEntity { ExpirationTime=t }, GetWhere(item.Key));
-                if (c>0)
+                var c = Collection.UpdateMany(x => new TCollectionEntity { ExpirationTime = t }, GetWhere(item.Key));
+                if (c > 0)
                 {
                     res++;
                 }
@@ -117,13 +117,13 @@ namespace Ao.Cache.InLitedb
             foreach (var item in notIn)
             {
                 var entity = pairs[item];
-                var time=GetCacheTime(item, entity);
+                var time = GetCacheTime(item, entity);
                 var exprTime = GetExpirationTime(time);
                 var row = ToCollectionEntity(item, entity);
                 row.ExpirationTime = exprTime;
                 inserts.Add(row);
             }
-            ok+=Collection.InsertBulk(inserts);
+            ok += Collection.InsertBulk(inserts);
             foreach (var item in ds)
             {
                 var time = GetCacheTime(GetIdentity(item), item);

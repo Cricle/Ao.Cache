@@ -1,8 +1,4 @@
 ﻿using Ao.Cache.CastleProxy.Interceptors;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Ao.Cache.CastleProxy
@@ -22,7 +18,7 @@ namespace Ao.Cache.CastleProxy
             SetIgnoreHead(finder);
             return finder;
         }
-        public IDataFinder<UnwindObject,TEntity> Get(IDataAccesstor<UnwindObject, TEntity> accesstor)
+        public IDataFinder<UnwindObject, TEntity> Get(IDataAccesstor<UnwindObject, TEntity> accesstor)
         {
             var finder = FinderFactory.Create(accesstor);
             SetIgnoreHead(finder);
@@ -30,9 +26,9 @@ namespace Ao.Cache.CastleProxy
         }
         private static void SetIgnoreHead(IDataFinder<UnwindObject, TEntity> finder)
         {
-            if (finder is DataFinderBase<UnwindObject,TEntity> igen)
+            if (finder is DataFinderBase<UnwindObject, TEntity> igen)
             {
-                igen.Options= IgnoreHeadDataFinderOptions<TEntity>.Options;
+                igen.Options = IgnoreHeadDataFinderOptions<TEntity>.Options;
             }
         }
         public Task<bool> DeleteAsync(in UnwindObject unwindObject)

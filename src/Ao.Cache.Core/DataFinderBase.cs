@@ -56,7 +56,7 @@ namespace Ao.Cache
 
         public virtual bool CanRenewal(TIdentity identity, TEntity entity)
         {
-            if (Options!=null)
+            if (Options != null)
             {
                 return Options.CanRenewal(identity, entity);
             }

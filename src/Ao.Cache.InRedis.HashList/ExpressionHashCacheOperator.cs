@@ -1,17 +1,14 @@
-﻿using FastExpressionCompiler;
+﻿using Ao.Cache.InRedis.HashList.Converters;
+using FastExpressionCompiler;
+using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using Ao.Cache.InRedis.HashList.Converters;
-using StackExchange.Redis;
-using System.Diagnostics;
-using System.Threading.Tasks;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace Ao.Cache.InRedis.HashList
 {
-    public class ExpressionHashCacheOperator: ComplexCacheOperator,IHashCacheOperator
+    public class ExpressionHashCacheOperator : ComplexCacheOperator, IHashCacheOperator
     {
         private static readonly Dictionary<Type, ExpressionHashCacheOperator> defaultRedisOpCache = new Dictionary<Type, ExpressionHashCacheOperator>();
 
@@ -30,14 +27,14 @@ namespace Ao.Cache.InRedis.HashList
         private static readonly MethodInfo ConvertMethod = typeof(ICacheValueConverter).GetMethod("Convert");
         private static readonly MethodInfo ConvertBackMethod = typeof(ICacheValueConverter).GetMethod("ConvertBack");
 
-        public ExpressionHashCacheOperator(Type target, ICacheColumnAnalysis columnAnalysis) 
+        public ExpressionHashCacheOperator(Type target, ICacheColumnAnalysis columnAnalysis)
             : base(target, columnAnalysis)
         {
         }
-        
+
         private Action<object, IDictionary<string, RedisValue>> writeMethod;
         private Func<object, HashEntry[]> asMethod;
-        private Func<IDictionary<string, RedisValue>,object> writeWithObjectMethod;
+        private Func<IDictionary<string, RedisValue>, object> writeWithObjectMethod;
 
         protected override void OnBuild()
         {
@@ -79,7 +76,7 @@ namespace Ao.Cache.InRedis.HashList
                 }
             }
         }
-        private Func<IDictionary<string, RedisValue>,object> AotCompileWithInstanceWrite()
+        private Func<IDictionary<string, RedisValue>, object> AotCompileWithInstanceWrite()
         {
             var map = Expression.Parameter(typeof(IDictionary<string, RedisValue>));
             var inst = Expression.Variable(Target);
@@ -88,20 +85,20 @@ namespace Ao.Cache.InRedis.HashList
             var allExps = new List<Expression> { assign };
             allExps.AddRange(exps);
             allExps.Add(Expression.Convert(inst, Target));
-            var body = Expression.Block(new ParameterExpression[] {inst},allExps);
+            var body = Expression.Block(new ParameterExpression[] { inst }, allExps);
             return Expression.Lambda<Func<IDictionary<string, RedisValue>, object>>(body, map)
                 .CompileSys();
         }
-        private Action<object,IDictionary<string, RedisValue>> AotCompileWrite()
+        private Action<object, IDictionary<string, RedisValue>> AotCompileWrite()
         {
             var map = Expression.Parameter(typeof(IDictionary<string, RedisValue>));
             var inst = Expression.Parameter(typeof(object));
-            var exps = AotWriteAll(Expression.Convert(inst,Target), Columns, map);
+            var exps = AotWriteAll(Expression.Convert(inst, Target), Columns, map);
             var allExps = new List<Expression>();
             allExps.AddRange(exps);
             allExps.Add(inst);
             var body = Expression.Block(allExps);
-            return Expression.Lambda<Action<object, IDictionary<string, RedisValue>>>(body, inst,map)
+            return Expression.Lambda<Action<object, IDictionary<string, RedisValue>>>(body, inst, map)
                 .CompileSys();
         }
         private Func<object, HashEntry[]> AotCompileAs()

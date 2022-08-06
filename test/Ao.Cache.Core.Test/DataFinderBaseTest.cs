@@ -1,7 +1,4 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Ao.Cache.Core.Test
@@ -35,7 +32,7 @@ namespace Ao.Cache.Core.Test
         public async Task SetInCache()
         {
             var finder = new NullDataFinder();
-            var ok = await finder.SetInCahceAsync(1,"1");
+            var ok = await finder.SetInCahceAsync(1, "1");
             Assert.IsTrue(ok);
         }
     }

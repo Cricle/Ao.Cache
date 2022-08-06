@@ -1,20 +1,16 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using DryIoc.Microsoft.DependencyInjection;
-using System;
-using Structing.DryInterceptor.Annotations;
+﻿using Ao.Cache.CastleProxy.Annotations;
 using Ao.Cache.CastleProxy.Interceptors;
-using Ao.Cache.CastleProxy.Annotations;
-using DryIoc;
-using Ao.Cache.InMemory;
-using Microsoft.Extensions.Caching.Memory;
 using Ao.Cache.CastleProxy.Model;
-using StackExchange.Redis;
+using Ao.Cache.InRedis;
+using Ao.Cache.InRedis.TextJson;
+using DryIoc;
+using DryIoc.Microsoft.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using RedLockNet;
 using RedLockNet.SERedis;
 using RedLockNet.SERedis.Configuration;
+using StackExchange.Redis;
 using System.Diagnostics;
-using Ao.Cache.InRedis;
-using Ao.Cache.InRedis.TextJson;
 
 namespace Ao.Cache.CastleProxy.Sample
 {
@@ -64,7 +60,7 @@ namespace Ao.Cache.CastleProxy.Sample
                 var sw = Stopwatch.GetTimestamp();
                 var n = gt.NowTime(i % 3, i);
                 var ed = Stopwatch.GetTimestamp();
-                Console.WriteLine(new TimeSpan(ed-sw));
+                Console.WriteLine(new TimeSpan(ed - sw));
                 if (i % 3 == 0)
                 {
                     var obj = nx.GetUnwindObject<GetTime>("NowTime", i % 3);
@@ -85,7 +81,7 @@ namespace Ao.Cache.CastleProxy.Sample
                     var q = i;
                     tsk[i] = Task.Factory.StartNew(() =>
                     {
-                        t.Inc(q*50);
+                        t.Inc(q * 50);
                     });
                 }
                 var sw = Stopwatch.GetTimestamp();
@@ -101,7 +97,7 @@ namespace Ao.Cache.CastleProxy.Sample
         public virtual int A { get; set; }
 
         [AutoLock]
-        public virtual void Inc([AutoLockSkipPart]int j)
+        public virtual void Inc([AutoLockSkipPart] int j)
         {
             for (int i = 0; i < j; i++)
             {
@@ -112,7 +108,7 @@ namespace Ao.Cache.CastleProxy.Sample
     public class GetTime
     {
         [AutoCache]
-        public virtual AutoCacheResult<DateTime?> NowTime(int id,[AutoCacheSkipPart]double dd)
+        public virtual AutoCacheResult<DateTime?> NowTime(int id, [AutoCacheSkipPart] double dd)
         {
             Console.WriteLine("yerp");
             return new AutoCacheResult<DateTime?> { RawData = DateTime.Now };

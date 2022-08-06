@@ -3,7 +3,6 @@ using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Ao.Cache.InRedis.HashList
 {
@@ -42,7 +41,7 @@ namespace Ao.Cache.InRedis.HashList
         {
             columns = BuildColumns();
             redisColumnMap = BuildColumnMap();
-            if (!Target.IsPrimitive && Target != typeof(string)&&Nullable.GetUnderlyingType(Target)==null)
+            if (!Target.IsPrimitive && Target != typeof(string) && Nullable.GetUnderlyingType(Target) == null)
             {
                 creator = CompiledPropertyInfo.GetCreator(Target);
             }

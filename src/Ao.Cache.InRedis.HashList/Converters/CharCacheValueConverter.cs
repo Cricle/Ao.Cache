@@ -1,6 +1,4 @@
 ﻿using StackExchange.Redis;
-using System;
-using System.Collections.Generic;
 
 namespace Ao.Cache.InRedis.HashList.Converters
 {

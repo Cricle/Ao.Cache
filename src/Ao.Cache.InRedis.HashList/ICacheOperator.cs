@@ -1,6 +1,4 @@
-﻿using StackExchange.Redis;
-
-namespace Ao.Cache.InRedis.HashList
+﻿namespace Ao.Cache.InRedis.HashList
 {
     public interface ICacheOperator<TValue>
     {

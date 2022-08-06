@@ -7,7 +7,7 @@ namespace Ao.Cache.CastleProxy.Annotations
 
     }
     [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false, Inherited = false)]
-    public sealed class AutoCacheSkipPartAttribute: KeySkipPartAttribute
+    public sealed class AutoCacheSkipPartAttribute : KeySkipPartAttribute
     {
 
     }

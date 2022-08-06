@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using StackExchange.Redis;
 using System;
 using System.Diagnostics;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Ao.Cache.WebApi.Controllers
@@ -25,7 +24,7 @@ namespace Ao.Cache.WebApi.Controllers
             WeatherForecastDataFinder3 finder3)
         {
             this.finder3 = finder3;
-            this.finder2=finder2;
+            this.finder2 = finder2;
             this.finder1 = finder1;
             this.finder = finder;
         }
@@ -38,7 +37,7 @@ namespace Ao.Cache.WebApi.Controllers
             {
                 var d = await finder.FindAsync(name);
             }
-            return Ok(new TimeSpan(Stopwatch.GetTimestamp()-s));
+            return Ok(new TimeSpan(Stopwatch.GetTimestamp() - s));
         }
         [HttpGet("[action]/{name}")]
         public async Task<IActionResult> GetJson(string name)
@@ -125,7 +124,7 @@ namespace Ao.Cache.WebApi.Controllers
     public class WeatherForecastDataFinder3 : BitRedisDataFinder<string, WeatherForecast>
     {
         public WeatherForecastDataFinder3(IDatabase database)
-            :base(TextJsonEntityConvertor<WeatherForecast>.Default)
+            : base(TextJsonEntityConvertor<WeatherForecast>.Default)
         {
             Database = database;
         }

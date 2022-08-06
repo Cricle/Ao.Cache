@@ -1,15 +1,13 @@
-﻿using System;
+﻿using LiteDB;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using LiteDB;
-using System.Threading.Tasks;
 using System.Linq.Expressions;
 
 namespace Ao.Cache.InLitedb
 {
     public partial class LitedbCacheFinder<TIdentity, TEntry, TCollectionEntity>
     {
-        public Expression<Func<TCollectionEntity,bool>> GetInvalidWhere()
+        public Expression<Func<TCollectionEntity, bool>> GetInvalidWhere()
         {
             return x => x.ExpirationTime != null && x.ExpirationTime <= DateTime.Now;
         }

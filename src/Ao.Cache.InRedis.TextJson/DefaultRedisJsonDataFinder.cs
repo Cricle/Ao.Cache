@@ -1,6 +1,5 @@
 ﻿using StackExchange.Redis;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Ao.Cache.InRedis.TextJson
@@ -12,10 +11,10 @@ namespace Ao.Cache.InRedis.TextJson
             : this(database, dataAccesstor, TextJsonEntityConvertor<TEntry>.Default)
         {
         }
-        public DefaultRedisJsonDataFinder(IDatabase database, 
+        public DefaultRedisJsonDataFinder(IDatabase database,
             IDataAccesstor<TIdentity, TEntry> dataAccesstor,
             IEntityConvertor<TEntry> entityConvertor)
-            :base(entityConvertor)
+            : base(entityConvertor)
         {
             Database = database ?? throw new ArgumentNullException(nameof(database));
             DataAccesstor = dataAccesstor ?? throw new ArgumentNullException(nameof(dataAccesstor));

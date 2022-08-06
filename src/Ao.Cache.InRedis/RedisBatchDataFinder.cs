@@ -1,8 +1,8 @@
-﻿using System;
+﻿using StackExchange.Redis;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using StackExchange.Redis;
 
 namespace Ao.Cache.InRedis
 {
@@ -19,7 +19,7 @@ namespace Ao.Cache.InRedis
             }
             return keys;
         }
-        protected virtual IDictionary<RedisKey,TIdentity> AsKeyMap(IReadOnlyList<TIdentity> identities)
+        protected virtual IDictionary<RedisKey, TIdentity> AsKeyMap(IReadOnlyList<TIdentity> identities)
         {
             var keys = new Dictionary<RedisKey, TIdentity>(identities.Count);
             for (int i = 0; i < identities.Count; i++)
@@ -29,14 +29,14 @@ namespace Ao.Cache.InRedis
             return keys;
         }
         protected async Task<IDictionary<TIdentity, TResult>> DoInRedisAsync<TResult>(IReadOnlyList<TIdentity> identities,
-            Func<IBatch,TIdentity,Task<TResult>> fetch)
+            Func<IBatch, TIdentity, Task<TResult>> fetch)
         {
             var db = GetDatabase();
             var batch = db.CreateBatch();
             var tasks = new Task<TResult>[identities.Count];
             for (int i = 0; i < identities.Count; i++)
             {
-                tasks[i] = fetch(batch,identities[i]);
+                tasks[i] = fetch(batch, identities[i]);
             }
             batch.Execute();
             await Task.WhenAll(tasks);
@@ -67,7 +67,7 @@ namespace Ao.Cache.InRedis
 
         public override async Task<long> RenewalAsync(IDictionary<TIdentity, TimeSpan?> input)
         {
-            var res=await DoInRedisAsync(input.Keys.ToList(),
+            var res = await DoInRedisAsync(input.Keys.ToList(),
                 (batch, identity) => batch.KeyExpireAsync(GetEntryKey(identity), input[identity]));
 
             return res.Count;

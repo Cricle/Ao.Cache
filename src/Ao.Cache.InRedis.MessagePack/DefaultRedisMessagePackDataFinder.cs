@@ -1,8 +1,5 @@
-﻿using Ao.Cache;
-using Ao.Cache.InRedis;
-using StackExchange.Redis;
+﻿using StackExchange.Redis;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Ao.Cache.InRedis.MessagePack
@@ -14,10 +11,10 @@ namespace Ao.Cache.InRedis.MessagePack
             : this(database, dataAccesstor, MessagePackEntityConvertor<TEntry>.Default)
         {
         }
-        public DefaultRedisMessagePackDataFinder(IDatabase database, 
+        public DefaultRedisMessagePackDataFinder(IDatabase database,
             IDataAccesstor<TIdentity, TEntry> dataAccesstor,
             IEntityConvertor<TEntry> entityConvertor)
-            :base(entityConvertor)
+            : base(entityConvertor)
         {
             Database = database ?? throw new ArgumentNullException(nameof(database));
             DataAccesstor = dataAccesstor ?? throw new ArgumentNullException(nameof(dataAccesstor));

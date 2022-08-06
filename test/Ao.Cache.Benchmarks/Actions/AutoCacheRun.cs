@@ -2,27 +2,24 @@
 using Ao.Cache.CastleProxy.Interceptors;
 using Ao.Cache.CastleProxy.Model;
 using Ao.Cache.InMemory;
+using BenchmarkDotNet.Attributes;
 using DryIoc;
 using DryIoc.Microsoft.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using BenchmarkDotNet;
-using BenchmarkDotNet.Attributes;
-using Ao.Cache.CastleProxy;
 
 namespace Ao.Cache.Benchmarks.Actions
 {
     [MemoryDiagnoser]
     public class AutoCacheRun
     {
-        [Params(7_000,3_000_000)]
+        [Params(7_000, 3_000_000)]
         public int Times { get; set; }
 
-        [Params(100,800)]
+        [Params(100, 800)]
         public int Concurrent { get; set; }
 
         IServiceProvider provider;
@@ -33,7 +30,7 @@ namespace Ao.Cache.Benchmarks.Actions
         {
             var ser = new ServiceCollection();
             ser.AddSingleton<GetTime>();
-            ser.AddSingleton<IDataAccesstor<int, int?>,AAccesstor>();
+            ser.AddSingleton<IDataAccesstor<int, int?>, AAccesstor>();
             ser.AddCastleCacheProxy();
             ser.AddSingleton<ILockerFactory, MemoryLockFactory>();
             ser.AddMemoryCache();
@@ -99,7 +96,7 @@ namespace Ao.Cache.Benchmarks.Actions
             var ts = Times / Concurrent;
             for (int i = 0; i < Concurrent; i++)
             {
-                tasks[i] =await Task.Factory.StartNew(async() =>
+                tasks[i] = await Task.Factory.StartNew(async () =>
                 {
                     for (int j = 0; j < ts; j++)
                     {
@@ -124,7 +121,7 @@ namespace Ao.Cache.Benchmarks.Actions
         public GetTime Gt { get; set; }
         public Task<int?> FindAsync(int identity)
         {
-            return Task.FromResult<int?>(Gt.Raw(identity,0));
+            return Task.FromResult<int?>(Gt.Raw(identity, 0));
         }
     }
     public class GetTime
@@ -132,13 +129,13 @@ namespace Ao.Cache.Benchmarks.Actions
         [AutoCache]
         public virtual AutoCacheResult<int> NowTime(int id, [AutoCacheSkipPart] long dd)
         {
-            return new AutoCacheResult<int> { RawData = Raw(id, dd)};
+            return new AutoCacheResult<int> { RawData = Raw(id, dd) };
         }
 
         [AutoCache]
         public virtual int NowTime1(int id, [AutoCacheSkipPart] long dd)
         {
-            return Raw(id, dd);   
+            return Raw(id, dd);
         }
 
         public int Raw(int id, long dd)

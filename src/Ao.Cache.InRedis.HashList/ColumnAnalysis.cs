@@ -1,6 +1,6 @@
-﻿using Ao.ObjectDesign;
-using Ao.Cache.InRedis.HashList.Annotations;
+﻿using Ao.Cache.InRedis.HashList.Annotations;
 using Ao.Cache.InRedis.HashList.Converters;
+using Ao.ObjectDesign;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -70,12 +70,12 @@ namespace Ao.Cache.InRedis.HashList
             return KnowsCacheValueConverter.GetConverter(info.PropertyType);
         }
         protected readonly Dictionary<Type, ICacheValueConverter> convertTypeCache = new Dictionary<Type, ICacheValueConverter>();
-        protected virtual bool TryGetConverter(Type instanceType,PropertyInfo info,out ICacheValueConverter converter)
+        protected virtual bool TryGetConverter(Type instanceType, PropertyInfo info, out ICacheValueConverter converter)
         {
             foreach (var item in ConverterProviders)
             {
                 converter = item.GetConverter(instanceType, info);
-                if (converter != null) 
+                if (converter != null)
                 {
                     return true;
                 }
@@ -114,12 +114,12 @@ namespace Ao.Cache.InRedis.HashList
             }
             return converter != null;
         }
-        protected virtual ICacheValueConverter ConverterNotFound(Type type,PropertyInfo property)
+        protected virtual ICacheValueConverter ConverterNotFound(Type type, PropertyInfo property)
         {
             return null;
         }
         private ICacheColumn[] Analysis(Type type, string prefx)
-        {            
+        {
             var columns = new List<ICacheColumn>();
             var props = type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
                 .Where(CanLookup);
@@ -128,11 +128,11 @@ namespace Ao.Cache.InRedis.HashList
 
             foreach (var item in props)
             {
-                if(!TryGetConverter(type,item,out var converter))
+                if (!TryGetConverter(type, item, out var converter))
                 {
                     converter = CreateConverter(item);
                 }
-                if (converter==null)
+                if (converter == null)
                 {
                     converter = ConverterNotFound(type, item);
                 }

@@ -3,7 +3,7 @@ using System;
 
 namespace Ao.Cache.InRedis.MessagePack
 {
-    public class RedisMessagePackCacheFinderFactory<TIdentity, TEntry> : IBatchDataFinderFactory<TIdentity, TEntry>,IDataFinderFactory<TIdentity,TEntry>
+    public class RedisMessagePackCacheFinderFactory<TIdentity, TEntry> : IBatchDataFinderFactory<TIdentity, TEntry>, IDataFinderFactory<TIdentity, TEntry>
     {
         public RedisMessagePackCacheFinderFactory(IDatabase database)
         {

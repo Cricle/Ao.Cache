@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using StackExchange.Redis;
+using System;
 using System.Threading.Tasks;
-using StackExchange.Redis;
 
 namespace Ao.Cache.InRedis
 {

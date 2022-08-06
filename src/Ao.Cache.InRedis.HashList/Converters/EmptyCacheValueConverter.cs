@@ -1,14 +1,8 @@
 ﻿using StackExchange.Redis;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Ao.Cache.InRedis.HashList.Converters
 {
-    internal class EmptyCacheValueConverter: ICacheValueConverter
+    internal class EmptyCacheValueConverter : ICacheValueConverter
     {
         public static readonly EmptyCacheValueConverter Instance = new EmptyCacheValueConverter();
 

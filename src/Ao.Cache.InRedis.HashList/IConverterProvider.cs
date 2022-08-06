@@ -6,6 +6,6 @@ namespace Ao.Cache.InRedis.HashList
 {
     public interface IConverterProvider
     {
-        ICacheValueConverter GetConverter(Type instanceType,PropertyInfo property);
+        ICacheValueConverter GetConverter(Type instanceType, PropertyInfo property);
     }
 }

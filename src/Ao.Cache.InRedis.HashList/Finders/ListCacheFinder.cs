@@ -1,13 +1,10 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using StackExchange.Redis;
+﻿using StackExchange.Redis;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace Ao.Cache.InRedis.HashList.Finders
 {
-    public abstract class ListCacheFinder<TIdentity, TEntry> : ColumnCacheFinder<TIdentity, TEntry,RedisValue[]>
+    public abstract class ListCacheFinder<TIdentity, TEntry> : ColumnCacheFinder<TIdentity, TEntry, RedisValue[]>
     {
         private ExpressionListCacheOperator expressionCacher;
 
@@ -37,7 +34,7 @@ namespace Ao.Cache.InRedis.HashList.Finders
 
         protected override TEntry Write(TIdentity identity, RedisValue[] value)
         {
-            if (value.Length==0)
+            if (value.Length == 0)
             {
                 return default;
             }
@@ -58,7 +55,7 @@ namespace Ao.Cache.InRedis.HashList.Finders
         protected override async Task<object> CoreGetColumn(TIdentity identity, ICacheColumn column)
         {
             var index = GetIndex(column);
-            if (index==-1)
+            if (index == -1)
             {
                 return null;
             }
@@ -75,7 +72,7 @@ namespace Ao.Cache.InRedis.HashList.Finders
             var len = allColumns.Count;
             for (int i = 0; i < len; i++)
             {
-                if (allColumns[i]==column)
+                if (allColumns[i] == column)
                 {
                     return i;
                 }

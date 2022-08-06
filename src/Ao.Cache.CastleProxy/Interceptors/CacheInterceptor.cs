@@ -13,7 +13,7 @@ namespace Ao.Cache.CastleProxy.Interceptors
 {
     public class CacheInterceptor : NamedInterceptor
     {
-        public CacheInterceptor(IServiceScopeFactory serviceScopeFactory, 
+        public CacheInterceptor(IServiceScopeFactory serviceScopeFactory,
             IStringTransfer stringTransfer,
             ICacheNamedHelper cacheNamedHelper)
         {
@@ -99,7 +99,7 @@ namespace Ao.Cache.CastleProxy.Interceptors
                 return (TOut)(object)res;
             };
         }
-       
+
         protected async Task<AutoCacheResult<TResult>> CoreInterceptAsync<TResult>(IInvocation invocation, IInvocationProceedInfo proceedInfo, Func<Task<TResult>> proceed)
         {
             var rr = new AutoCacheResult<TResult>();
@@ -107,7 +107,7 @@ namespace Ao.Cache.CastleProxy.Interceptors
             {
                 var finderFactory = scope.ServiceProvider.GetRequiredService<IDataFinderFactory<UnwindObject, TResult>>();
                 var finder = finderFactory.Create(new CastleDataAccesstor<UnwindObject, TResult> { Proceed = proceed });
-                if (finder is DataFinderBase<UnwindObject,TResult> idGen)
+                if (finder is DataFinderBase<UnwindObject, TResult> idGen)
                 {
                     idGen.Options = IgnoreHeadDataFinderOptions<TResult>.Options;
                 }
@@ -132,7 +132,7 @@ namespace Ao.Cache.CastleProxy.Interceptors
         private static readonly Dictionary<Type, bool> hasAutoCache = new Dictionary<Type, bool>();
         private static bool HasAutoCache(Type tuple, IInvocation invocation)
         {
-            if (!hasAutoCache.TryGetValue(tuple,out var b))
+            if (!hasAutoCache.TryGetValue(tuple, out var b))
             {
                 lock (hasAutoCacheLocker)
                 {
@@ -164,7 +164,7 @@ namespace Ao.Cache.CastleProxy.Interceptors
                 var res = await CoreInterceptAsync(invocation, proceedInfo, () => proceed(invocation, proceedInfo));
                 return res.RawData;
             }
-            var rr =await (Task<TResult>)actualTypeInfo.Method(this, invocation, proceedInfo, proceed);
+            var rr = await (Task<TResult>)actualTypeInfo.Method(this, invocation, proceedInfo, proceed);
             invocation.ReturnValue = rr;
             return rr;
         }

@@ -1,15 +1,14 @@
-﻿using FastExpressionCompiler;
+﻿using Ao.Cache.InRedis.HashList.Converters;
+using FastExpressionCompiler;
+using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using Ao.Cache.InRedis.HashList.Converters;
-using StackExchange.Redis;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace Ao.Cache.InRedis.HashList
 {
-    public class ExpressionListCacheOperator : ComplexCacheOperator,IListCacheOperator
+    public class ExpressionListCacheOperator : ComplexCacheOperator, IListCacheOperator
     {
         private static readonly Dictionary<Type, ExpressionListCacheOperator> defaultRedisOpCache = new Dictionary<Type, ExpressionListCacheOperator>();
 

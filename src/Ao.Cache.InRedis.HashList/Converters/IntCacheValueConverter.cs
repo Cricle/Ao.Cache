@@ -16,7 +16,7 @@ namespace Ao.Cache.InRedis.HashList.Converters
 
         public object ConvertBack(in RedisValue value, ICacheColumn column)
         {
-            if (value .TryParse(out int val))
+            if (value.TryParse(out int val))
             {
                 return val;
             }
