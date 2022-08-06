@@ -56,11 +56,7 @@ namespace Ao.Cache
 
         public virtual bool CanRenewal(TIdentity identity, TEntity entity)
         {
-            if (Options != null)
-            {
-                return Options.CanRenewal(identity, entity);
-            }
-            return true;
+            return Options.CanRenewal(identity, entity);
         }
 
         public abstract Task<bool> RenewalAsync(TIdentity identity, TimeSpan? time);

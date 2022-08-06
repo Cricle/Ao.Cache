@@ -56,7 +56,7 @@ namespace Ao.Cache.CastleProxy.Sample
             var finderFc = provider.GetRequiredService<AutoCacheService<DateTime?>>();
             for (int i = 0; i < 10; i++)
             {
-                Thread.Sleep(TimeSpan.FromMilliseconds(1000));
+                Thread.Sleep(TimeSpan.FromMilliseconds(300));
                 var sw = Stopwatch.GetTimestamp();
                 var n = gt.NowTime(i % 3, i);
                 var ed = Stopwatch.GetTimestamp();

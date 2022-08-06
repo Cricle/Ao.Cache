@@ -6,8 +6,21 @@ using System.Threading.Tasks;
 
 namespace Ao.Cache
 {
-    public abstract class BatchDataFinderBase<TIdentity, TEntity> : IdentityGenerater<TIdentity, TEntity>, IBatchDataFinder<TIdentity, TEntity>, IBatchRenewalable<TIdentity>, IBatchDataFinder, IBatchRenewalable
+    public abstract class BatchDataFinderBase<TIdentity, TEntity> : IIdentityGenerater<TIdentity>, IBatchDataFinder<TIdentity, TEntity>, IBatchRenewalable<TIdentity>, IBatchDataFinder, IBatchRenewalable, IDataFinderOptions<TIdentity, TEntity>
     {
+        protected BatchDataFinderBase()
+        {
+            Options = DefaultDataFinderOptions<TIdentity, TEntity>.Default;
+        }
+
+        private IDataFinderOptions<TIdentity, TEntity> options;
+
+        public IDataFinderOptions<TIdentity, TEntity> Options
+        {
+            get => options;
+            set => options = value ?? DefaultDataFinderOptions<TIdentity, TEntity>.Default;
+        }
+
         public abstract Task<long> DeleteAsync(IReadOnlyList<TIdentity> identity);
         public abstract Task<IDictionary<TIdentity, bool>> ExistsAsync(IReadOnlyList<TIdentity> identity);
 
@@ -27,17 +40,31 @@ namespace Ao.Cache
 
         public abstract Task<long> SetInCahceAsync(IDictionary<TIdentity, TEntity> pairs);
 
-        protected virtual TimeSpan? GetCacheTime(TIdentity identity, TEntity entity)
+        public virtual TimeSpan? GetCacheTime(TIdentity identity, TEntity entity)
         {
-            return DataFinderConst.DefaultCacheTime;
+            return Options.GetCacheTime(identity, entity);
         }
-        protected virtual bool CanRenewal(TIdentity identity, TEntity entity)
+        public virtual bool CanRenewal(TIdentity identity, TEntity entity)
         {
-            return true;
+            return Options.CanRenewal(identity, entity);
         }
 
         protected abstract Task<IDictionary<TIdentity, TEntity>> OnFindInDbAsync(IReadOnlyList<TIdentity> identities);
 
+        public string GetEntryKey(TIdentity identity)
+        {
+            return Options.GetEntryKey(identity);
+        }
+
+        public string GetHead()
+        {
+            return Options.GetHead();
+        }
+
+        public string GetPart(TIdentity identity)
+        {
+            return Options.GetPart(identity);
+        }
         Task<long> IBatchDataFinder.DeleteAsync(IList identity)
         {
             return DeleteAsync(identity.Cast<TIdentity>().ToList());
