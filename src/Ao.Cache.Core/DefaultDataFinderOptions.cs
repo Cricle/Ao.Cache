@@ -2,9 +2,9 @@
 
 namespace Ao.Cache
 {
-    public class DefaultDataFinderOptions<TIdentity, TEntity> : IdentityGenerater<TIdentity, TEntity>, IDataFinderOptions<TIdentity, TEntity>
+    public class DefaultDataFinderOptions<TIdentity, TEntity> : WithHeaderIdentityGenerater<TIdentity, TEntity>, IDataFinderOptions<TIdentity, TEntity>
     {
-        public static DefaultDataFinderOptions<TIdentity, TEntity> Default => new DefaultDataFinderOptions<TIdentity, TEntity>();
+        public static DefaultDataFinderOptions<TIdentity, TEntity> Default = new DefaultDataFinderOptions<TIdentity, TEntity>();
 
         public virtual bool CanRenewal(TIdentity identity, TEntity entity)
         {

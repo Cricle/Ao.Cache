@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 
 namespace Ao.Cache.CastleProxy
 {
@@ -29,16 +30,28 @@ namespace Ao.Cache.CastleProxy
                 return dele;
             }
         }
-        public static UnwindObject GetUnwindObject<T>(this ICacheNamedHelper helper, Expression<Action<T>> call, bool cacheCall = false)
+        public static Task<bool> DeleteAsync<T,TEntity>(this AutoCacheService<TEntity> service, Expression<Action<T>> call, bool cacheCall = true)
         {
-            return GetUnwindObject(helper, DefaultCacheNamedHelper.Default, call, cacheCall);
+            var winObj = GetUnwindObject(service, call, cacheCall);
+            var finder = service.GetEmpty();
+            return finder.DeleteAsync(winObj);
         }
-        public static UnwindObject GetUnwindObject<T>(this ICacheNamedHelper helper, ICacheNamedHelper namedHelper, Expression<Action<T>> call,bool cacheCall=false)
+        public static Task<bool> RenewalAsync<T, TEntity>(this AutoCacheService<TEntity> service, TimeSpan? cacheTime, Expression<Action<T>> call, bool cacheCall = true)
+        {
+            var winObj = GetUnwindObject(service, call, cacheCall);
+            var finder = service.GetEmpty();
+            return finder.RenewalAsync(winObj, cacheTime);
+        }
+        public static UnwindObject GetUnwindObject<T, TEntity>(this AutoCacheService<TEntity> service, Expression<Action<T>> call, bool cacheCall = true)
+        {
+            return GetUnwindObject(service.NamedHelper, call, cacheCall);
+        }
+        public static UnwindObject GetUnwindObject<T>(this ICacheNamedHelper helper, Expression<Action<T>> call,bool cacheCall= true)
         {
             if (call.Body is MethodCallExpression exp)
             {
                 var tt = typeof(T);
-                var vals = namedHelper.GetArgIndexs(
+                var vals = helper.GetArgIndexs(
                     new NamedInterceptorKey(tt, exp.Method));
                 var args = new object[vals.ArgIndexs == null ? exp.Arguments.Count : vals.ArgIndexs.Count];
                 var argsIndex = 0;
@@ -53,7 +66,7 @@ namespace Ao.Cache.CastleProxy
                     {
                         args[argsIndex++] = constExp.Value;
                     }
-                    else if (arg is UnaryExpression ||arg is MethodCallExpression||arg is MemberExpression)
+                    else
                     {
                         if (cacheCall)
                         {
@@ -66,18 +79,26 @@ namespace Ao.Cache.CastleProxy
                             args[argsIndex++] = res;
                         }
                     }
-                    else
-                    {
-                        throw new ArgumentException($"No support {arg.ToString()}");
-                    }
                 }
                 return helper.GetUnwindObject(new NamedInterceptorKey(tt, exp.Method), args);
             }
             throw new NotSupportedException(call.Body.ToString());
         }
-        public static UnwindObject GetUnwindObject<T>(this ICacheNamedHelper helper, string methodName, params object[] args)
+        public static Task<bool> DeleteAsync<TEntity>(this AutoCacheService<TEntity> service, Type targetType, string methodName, params object[] args)
         {
-            return GetUnwindObject(helper, typeof(T), methodName, args);
+            var winObj = GetUnwindObject(service, targetType, methodName, args);
+            var finder = service.GetEmpty();
+            return finder.DeleteAsync(winObj);
+        }
+        public static Task<bool> RenewalAsync<TEntity>(this AutoCacheService<TEntity> service,TimeSpan? cacheTime, Type targetType, string methodName, params object[] args)
+        {
+            var winObj = GetUnwindObject(service, targetType, methodName, args);
+            var finder = service.GetEmpty();
+            return finder.RenewalAsync(winObj, cacheTime);
+        }
+        public static UnwindObject GetUnwindObject<TEntity>(this AutoCacheService<TEntity> service, Type targetType, string methodName, params object[] args)
+        {
+            return GetUnwindObject(service.NamedHelper, targetType, methodName, args);
         }
         public static UnwindObject GetUnwindObject(this ICacheNamedHelper helper, Type targetType, string methodName, params object[] args)
         {

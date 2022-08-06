@@ -52,7 +52,6 @@ namespace Ao.Cache.CastleProxy.Sample
         private static async Task RunCache(IServiceProvider provider)
         {
             var gt = provider.GetRequiredService<GetTime>();
-            var nx = provider.GetRequiredService<ICacheNamedHelper>();
             var finderFc = provider.GetRequiredService<AutoCacheService<DateTime?>>();
             for (int i = 0; i < 10; i++)
             {
@@ -63,9 +62,7 @@ namespace Ao.Cache.CastleProxy.Sample
                 Console.WriteLine(new TimeSpan(ed - sw));
                 if (i % 3 == 0)
                 {
-                    var obj = nx.GetUnwindObject<GetTime>(t => t.NowTime(Rand(i,GetSP()), i));
-                    var finder = finderFc.GetEmpty();
-                    var ok = await finderFc.DeleteAsync(obj);
+                    await finderFc.DeleteAsync<GetTime, DateTime?>(t => t.NowTime(i % 3, i));
                 }
             }
         }
