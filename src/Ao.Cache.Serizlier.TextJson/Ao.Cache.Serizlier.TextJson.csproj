@@ -6,7 +6,6 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\Ao.Cache.Core\Ao.Cache.Core.csproj" />
-		<ProjectReference Include="..\Ao.Cache.InRedis\Ao.Cache.InRedis.csproj" />
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="System.Text.Json" Version="6.0.2" Condition="'$(TargetFramework)'!='net6.0'" />

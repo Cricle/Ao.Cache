@@ -18,10 +18,8 @@ builder.Services.AddStackExchangeRedisCache(x => x.Configuration = "127.0.0.1:63
 builder.Services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect("127.0.0.1:6379"));
 builder.Services.AddScoped<IDatabase>(x => x.GetRequiredService<IConnectionMultiplexer>().GetDatabase());
 
-builder.Services.AddScoped<WeatherForecastDataFinder>();
 builder.Services.AddScoped<WeatherForecastDataFinder1>();
 builder.Services.AddScoped<WeatherForecastDataFinder2>();
-builder.Services.AddScoped<WeatherForecastDataFinder3>();
 builder.Services.AddScoped<CacheFinderManager>();
 builder.Services.AddMemoryCache();
 

@@ -2,7 +2,8 @@
 using Ao.Cache.CastleProxy.Interceptors;
 using Ao.Cache.CastleProxy.Model;
 using Ao.Cache.InRedis;
-using Ao.Cache.InRedis.TextJson;
+using Ao.Cache.Serizlier.SpanJson;
+using Ao.Cache.Serizlier.TextJson;
 using DryIoc;
 using DryIoc.Microsoft.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
@@ -33,7 +34,9 @@ namespace Ao.Cache.CastleProxy.Sample
                   }
             })));
             ser.AddSingleton<ILockerFactory, RedisLockFactory>();
-            ser.AddSingleton(typeof(IDataFinderFactory<,>), typeof(RedisTextJsonPackCacheFinderFactory<,>));
+            ser.AddSingleton<IEntityConvertor, SpanJsonEntityConvertor>();
+            ser.AddSingleton(typeof(IEntityConvertor<>),typeof(SpanJsonEntityConvertor<>));
+            ser.AddSingleton(typeof(IDataFinderFactory<,>), typeof(RedisDataFinderFactory<,>));
 
             //ser.AddSingleton<ILockerFactory, MemoryLockFactory>();
             //ser.AddSingleton(typeof(IDataFinderFactory<,>),typeof(InMemoryCacheFinderFactory<,>));

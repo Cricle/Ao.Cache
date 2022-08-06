@@ -13,8 +13,6 @@
     <ProjectReference Include="..\..\src\Ao.Cache.Core\Ao.Cache.Core.csproj" />
     <ProjectReference Include="..\..\src\Ao.Cache.InMemory\Ao.Cache.InMemory.csproj" />
     <ProjectReference Include="..\..\src\Ao.Cache.InRedis.HashList\Ao.Cache.InRedis.HashList.csproj" />
-    <ProjectReference Include="..\..\src\Ao.Cache.InRedis.MessagePack\Ao.Cache.InRedis.MessagePack.csproj" />
-    <ProjectReference Include="..\..\src\Ao.Cache.InRedis.TextJson\Ao.Cache.InRedis.TextJson.csproj" />
   </ItemGroup>
 
 </Project>

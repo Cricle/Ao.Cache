@@ -1,4 +1,5 @@
-﻿using System;
+﻿using StackExchange.Redis;
+using System;
 using System.Threading.Tasks;
 
 namespace Ao.Cache.InRedis

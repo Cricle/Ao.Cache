@@ -2,7 +2,7 @@
 using System;
 using MP = MessagePack;
 
-namespace Ao.Cache.InRedis.MessagePack
+namespace Ao.Cache.Serizlier.MessagePack
 {
     public class MessagePackEntityConvertor<TEntity> : MessagePackEntityConvertor, IEntityConvertor<TEntity>
     {
@@ -13,7 +13,7 @@ namespace Ao.Cache.InRedis.MessagePack
             return ToBytes(entry, typeof(TEntity));
         }
 
-        public TEntity ToEntry(in ReadOnlyMemory<byte> bytes)
+        public TEntity ToEntry(byte[] bytes)
         {
             return (TEntity)ToEntry(bytes, typeof(TEntity));
         }
@@ -42,7 +42,7 @@ namespace Ao.Cache.InRedis.MessagePack
             return MP.MessagePackSerializer.Serialize(type, entry, Options);
         }
 
-        public object ToEntry(in ReadOnlyMemory<byte> bytes, Type type)
+        public object ToEntry(byte[] bytes, Type type)
         {
             return MP.MessagePackSerializer.Deserialize(type, bytes, Options);
         }
