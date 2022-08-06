@@ -16,6 +16,7 @@
     <ProjectReference Include="..\..\src\Ao.Cache.CastleProxy\Ao.Cache.CastleProxy.csproj" />
     <ProjectReference Include="..\..\src\Ao.Cache.InMemory\Ao.Cache.InMemory.csproj" />
     <ProjectReference Include="..\..\src\Ao.Cache.InRedis\Ao.Cache.InRedis.csproj" />
+    <ProjectReference Include="..\..\src\Ao.Cache.Serizlier.Apex\Ao.Cache.Serizlier.Apex.csproj" />
     <ProjectReference Include="..\..\src\Ao.Cache.Serizlier.SpanJson\Ao.Cache.Serizlier.SpanJson.csproj" />
     <ProjectReference Include="..\..\src\Ao.Cache.Serizlier.TextJson\Ao.Cache.Serizlier.TextJson.csproj" />
   </ItemGroup>

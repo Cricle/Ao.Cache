@@ -2,6 +2,7 @@
 using Ao.Cache.CastleProxy.Interceptors;
 using Ao.Cache.CastleProxy.Model;
 using Ao.Cache.InRedis;
+using Ao.Cache.Serizlier.Apex;
 using Ao.Cache.Serizlier.SpanJson;
 using Ao.Cache.Serizlier.TextJson;
 using DryIoc;
@@ -19,6 +20,7 @@ namespace Ao.Cache.CastleProxy.Sample
     {
         static void Main(string[] args)
         {
+
             var ser = new ServiceCollection();
             ser.AddSingleton<GetTime>();
             ser.AddSingleton<LockTime>();
@@ -34,8 +36,8 @@ namespace Ao.Cache.CastleProxy.Sample
                   }
             })));
             ser.AddSingleton<ILockerFactory, RedisLockFactory>();
-            ser.AddSingleton<IEntityConvertor, SpanJsonEntityConvertor>();
-            ser.AddSingleton(typeof(IEntityConvertor<>),typeof(SpanJsonEntityConvertor<>));
+            ser.AddSingleton<IEntityConvertor, ApexEntityConvertor>();
+            ser.AddSingleton(typeof(IEntityConvertor<>),typeof(ApexEntityConvertor<>));
             ser.AddSingleton(typeof(IDataFinderFactory<,>), typeof(RedisDataFinderFactory<,>));
 
             //ser.AddSingleton<ILockerFactory, MemoryLockFactory>();
@@ -55,7 +57,7 @@ namespace Ao.Cache.CastleProxy.Sample
         private static async Task RunCache(IServiceProvider provider)
         {
             var gt = provider.GetRequiredService<GetTime>();
-            var finderFc = provider.GetRequiredService<AutoCacheService<DateTime?>>();
+            var finderFc = provider.GetRequiredService<AutoCacheService<DtObj>>();
             for (int i = 0; i < 10; i++)
             {
                 Thread.Sleep(TimeSpan.FromMilliseconds(300));
@@ -65,7 +67,7 @@ namespace Ao.Cache.CastleProxy.Sample
                 Console.WriteLine(new TimeSpan(ed - sw));
                 if (i % 3 == 0)
                 {
-                    await finderFc.DeleteAsync<GetTime, DateTime?>(t => t.NowTime(i % 3, i));
+                    await finderFc.DeleteAsync<GetTime, DtObj>(t => t.NowTime(i % 3, i));
                 }
             }
         }
@@ -110,17 +112,25 @@ namespace Ao.Cache.CastleProxy.Sample
     public class GetTime
     {
         [AutoCache]
-        public virtual AutoCacheResult<DateTime?> NowTime(int id, [AutoCacheSkipPart] double dd)
+        public virtual AutoCacheResult<DtObj> NowTime(int id, [AutoCacheSkipPart] double dd)
         {
             Console.WriteLine("yerp");
-            return new AutoCacheResult<DateTime?> { RawData = DateTime.Now };
+            return new AutoCacheResult<DtObj> { RawData = new DtObj { Time= DateTime.Now } };
         }
 
         [AutoCache]
-        public virtual DateTime? NowTime1(int id, [AutoCacheSkipPart] long dd)
+        public virtual DtObj NowTime1(int id, [AutoCacheSkipPart] long dd)
         {
             Console.WriteLine("yerp");
-            return DateTime.Now;
+            return new DtObj { Time = DateTime.Now };
+        }
+    }
+    public class DtObj
+    {
+        public DateTime? Time { get; set; }
+        public override string ToString()
+        {
+            return Time?.ToString();
         }
     }
 }
