@@ -58,16 +58,22 @@ namespace Ao.Cache.CastleProxy.Sample
         {
             var gt = provider.GetRequiredService<GetTime>();
             var finderFc = provider.GetRequiredService<AutoCacheService<DtObj>>();
-            for (int i = 0; i < 10; i++)
+            for (int q = 0; q < 3; q++)
             {
-                Thread.Sleep(TimeSpan.FromMilliseconds(300));
-                var sw = Stopwatch.GetTimestamp();
-                var n = gt.NowTime(i % 3, i);
-                var ed = Stopwatch.GetTimestamp();
-                Console.WriteLine(new TimeSpan(ed - sw));
-                if (i % 3 == 0)
+                for (int i = 0; i < 3; i++)
                 {
-                    await finderFc.DeleteAsync<GetTime, DtObj>(t => t.NowTime(i % 3, i));
+                    //Thread.Sleep(TimeSpan.FromMilliseconds(300));
+                    var sw = Stopwatch.GetTimestamp();
+                    for (int j = 0; j < 1_000; j++)
+                    {
+                        var n = gt.NowTime(q, i);
+                    }
+                    var ed = Stopwatch.GetTimestamp();
+                    Console.WriteLine(new TimeSpan(ed - sw));
+                    if (i % 3 == 0)
+                    {
+                        await finderFc.DeleteAsync<GetTime, DtObj>(t => t.NowTime(i % 3, i));
+                    }
                 }
             }
         }
@@ -119,6 +125,7 @@ namespace Ao.Cache.CastleProxy.Sample
         }
 
         [AutoCache]
+        [AutoCacheOptions("00:01:00")]
         public virtual DtObj NowTime1(int id, [AutoCacheSkipPart] long dd)
         {
             Console.WriteLine("yerp");

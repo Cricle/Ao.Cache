@@ -8,7 +8,7 @@ namespace Ao.Cache
 
         Task<bool> ExistsAsync(object identity);
     }
-    public interface IDataFinder<TIdentity, TEntity> : ICacheFinder<TIdentity, TEntity>, IPhysicalFinder<TIdentity, TEntity>, IRenewalable<TIdentity>
+    public interface IDataFinder<TIdentity, TEntity> : IWithDataFinderOptions<TIdentity, TEntity>, ICacheFinder<TIdentity, TEntity>, IPhysicalFinder<TIdentity, TEntity>, IRenewalable<TIdentity>
     {
         Task<bool> DeleteAsync(TIdentity identity);
 

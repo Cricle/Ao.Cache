@@ -2,6 +2,6 @@
 {
     internal class IgnoreHeadDataFinderOptions<TResult>
     {
-        public static readonly IDataFinderOptions<UnwindObject, TResult> Options = new DefaultDataFinderOptions<UnwindObject, TResult>() { IgnoreHead = true };
+        public static readonly DefaultDataFinderOptions<UnwindObject, TResult> Options = new DefaultDataFinderOptions<UnwindObject, TResult>() { IgnoreHead = true };
     }
 }

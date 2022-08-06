@@ -107,10 +107,16 @@ namespace Ao.Cache.CastleProxy.Interceptors
             {
                 var finderFactory = scope.ServiceProvider.GetRequiredService<IDataFinderFactory<UnwindObject, TResult>>();
                 var finder = finderFactory.Create(new CastleDataAccesstor<UnwindObject, TResult> { Proceed = proceed });
-                if (finder is DataFinderBase<UnwindObject, TResult> idGen)
+                var attr = invocation.Method.GetCustomAttribute<AutoCacheOptionsAttribute>();
+                var opt = IgnoreHeadDataFinderOptions<TResult>.Options;
+
+                if (attr!=null)
                 {
-                    idGen.Options = IgnoreHeadDataFinderOptions<TResult>.Options;
+                    opt.CacheTime = attr.CacheTime;
+                    opt.IsCanRenewal = attr.CanRenewal;
                 }
+                finder.Options = opt;
+
                 var key = new NamedInterceptorKey(invocation.TargetType, invocation.Method);
                 var winObj = NamedHelper.GetUnwindObject(key, invocation.Arguments);
                 var res = await finder.FindInCahceAsync(winObj);

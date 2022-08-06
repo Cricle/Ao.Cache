@@ -6,6 +6,12 @@ namespace Ao.Cache
 {
     public class DataFinderGroup<TIdentity, TEntity> : List<IDataFinder<TIdentity, TEntity>>, IDataFinder<TIdentity, TEntity>
     {
+        public IDataFinderOptions<TIdentity, TEntity> Options
+        {
+            get => throw new NotSupportedException();
+            set => throw new NotSupportedException();
+        }
+
         public virtual async Task<bool> DeleteAsync(TIdentity identity)
         {
             var tasks = new Task[Count];

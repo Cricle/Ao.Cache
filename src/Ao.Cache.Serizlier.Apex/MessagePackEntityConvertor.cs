@@ -62,6 +62,7 @@ namespace Ao.Cache.Serizlier.Apex
                         var settings = new Settings { AllowFunctionSerialization = false, SupportSerializationHooks = false, UseSerializedVersionId = false };
                         settings = settings.MarkSerializable(type);
                         binary = Binary.Create(settings);
+                        binary.Precompile(type);
                         binaryCache[type] = binary;
                     }
                 }

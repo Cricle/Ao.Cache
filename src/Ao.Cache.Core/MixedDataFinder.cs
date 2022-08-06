@@ -16,6 +16,16 @@ namespace Ao.Cache
 
         public IBatchDataFinder<TIdentity, TEntity> BatchDataFinder { get; }
 
+        public IDataFinderOptions<TIdentity, TEntity> Options
+        {
+            get => DataFinder.Options ?? BatchDataFinder.Options;
+            set
+            {
+                DataFinder.Options =
+                    BatchDataFinder.Options = value;
+            }
+        }
+
         public Task<bool> DeleteAsync(TIdentity identity)
         {
             return DataFinder.DeleteAsync(identity);

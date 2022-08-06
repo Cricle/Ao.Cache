@@ -6,14 +6,18 @@ namespace Ao.Cache
     {
         public static DefaultDataFinderOptions<TIdentity, TEntity> Default = new DefaultDataFinderOptions<TIdentity, TEntity>();
 
+        public bool IsCanRenewal { get; set; } = true;
+
+        public TimeSpan? CacheTime { get; set; }= DataFinderConst.DefaultCacheTime;
+
         public virtual bool CanRenewal(TIdentity identity, TEntity entity)
         {
-            return true;
+            return IsCanRenewal;
         }
 
         public virtual TimeSpan? GetCacheTime(TIdentity identity, TEntity entity)
         {
-            return DataFinderConst.DefaultCacheTime;
+            return CacheTime;
         }
     }
 
