@@ -63,12 +63,14 @@ namespace Ao.Cache.CastleProxy.Sample
                 Console.WriteLine(new TimeSpan(ed - sw));
                 if (i % 3 == 0)
                 {
-                    var obj = nx.GetUnwindObject<GetTime>("NowTime", i % 3);
+                    var obj = nx.GetUnwindObject<GetTime>(t => t.NowTime(Rand(i,GetSP()), i));
                     var finder = finderFc.GetEmpty();
                     var ok = await finderFc.DeleteAsync(obj);
                 }
             }
         }
+        private static int Rand(int a,int b) => a % b;
+        private static int GetSP() => 3;
         private static void RunLock(IServiceProvider provider)
         {
             var t = provider.GetRequiredService<LockTime>();

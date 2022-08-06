@@ -54,8 +54,13 @@ namespace Ao.Cache
         {
             return string.Concat(header, split, part1 ?? NullString, split, part2 ?? NullString, split, part3 ?? NullString, split, part4 ?? NullString);
         }
-
-        public static string ConcatWithSplit(string header, string split, params object[] parts)
+        public static string ConcatCopyWithSplit(string header, string split, object[] parts)
+        {
+            var cpParts = new object[parts.Length];
+            Array.Copy(parts, cpParts,parts.Length);
+            return ConcatWithSplit(header, split, ref cpParts);
+        }
+        public static string ConcatWithSplit(string header, string split,ref object[] parts)
         {
             if (parts is null)
             {

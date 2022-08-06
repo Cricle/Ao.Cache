@@ -8,7 +8,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddCastleCacheProxy(this IServiceCollection services)
         {
             services.AddSingleton<IStringTransfer>(DefaultStringTransfer.Default);
-            services.AddSingleton<ICacheNamedHelper, DefaultCacheNamedHelper>();
+            services.AddSingleton<ICacheNamedHelper>(DefaultCacheNamedHelper.Default);
             services.AddSingleton<CacheInterceptor>();
             services.AddSingleton<LockInterceptor>();
             services.AddSingleton(typeof(AutoCacheService<>));

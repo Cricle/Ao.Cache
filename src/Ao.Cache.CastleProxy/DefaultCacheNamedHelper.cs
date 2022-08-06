@@ -8,6 +8,8 @@ namespace Ao.Cache.CastleProxy
 {
     public class DefaultCacheNamedHelper : ICacheNamedHelper
     {
+        public static readonly DefaultCacheNamedHelper Default = new DefaultCacheNamedHelper(DefaultStringTransfer.Default);
+
         public object SyncRoot { get; } = new object();
 
         private readonly Dictionary<NamedInterceptorKey, NamedInterceptorValue> cacheMap = new Dictionary<NamedInterceptorKey, NamedInterceptorValue>();
