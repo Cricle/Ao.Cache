@@ -66,6 +66,16 @@ namespace Ao.Cache
             return BatchDataFinder.RenewalAsync(input);
         }
 
+        public Task<bool> RenewalAsync(TIdentity identity, TimeSpan? time)
+        {
+            return DataFinder.RenewalAsync(identity, time);
+        }
+
+        public Task<long> RenewalAsync(IDictionary<TIdentity, TimeSpan?> input)
+        {
+            return BatchDataFinder.RenewalAsync(input);
+        }
+
         public Task<bool> SetInCahceAsync(TIdentity identity, TEntity entity)
         {
             return DataFinder.SetInCahceAsync(identity, entity);
