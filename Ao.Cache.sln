@@ -44,7 +44,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ao.Cache.Serizlier.SpanJson
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ao.Cache.Serizlier.TextJson", "src\Ao.Cache.Serizlier.TextJson\Ao.Cache.Serizlier.TextJson.csproj", "{42CC9B09-8003-47F6-867C-E6FEA693FFDF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ao.Cache.Serizlier.Apex", "src\Ao.Cache.Serizlier.Apex\Ao.Cache.Serizlier.Apex.csproj", "{01256896-AC08-478D-A9C1-8DF65D60A609}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ao.Cache.Serizlier.Apex", "src\Ao.Cache.Serizlier.Apex\Ao.Cache.Serizlier.Apex.csproj", "{01256896-AC08-478D-A9C1-8DF65D60A609}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
