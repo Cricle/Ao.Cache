@@ -18,10 +18,15 @@ namespace Ao.Cache
             set => options = value ?? DefaultDataFinderOptions<TIdentity, TEntity>.Default;
         }
 
-        public Task<TEntity> FindInCahceAsync(TIdentity identity)
+        public async Task<TEntity> FindInCacheAsync(TIdentity identity)
         {
             var key = GetEntryKey(identity);
-            return CoreFindInCacheAsync(key, identity);
+            var entity = await CoreFindInCacheAsync(key, identity);
+            if (entity != null && CanRenewal(identity))
+            {
+                await RenewalAsync(identity);
+            }
+            return entity;
         }
 
         protected abstract Task<TEntity> CoreFindInCacheAsync(string key, TIdentity identity);
@@ -31,20 +36,20 @@ namespace Ao.Cache
             var entry = await OnFindInDbAsync(identity);
             if (entry != null && cache)
             {
-                await SetInCahceAsync(identity, entry);
+                await SetInCacheAsync(identity, entry);
             }
             return entry;
         }
 
         protected abstract Task<TEntity> OnFindInDbAsync(TIdentity identity);
 
-        public Task<bool> SetInCahceAsync(TIdentity identity, TEntity entity)
+        public Task<bool> SetInCacheAsync(TIdentity identity, TEntity entity)
         {
             var key = GetEntryKey(identity);
             var cacheTime = GetCacheTime(identity);
-            return SetInCahceAsync(key, identity, entity, cacheTime);
+            return SetInCacheAsync(key, identity, entity, cacheTime);
         }
-        protected abstract Task<bool> SetInCahceAsync(string key, TIdentity identity, TEntity entity, TimeSpan? caheTime);
+        protected abstract Task<bool> SetInCacheAsync(string key, TIdentity identity, TEntity entity, TimeSpan? caheTime);
 
         public virtual TimeSpan? GetCacheTime(TIdentity identity)
         {
@@ -86,14 +91,14 @@ namespace Ao.Cache
             return ExistsAsync((TIdentity)identity);
         }
 
-        Task<bool> ICacheFinder.SetInCahceAsync(object identity, object entity)
+        Task<bool> ICacheFinder.SetInCacheAsync(object identity, object entity)
         {
-            return SetInCahceAsync((TIdentity)identity, (TEntity)entity);
+            return SetInCacheAsync((TIdentity)identity, (TEntity)entity);
         }
 
-        async Task<object> ICacheFinder.FindInCahceAsync(object identity)
+        async Task<object> ICacheFinder.FindInCacheAsync(object identity)
         {
-            var res = await FindInCahceAsync((TIdentity)identity);
+            var res = await FindInCacheAsync((TIdentity)identity);
             return res;
         }
 

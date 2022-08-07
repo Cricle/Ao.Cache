@@ -11,14 +11,14 @@ namespace Ao.Cache.Core.Test
         public async Task FindInCache_WhenExists_ReturnCache()
         {
             var finder = new NullDataFinder();
-            var str = await finder.FindInCahceAsync(1);
+            var str = await finder.FindInCacheAsync(1);
             Assert.AreEqual("1", str);
         }
         [TestMethod]
         public async Task FindInCache_WhenNotExists_ReturnCache()
         {
             var finder = new NullDataFinder();
-            var str = await finder.FindInCahceAsync(99);
+            var str = await finder.FindInCacheAsync(99);
             Assert.IsNull(str);
         }
         [TestMethod]
@@ -32,7 +32,7 @@ namespace Ao.Cache.Core.Test
         public async Task SetInCache()
         {
             var finder = new NullDataFinder();
-            var ok = await finder.SetInCahceAsync(1, "1");
+            var ok = await finder.SetInCacheAsync(1, "1");
             Assert.IsTrue(ok);
         }
     }

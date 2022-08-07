@@ -37,12 +37,12 @@ namespace Ao.Cache
             return false;
         }
 
-        public virtual async Task<TEntity> FindInCahceAsync(TIdentity identity)
+        public virtual async Task<TEntity> FindInCacheAsync(TIdentity identity)
         {
             for (int i = 0; i < Count; i++)
             {
                 var entity = this[i];
-                var data = await entity.FindInCahceAsync(identity);
+                var data = await entity.FindInCacheAsync(identity);
                 if (IsHit(data))
                 {
                     return data;
@@ -61,7 +61,7 @@ namespace Ao.Cache
                 {
                     if (cache)
                     {
-                        await SetInCahceAsync(identity, data);
+                        await SetInCacheAsync(identity, data);
                     }
                     return data;
                 }
@@ -91,12 +91,12 @@ namespace Ao.Cache
             return true;
         }
 
-        public virtual async Task<bool> SetInCahceAsync(TIdentity identity, TEntity entity)
+        public virtual async Task<bool> SetInCacheAsync(TIdentity identity, TEntity entity)
         {
             var tasks = new Task[Count];
             for (int i = 0; i < tasks.Length; i++)
             {
-                tasks[i] = this[i].SetInCahceAsync(identity, entity);
+                tasks[i] = this[i].SetInCacheAsync(identity, entity);
             }
             await Task.WhenAll(tasks);
             return true;

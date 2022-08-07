@@ -44,7 +44,7 @@ namespace Ao.Cache.InRedis.HashList.Finders
 
         protected abstract ICacheOperator<TValue> GetOperator();
 
-        public virtual async Task<TEntity> FindInCahceAsync(TIdentity identity)
+        public virtual async Task<TEntity> FindInCacheAsync(TIdentity identity)
         {
             var key = GetEntryKey(identity);
             var data = await GetValueAsync(key, identity);
@@ -97,7 +97,7 @@ namespace Ao.Cache.InRedis.HashList.Finders
             var entry = await OnFindInDbAsync(identity);
             if (CanCache(identity, entry, cache))
             {
-                await SetInCahceAsync(identity, entry);
+                await SetInCacheAsync(identity, entry);
             }
             return entry;
         }
@@ -124,7 +124,7 @@ namespace Ao.Cache.InRedis.HashList.Finders
             return CoreGetColumn(identity, column);
         }
 
-        public Task<bool> SetInCahceAsync(TIdentity identity, TEntity entity)
+        public Task<bool> SetInCacheAsync(TIdentity identity, TEntity entity)
         {
             var key = GetEntryKey(identity);
             var h = @operator.As(entity);

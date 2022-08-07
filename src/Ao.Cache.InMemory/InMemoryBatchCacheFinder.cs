@@ -58,7 +58,7 @@ namespace Ao.Cache.InMemory
             return Task.FromResult<IDictionary<TIdentity, bool>>(res);
         }
 
-        public override Task<IDictionary<TIdentity, TEntry>> FindInCahceAsync(IReadOnlyList<TIdentity> identity)
+        protected override Task<IDictionary<TIdentity, TEntry>> CoreFindInCacheAsync(IReadOnlyList<TIdentity> identity)
         {
             var res = new Dictionary<TIdentity, TEntry>(identity.Count);
             var mem = GetMemoryCache();
@@ -91,7 +91,7 @@ namespace Ao.Cache.InMemory
             return Task.FromResult(res);
         }
 
-        public override Task<long> SetInCahceAsync(IDictionary<TIdentity, TEntry> pairs)
+        public override Task<long> SetInCacheAsync(IDictionary<TIdentity, TEntry> pairs)
         {
             var res = 0L;
             var mem = GetMemoryCache();

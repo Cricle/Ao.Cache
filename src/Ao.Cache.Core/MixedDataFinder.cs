@@ -46,14 +46,14 @@ namespace Ao.Cache
             return BatchDataFinder.ExistsAsync(identity);
         }
 
-        public Task<TEntity> FindInCahceAsync(TIdentity identity)
+        public Task<TEntity> FindInCacheAsync(TIdentity identity)
         {
-            return DataFinder.FindInCahceAsync(identity);
+            return DataFinder.FindInCacheAsync(identity);
         }
 
-        public Task<IDictionary<TIdentity, TEntity>> FindInCahceAsync(IReadOnlyList<TIdentity> identity)
+        public Task<IDictionary<TIdentity, TEntity>> FindInCacheAsync(IReadOnlyList<TIdentity> identity)
         {
-            return BatchDataFinder.FindInCahceAsync(identity);
+            return BatchDataFinder.FindInCacheAsync(identity);
         }
 
         public Task<TEntity> FindInDbAsync(TIdentity identity, bool cache)
@@ -86,14 +86,14 @@ namespace Ao.Cache
             return BatchDataFinder.RenewalAsync(input);
         }
 
-        public Task<bool> SetInCahceAsync(TIdentity identity, TEntity entity)
+        public Task<bool> SetInCacheAsync(TIdentity identity, TEntity entity)
         {
-            return DataFinder.SetInCahceAsync(identity, entity);
+            return DataFinder.SetInCacheAsync(identity, entity);
         }
 
-        public Task<long> SetInCahceAsync(IDictionary<TIdentity, TEntity> pairs)
+        public Task<long> SetInCacheAsync(IDictionary<TIdentity, TEntity> pairs)
         {
-            return BatchDataFinder.SetInCahceAsync(pairs);
+            return BatchDataFinder.SetInCacheAsync(pairs);
         }
     }
 }

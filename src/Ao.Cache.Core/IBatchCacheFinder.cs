@@ -6,14 +6,14 @@ namespace Ao.Cache
 {
     public interface IBatchCacheFinder
     {
-        Task<long> SetInCahceAsync(IDictionary pairs);
+        Task<long> SetInCacheAsync(IDictionary pairs);
 
-        Task<IDictionary> FindInCahceAsync(IList identity);
+        Task<IDictionary> FindInCacheAsync(IList identity);
     }
     public interface IBatchCacheFinder<TIdentity, TEntity>
     {
-        Task<long> SetInCahceAsync(IDictionary<TIdentity, TEntity> pairs);
+        Task<long> SetInCacheAsync(IDictionary<TIdentity, TEntity> pairs);
 
-        Task<IDictionary<TIdentity, TEntity>> FindInCahceAsync(IReadOnlyList<TIdentity> identity);
+        Task<IDictionary<TIdentity, TEntity>> FindInCacheAsync(IReadOnlyList<TIdentity> identity);
     }
 }

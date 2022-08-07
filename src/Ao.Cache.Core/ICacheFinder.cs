@@ -4,15 +4,15 @@ namespace Ao.Cache
 {
     public interface ICacheFinder
     {
-        Task<bool> SetInCahceAsync(object identity, object entity);
+        Task<bool> SetInCacheAsync(object identity, object entity);
 
-        Task<object> FindInCahceAsync(object identity);
+        Task<object> FindInCacheAsync(object identity);
     }
     public interface ICacheFinder<TIdentity, TEntity>
     {
-        Task<bool> SetInCahceAsync(TIdentity identity, TEntity entity);
+        Task<bool> SetInCacheAsync(TIdentity identity, TEntity entity);
 
-        Task<TEntity> FindInCahceAsync(TIdentity identity);
+        Task<TEntity> FindInCacheAsync(TIdentity identity);
     }
 
 }

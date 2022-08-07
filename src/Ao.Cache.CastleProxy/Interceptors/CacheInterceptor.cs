@@ -119,11 +119,11 @@ namespace Ao.Cache.CastleProxy.Interceptors
 
                 var key = new NamedInterceptorKey(invocation.TargetType, invocation.Method);
                 var winObj = NamedHelper.GetUnwindObject(key, invocation.Arguments);
-                var res = await finder.FindInCahceAsync(winObj);
+                var res = await finder.FindInCacheAsync(winObj);
                 if (res == null)
                 {
                     res = await proceed();
-                    await finder.SetInCahceAsync(winObj, res);
+                    await finder.SetInCacheAsync(winObj, res);
                     rr.RawData = res;
                     rr.Status = AutoCacheStatus.MethodHit;
                     return rr;

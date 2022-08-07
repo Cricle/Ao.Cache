@@ -24,21 +24,35 @@ namespace Ao.Cache
         public abstract Task<long> DeleteAsync(IReadOnlyList<TIdentity> identity);
         public abstract Task<IDictionary<TIdentity, bool>> ExistsAsync(IReadOnlyList<TIdentity> identity);
 
-        public abstract Task<IDictionary<TIdentity, TEntity>> FindInCahceAsync(IReadOnlyList<TIdentity> identity);
+        public async Task<IDictionary<TIdentity, TEntity>> FindInCacheAsync(IReadOnlyList<TIdentity> identity)
+        {
+            var entity = await CoreFindInCacheAsync(identity);
+            if (entity.Count!=0)
+            {
+                var renewals = entity.Keys.Where(x => CanRenewal(x)).ToList();
+                if (renewals.Count!=0)
+                {
+                    await RenewalAsync(renewals);
+                }
+            }
+            return entity;
+        }
 
         public async Task<IDictionary<TIdentity, TEntity>> FindInDbAsync(IReadOnlyList<TIdentity> identity, bool cache)
         {
             var entry = await OnFindInDbAsync(identity);
             if (entry != null && cache)
             {
-                await SetInCahceAsync(entry);
+                await SetInCacheAsync(entry);
             }
             return entry;
         }
 
+        protected abstract Task<IDictionary<TIdentity, TEntity>> CoreFindInCacheAsync(IReadOnlyList<TIdentity> identity);
+
         public abstract Task<long> RenewalAsync(IDictionary<TIdentity, TimeSpan?> input);
 
-        public abstract Task<long> SetInCahceAsync(IDictionary<TIdentity, TEntity> pairs);
+        public abstract Task<long> SetInCacheAsync(IDictionary<TIdentity, TEntity> pairs);
 
         public virtual TimeSpan? GetCacheTime(TIdentity identity)
         {
@@ -77,7 +91,7 @@ namespace Ao.Cache
             return res.ToDictionary(x => (object)x, x => x.Value);
         }
 
-        Task<long> IBatchCacheFinder.SetInCahceAsync(IDictionary pairs)
+        Task<long> IBatchCacheFinder.SetInCacheAsync(IDictionary pairs)
         {
             var m = new Dictionary<TIdentity, TEntity>(pairs.Count);
             var enu = pairs.GetEnumerator();
@@ -85,12 +99,12 @@ namespace Ao.Cache
             {
                 m[(TIdentity)enu.Key] = (TEntity)enu.Value;
             }
-            return SetInCahceAsync(m);
+            return SetInCacheAsync(m);
         }
 
-        async Task<IDictionary> IBatchCacheFinder.FindInCahceAsync(IList identity)
+        async Task<IDictionary> IBatchCacheFinder.FindInCacheAsync(IList identity)
         {
-            var res = await FindInCahceAsync(identity.Cast<TIdentity>().ToList());
+            var res = await FindInCacheAsync(identity.Cast<TIdentity>().ToList());
             if (res is IDictionary map)
             {
                 return map;

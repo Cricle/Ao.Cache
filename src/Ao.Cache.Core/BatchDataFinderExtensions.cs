@@ -13,7 +13,7 @@ namespace Ao.Cache
             {
                 throw new ArgumentNullException(nameof(finder));
             }
-            var val = await finder.FindInCahceAsync(identity).ConfigureAwait(false);
+            var val = await finder.FindInCacheAsync(identity).ConfigureAwait(false);
             if (ReferenceEquals(val, default(TEntity)))
             {
                 return await finder.FindInDbAsync(identity, cache).ConfigureAwait(false);
@@ -32,7 +32,7 @@ namespace Ao.Cache
                 throw new ArgumentNullException(nameof(identities));
             }
 
-            var cacheDatas = await finder.FindInCahceAsync(identities).ConfigureAwait(false);
+            var cacheDatas = await finder.FindInCacheAsync(identities).ConfigureAwait(false);
             var notIncludes = identities.Except(cacheDatas.Keys);
             if (!notIncludes.Any())
             {

@@ -15,7 +15,7 @@ namespace Ao.Cache.InRedis
 
         public IEntityConvertor<TEntity> EntityConvertor { get; }
 
-        public override async Task<IDictionary<TIdentity, TEntity>> FindInCahceAsync(IReadOnlyList<TIdentity> identity)
+        protected override async Task<IDictionary<TIdentity, TEntity>> CoreFindInCacheAsync(IReadOnlyList<TIdentity> identity)
         {
             var keyMap = AsKeyMap(identity);
             var keys = keyMap.Keys.ToArray();
@@ -33,7 +33,7 @@ namespace Ao.Cache.InRedis
             return map;
         }
 
-        public override async Task<long> SetInCahceAsync(IDictionary<TIdentity, TEntity> pairs)
+        public override async Task<long> SetInCacheAsync(IDictionary<TIdentity, TEntity> pairs)
         {
             var res = await DoInRedisAsync(pairs.Keys.ToList(), (batch, identity) =>
                     batch.StringSetAsync(GetEntryKey(identity), EntityConvertor.ToBytes(pairs[identity]), GetCacheTime(identity)));

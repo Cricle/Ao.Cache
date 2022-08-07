@@ -63,7 +63,7 @@ namespace Ao.Cache.InLitedb
             return Task.FromResult<IDictionary<TIdentity, bool>>(map);
         }
 
-        public override async Task<IDictionary<TIdentity, TEntry>> FindInCahceAsync(IReadOnlyList<TIdentity> identity)
+        protected override async Task<IDictionary<TIdentity, TEntry>> CoreFindInCacheAsync(IReadOnlyList<TIdentity> identity)
         {
             var coll = Collection;
             var datas = coll.Query()
@@ -106,7 +106,7 @@ namespace Ao.Cache.InLitedb
             return time == null ? (DateTime?)null : DateTime.Now.Add(time.Value);
         }
 
-        public override Task<long> SetInCahceAsync(IDictionary<TIdentity, TEntry> pairs)
+        public override Task<long> SetInCacheAsync(IDictionary<TIdentity, TEntry> pairs)
         {
             var ds = Collection.Query()
                 .Where(GetWhere(pairs.Keys.ToList()))
@@ -210,7 +210,7 @@ namespace Ao.Cache.InLitedb
             return data;
         }
 
-        protected override Task<bool> SetInCahceAsync(string key, TIdentity identity, TEntry entity, TimeSpan? caheTime)
+        protected override Task<bool> SetInCacheAsync(string key, TIdentity identity, TEntry entity, TimeSpan? caheTime)
         {
             var newTime = GetExpirationTime(caheTime);
             var ent = Collection.Query().Where(GetWhere(identity)).FirstOrDefault();
