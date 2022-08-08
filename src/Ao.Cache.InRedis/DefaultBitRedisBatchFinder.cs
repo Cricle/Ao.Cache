@@ -9,7 +9,7 @@ namespace Ao.Cache.InRedis
     {
         public DefaultBitRedisBatchFinder(IDatabase database,
             IBatchDataAccesstor<TIdentity, TEntity> dataAccesstor,
-            IEntityConvertor<TEntity> entityConvertor)
+            IEntityConvertor entityConvertor)
             : base(entityConvertor)
         {
             if (entityConvertor is null)

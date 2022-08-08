@@ -34,7 +34,7 @@ namespace Ao.Cache.Benchmarks.Actions
             ser.AddCastleCacheProxy();
             ser.AddSingleton<ILockerFactory, MemoryLockFactory>();
             ser.AddMemoryCache();
-            ser.AddSingleton(typeof(IDataFinderFactory<,>), typeof(InMemoryCacheFinderFactory<,>));
+            ser.AddSingleton(typeof(IDataFinderFactory), typeof(InMemoryCacheFinderFactory));
             ser.AddSingleton(typeof(IDataFinder<,>), typeof(DefaultInMemoryCacheFinder<,>));
 
             var icon = new Container(Rules.MicrosoftDependencyInjectionRules)

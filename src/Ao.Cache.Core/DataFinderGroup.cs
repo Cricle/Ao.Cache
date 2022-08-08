@@ -6,10 +6,36 @@ namespace Ao.Cache
 {
     public class DataFinderGroup<TIdentity, TEntity> : List<IDataFinder<TIdentity, TEntity>>, IDataFinder<TIdentity, TEntity>
     {
+        public DataFinderGroup()
+        {
+        }
+
+        public DataFinderGroup(IEnumerable<IDataFinder<TIdentity, TEntity>> collection) : base(collection)
+        {
+        }
+
+        public DataFinderGroup(int capacity) : base(capacity)
+        {
+        }
+
         public IDataFinderOptions<TIdentity, TEntity> Options
         {
-            get => throw new NotSupportedException();
-            set => throw new NotSupportedException();
+            get
+            {
+                if (Count==0)
+                {
+                    return null;
+                }
+                return this[0].Options;
+            }
+            set
+            {
+                value = value ?? DefaultDataFinderOptions<TIdentity, TEntity>.Default;
+                foreach (var item in this)
+                {
+                    item.Options = value;
+                }
+            }
         }
 
         public virtual async Task<bool> DeleteAsync(TIdentity identity)

@@ -5,19 +5,19 @@ namespace Ao.Cache.CastleProxy
 {
     public class AutoCacheService<TEntity>
     {
-        public AutoCacheService(IDataFinderFactory<UnwindObject, TEntity> finderFactory, ICacheNamedHelper namedHelper)
+        public AutoCacheService(IDataFinderFactory finderFactory, ICacheNamedHelper namedHelper)
         {
             FinderFactory = finderFactory ?? throw new System.ArgumentNullException(nameof(finderFactory));
             NamedHelper = namedHelper ?? throw new System.ArgumentNullException(nameof(namedHelper));
         }
 
-        public IDataFinderFactory<UnwindObject, TEntity> FinderFactory { get; }
+        public IDataFinderFactory FinderFactory { get; }
 
         public ICacheNamedHelper NamedHelper { get; }
 
         public IDataFinder<UnwindObject, TEntity> GetEmpty()
         {
-            var finder = FinderFactory.CreateEmpty();
+            var finder = FinderFactory.CreateEmpty<UnwindObject,TEntity>();
             SetIgnoreHead(finder);
             return finder;
         }

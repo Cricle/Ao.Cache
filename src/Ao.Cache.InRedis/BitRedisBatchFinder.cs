@@ -7,12 +7,12 @@ namespace Ao.Cache.InRedis
 {
     public abstract class BitRedisBatchFinder<TIdentity, TEntity> : RedisBatchDataFinder<TIdentity, TEntity>
     {
-        protected BitRedisBatchFinder(IEntityConvertor<TEntity> entityConvertor)
+        protected BitRedisBatchFinder(IEntityConvertor entityConvertor)
         {
             EntityConvertor = entityConvertor ?? throw new ArgumentNullException(nameof(entityConvertor));
         }
 
-        public IEntityConvertor<TEntity> EntityConvertor { get; }
+        public IEntityConvertor EntityConvertor { get; }
 
         protected override async Task<IDictionary<TIdentity, TEntity>> CoreFindInCacheAsync(IReadOnlyList<TIdentity> identity)
         {
@@ -26,7 +26,7 @@ namespace Ao.Cache.InRedis
                 var data = datas[i];
                 if (data.HasValue)
                 {
-                    map[keyMap[keys[i]]] = EntityConvertor.ToEntry(data);
+                    map[keyMap[keys[i]]] = (TEntity)EntityConvertor.ToEntry(data,typeof(TEntity));
                 }
             }
             return map;
@@ -35,7 +35,7 @@ namespace Ao.Cache.InRedis
         public override async Task<long> SetInCacheAsync(IDictionary<TIdentity, TEntity> pairs)
         {
             var res = await DoInRedisAsync(pairs.Keys.ToList(), (batch, identity) =>
-                    batch.StringSetAsync(GetEntryKey(identity), EntityConvertor.ToBytes(pairs[identity]), GetCacheTime(identity)));
+                    batch.StringSetAsync(GetEntryKey(identity), EntityConvertor.ToBytes(pairs[identity], typeof(TEntity)), GetCacheTime(identity)));
             return res.Count;
         }
 

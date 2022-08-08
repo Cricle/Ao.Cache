@@ -1,4 +1,5 @@
-﻿using LiteDB;
+﻿using Ao.Cache.Serizlier.TextJson;
+using LiteDB;
 using System;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -15,46 +16,23 @@ namespace Ao.Cache.InLitedb.Cmd
         {
             using (var litedb = new LiteDatabase("a.db"))
             {
-                var coll = litedb.GetCollection<CacheStudent>("students", BsonAutoId.Int64);
-                coll.EnsureIndex(x => x.Idx);
-                var finder = new StudentLitedbCacheFinder(coll);
-                var del = finder.DeleteInvalidRows();
-                Console.WriteLine($"Deleted {del} rows");
-                for (int i = 0; i < 10_000; i++)
-                {
-                    var ds = await finder.FindAsync(100);
-                    Console.WriteLine(ds.ToString());
-                    await Task.Delay(1000);
-                }
+                var d = litedb.GetCacheCollection();
+                d.EnsureIndex();
+                var finder = new LitedbCacheFactory(litedb,d, TextJsonEntityConvertor.Default);
+                var f = finder.Create(new DataAsstor());
+                var q = await f.FindAsync(123);
+                Console.WriteLine(q);
+                q = await f.FindAsync(123);
+                Console.WriteLine(q);
+                await f.DeleteAsync(123);
+                q = await f.FindAsync(123);
+                Console.WriteLine(q);
             }
         }
     }
-    public class StudentLitedbCacheFinder : LitedbCacheFinder<long, Student, CacheStudent>
+    public class DataAsstor : IDataAccesstor<long, Student>
     {
-        public StudentLitedbCacheFinder(ILiteCollection<CacheStudent> collection) : base(collection)
-        {
-        }
-        public override TimeSpan? GetCacheTime(long identity)
-        {
-            return TimeSpan.FromSeconds(2);
-        }
-        protected override Expression<Func<CacheStudent, Student>> GetSelect(long identity)
-        {
-            return x => new CacheStudent
-            {
-                Idx = x.Idx,
-                Class = x.Class,
-                Name = x.Name,
-                Time = DateTime.Now
-            };
-        }
-
-        protected override Expression<Func<CacheStudent, bool>> GetWhere(long identity)
-        {
-            return x => x.Idx == identity;
-        }
-
-        protected override Task<Student> OnFindInDbAsync(long identity)
+        public Task<Student> FindAsync(long identity)
         {
             var rand = new Random();
             return Task.FromResult(new Student
@@ -63,18 +41,6 @@ namespace Ao.Cache.InLitedb.Cmd
                 Idx = identity,
                 Name = "aaa" + rand.Next(10000, 9999999)
             });
-        }
-
-        protected override CacheStudent ToCollectionEntity(long identity, Student entry)
-        {
-            return new CacheStudent
-            {
-                Class = entry.Class,
-                Time = DateTime.Now,
-                ExpirationTime = DateTime.Now,
-                Idx = identity,
-                Name = entry.Name
-            };
         }
     }
     public class Student
@@ -89,14 +55,5 @@ namespace Ao.Cache.InLitedb.Cmd
         {
             return $"{Idx},{Name},{Class}";
         }
-    }
-    public class CacheStudent : Student, ILiteCacheEntity
-    {
-        [BsonId]
-        public ObjectId Id { get; set; }
-
-        public DateTime Time { get; set; }
-
-        public DateTime? ExpirationTime { get; set; }
     }
 }

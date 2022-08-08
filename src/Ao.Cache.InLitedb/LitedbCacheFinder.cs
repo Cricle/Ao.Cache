@@ -1,171 +1,44 @@
-﻿using LiteDB;
+﻿using Ao.Cache.InLitedb.Models;
+using LiteDB;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace Ao.Cache.InLitedb
 {
-    public abstract class LitedbCacheBatchFinder<TIdentity, TEntry> : LitedbCacheBatchFinder<TIdentity, TEntry, TEntry>
-       where TEntry : ILiteCacheEntity, new()
+    public abstract class LitedbCacheFinder<TIdentity, TEntry> : DataFinderBase<TIdentity, TEntry>
     {
-        protected LitedbCacheBatchFinder(ILiteCollection<TEntry> collection) : base(collection)
+        protected LitedbCacheFinder(ILiteDatabase database, ILiteCollection<LiteCacheEntity> collection, IEntityConvertor entityConvertor)
         {
-        }
-
-        protected override Expression<Func<TEntry, TEntry>> GetSelect()
-        {
-            return x => x;
-        }
-
-        protected override TEntry ToCollectionEntity(TIdentity identity, TEntry entry)
-        {
-            return entry;
-        }
-    }
-    public abstract class LitedbCacheBatchFinder<TIdentity, TEntry, TCollectionEntity> : BatchDataFinderBase<TIdentity, TEntry>
-           where TCollectionEntity : TEntry, ILiteCacheEntity, new()
-    {
-        protected LitedbCacheBatchFinder(ILiteCollection<TCollectionEntity> collection)
-        {
+            Database = database ?? throw new ArgumentNullException(nameof(database));
             Collection = collection ?? throw new ArgumentNullException(nameof(collection));
+            EntityConvertor = entityConvertor ?? throw new ArgumentNullException(nameof(entityConvertor));
         }
 
-        public ILiteCollection<TCollectionEntity> Collection { get; }
+        public ILiteDatabase Database { get; }
 
-        protected abstract Expression<Func<TCollectionEntity, bool>> GetWhere(IReadOnlyList<TIdentity> identity);
-        protected abstract Expression<Func<TCollectionEntity, bool>> GetWhere(TIdentity identity);
-        protected abstract Expression<Func<TCollectionEntity, TEntry>> GetSelect();
-        protected abstract Expression<Func<TCollectionEntity, TIdentity>> GetIdentity();
-        protected abstract TIdentity GetIdentity(TCollectionEntity entity);
-        protected abstract TCollectionEntity ToCollectionEntity(TIdentity identity, TEntry entry);
+        public ILiteCollection<LiteCacheEntity> Collection { get; }
 
-        public override Task<long> DeleteAsync(IReadOnlyList<TIdentity> identity)
+        public IEntityConvertor EntityConvertor { get; }
+
+        protected virtual Expression<Func<LiteCacheEntity, bool>> GetWhere(TIdentity identity)
         {
-            var i = Collection.DeleteMany(GetWhere(identity));
-
-            return Task.FromResult<long>(i);
+            var key = GetEntryKey(identity);
+            return x => x.Identity == key;
         }
-
-        public override Task<IDictionary<TIdentity, bool>> ExistsAsync(IReadOnlyList<TIdentity> identity)
+        protected virtual LiteCacheEntity ToCollectionEntity(TIdentity identity, TEntry entry)
         {
-            var res = Collection.Query()
-                .Where(GetWhere(identity))
-                .Select(GetIdentity())
-                .ToList();
-            var map = new Dictionary<TIdentity, bool>(identity.Count);
-            for (int i = 0; i < identity.Count; i++)
-            {
-                var iden = identity[i];
-                map[iden] = res.Contains(iden);
-            }
-            return Task.FromResult<IDictionary<TIdentity, bool>>(map);
-        }
-
-        protected override async Task<IDictionary<TIdentity, TEntry>> CoreFindInCacheAsync(IReadOnlyList<TIdentity> identity)
-        {
-            var coll = Collection;
-            var datas = coll.Query()
-                .Where(GetWhere(identity))
-                .ToList();
             var now = DateTime.Now;
-            var rm = new List<TIdentity>();
-            var map = new Dictionary<TIdentity, TEntry>();
-            for (int i = 0; i < datas.Count; i++)
+            var cacheTime = GetCacheTime(identity);
+            return new LiteCacheEntity
             {
-                var data = datas[i];
-                if (data == null || data.ExpirationTime == null || data.ExpirationTime >= now)
-                {
-                    map[GetIdentity(data)] = data;
-                }
-            }
-            if (rm.Count != 0)
-            {
-                await DeleteAsync(rm);
-            }
-            return map;
+                CreateTime = DateTime.Now,
+                Data = EntityConvertor.ToBytes(entry, typeof(TEntry)),
+                Identity = GetEntryKey(identity),
+                ExpireTime = cacheTime == null ? (DateTime?)null : now.Add(cacheTime.Value)
+            };
         }
-
-        public override Task<long> RenewalAsync(IDictionary<TIdentity, TimeSpan?> input)
-        {
-            var res = 0L;
-            foreach (var item in input)
-            {
-                var t = GetExpirationTime(item.Value);
-                var c = Collection.UpdateMany(x => new TCollectionEntity { ExpirationTime = t }, GetWhere(item.Key));
-                if (c > 0)
-                {
-                    res++;
-                }
-            }
-            return Task.FromResult(res);
-        }
-        protected DateTime? GetExpirationTime(TimeSpan? time)
-        {
-            return time == null ? (DateTime?)null : DateTime.Now.Add(time.Value);
-        }
-
-        public override Task<long> SetInCacheAsync(IDictionary<TIdentity, TEntry> pairs)
-        {
-            var ds = Collection.Query()
-                .Where(GetWhere(pairs.Keys.ToList()))
-                .ToList();
-            var notIn = pairs.Keys.Except(ds.Select(x => GetIdentity(x)));
-            var inserts = new List<TCollectionEntity>();
-            var ok = 0L;
-            foreach (var item in notIn)
-            {
-                var entity = pairs[item];
-                var time = GetCacheTime(item);
-                var exprTime = GetExpirationTime(time);
-                var row = ToCollectionEntity(item, entity);
-                row.ExpirationTime = exprTime;
-                inserts.Add(row);
-            }
-            ok += Collection.InsertBulk(inserts);
-            foreach (var item in ds)
-            {
-                var time = GetCacheTime(GetIdentity(item));
-                var exprTime = GetExpirationTime(time);
-                item.ExpirationTime = exprTime;
-            }
-            ok += Collection.Update(ds);
-            return Task.FromResult(ok);
-        }
-
-    }
-    public abstract class LitedbCacheFinder<TIdentity, TEntry> : LitedbCacheFinder<TIdentity, TEntry, TEntry>
-          where TEntry : ILiteCacheEntity, new()
-    {
-        protected LitedbCacheFinder(ILiteCollection<TEntry> collection)
-            : base(collection)
-        {
-        }
-
-        protected override Expression<Func<TEntry, TEntry>> GetSelect(TIdentity identity)
-        {
-            return x => x;
-        }
-
-        protected override TEntry ToCollectionEntity(TIdentity identity, TEntry entry)
-        {
-            return entry;
-        }
-    }
-    public abstract partial class LitedbCacheFinder<TIdentity, TEntry, TCollectionEntity> : DataFinderBase<TIdentity, TEntry>
-        where TCollectionEntity : TEntry, ILiteCacheEntity, new()
-    {
-        protected LitedbCacheFinder(ILiteCollection<TCollectionEntity> collection)
-        {
-            Collection = collection ?? throw new ArgumentNullException(nameof(collection));
-        }
-
-        public ILiteCollection<TCollectionEntity> Collection { get; }
-
-        protected abstract Expression<Func<TCollectionEntity, bool>> GetWhere(TIdentity identity);
-        protected abstract Expression<Func<TCollectionEntity, TEntry>> GetSelect(TIdentity identity);
-        protected abstract TCollectionEntity ToCollectionEntity(TIdentity identity, TEntry entry);
 
         public override Task<bool> DeleteAsync(TIdentity entity)
         {
@@ -187,44 +60,94 @@ namespace Ao.Cache.InLitedb
         public override Task<bool> RenewalAsync(TIdentity identity, TimeSpan? time)
         {
             var newTime = GetExpirationTime(time);
-
-            var r = Collection
-                .UpdateMany(x => new TCollectionEntity { ExpirationTime = newTime },
-                    GetWhere(identity));
-            return Task.FromResult(r != 0);
+            var key = GetEntryKey(identity);
+            var d = Collection.Query()
+                .Where(x => x.Identity == key)
+                .OrderByDescending(x => x.ExpireTime)
+                .FirstOrDefault();
+            if (d == null)
+            {
+                return Task.FromResult(false);
+            }
+            d.ExpireTime = newTime;
+            var ok = Collection.Update(d);
+            return Task.FromResult(ok);
         }
 
-        protected override async Task<TEntry> CoreFindInCacheAsync(string key, TIdentity identity)
+        protected override Task<TEntry> CoreFindInCacheAsync(string key, TIdentity identity)
         {
             var coll = Collection;
             var data = coll.Query()
                 .Where(GetWhere(identity))
-                .Limit(1)
-                .FirstOrDefault();
-            var now = DateTime.Now;
-            if (data != null && data.ExpirationTime != null && data.ExpirationTime < now)
+                .ToList();
+            if (data.Count == 0)
             {
-                await DeleteAsync(identity);
-                return default;
+                return Task.FromResult<TEntry>(default);
             }
-            return data;
+            var now = DateTime.Now;
+            var rms = new List<ObjectId>();
+            byte[] val = null;
+            DateTime? dt = default;
+            bool ok = false;
+            foreach (var item in data)
+            {
+                if (data != null && item.ExpireTime != null && item.ExpireTime < now)
+                {
+                    rms.Add(item.Id);
+                }
+                else
+                {
+                    if (!ok)
+                    {
+                        ok = true;
+                        val = item.Data;
+                        dt = item.ExpireTime;
+                    }
+                    else
+                    {
+                        if (dt != null)
+                        {
+                            if (item.ExpireTime == null)
+                            {
+                                val = item.Data;
+                                dt = item.ExpireTime;
+                            }
+                            else if (item.ExpireTime > dt)
+                            {
+                                val = item.Data;
+                                dt = item.ExpireTime;
+                            }
+                        }
+                    }
+                }
+            }
+            if (rms.Count != 0)
+            {
+                Collection.DeleteMany(x => rms.Contains(x.Id));
+            }
+            if (val != null)
+            {
+                return Task.FromResult((TEntry)EntityConvertor.ToEntry(val, typeof(TEntry)));
+            }
+            return Task.FromResult<TEntry>(default);
         }
 
         protected override Task<bool> SetInCacheAsync(string key, TIdentity identity, TEntry entity, TimeSpan? caheTime)
         {
             var newTime = GetExpirationTime(caheTime);
-            var ent = Collection.Query().Where(GetWhere(identity)).FirstOrDefault();
+            var row = ToCollectionEntity(identity, entity);
+            var ent = Collection.Query().Where(GetWhere(identity)).OrderByDescending(x => x.ExpireTime).FirstOrDefault();
             if (ent == null)
             {
-                var row = ToCollectionEntity(identity, entity);
                 Collection.Insert(row);
-                row.ExpirationTime = newTime;
+                row.ExpireTime = newTime;
             }
             else
             {
-                ent.ExpirationTime = newTime;
+                ent.ExpireTime = newTime;
                 Collection.Update(ent);
             }
+            Database.Commit();
             return Task.FromResult(true);
         }
     }

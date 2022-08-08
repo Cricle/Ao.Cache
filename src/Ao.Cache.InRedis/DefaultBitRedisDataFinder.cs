@@ -8,7 +8,7 @@ namespace Ao.Cache.InRedis
     {
         public DefaultBitRedisDataFinder(IDatabase database,
             IDataAccesstor<TIdentity, TEntity> dataAccesstor,
-            IEntityConvertor<TEntity> entityConvertor)
+            IEntityConvertor entityConvertor)
             : base(entityConvertor)
         {
             if (entityConvertor is null)

@@ -2,13 +2,13 @@
 {
     public static class CreateEmptyFinderExtensions
     {
-        public static IDataFinder<TIdentity, TEntity> CreateEmpty<TIdentity, TEntity>(this IDataFinderFactory<TIdentity, TEntity> factory)
+        public static IDataFinder<TIdentity, TEntity> CreateEmpty<TIdentity, TEntity>(this IDataFinderFactory factory)
         {
-            return factory.Create(EmptyDataFinderFactory<TIdentity, TEntity>.Instance);
+            return factory.Create(EmptyDataAccesstor<TIdentity, TEntity>.Instance);
         }
-        public static IBatchDataFinder<TIdentity, TEntity> CreateEmpty<TIdentity, TEntity>(this IBatchDataFinderFactory<TIdentity, TEntity> factory)
+        public static IBatchDataFinder<TIdentity, TEntity> CreateEmpty<TIdentity, TEntity>(this IBatchDataFinderFactory factory)
         {
-            return factory.Create(EmptyBatchDataFinderFactory<TIdentity, TEntity>.Instance);
+            return factory.Create(EmptyDataAccesstor<TIdentity, TEntity>.Instance);
         }
     }
 }

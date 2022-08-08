@@ -105,7 +105,7 @@ namespace Ao.Cache.CastleProxy.Interceptors
             var rr = new AutoCacheResult<TResult>();
             using (var scope = ServiceScopeFactory.CreateScope())
             {
-                var finderFactory = scope.ServiceProvider.GetRequiredService<IDataFinderFactory<UnwindObject, TResult>>();
+                var finderFactory = scope.ServiceProvider.GetRequiredService<IDataFinderFactory>();
                 var finder = finderFactory.Create(new CastleDataAccesstor<UnwindObject, TResult> { Proceed = proceed });
                 var attr = invocation.Method.GetCustomAttribute<AutoCacheOptionsAttribute>();
                 var opt = IgnoreHeadDataFinderOptions<TResult>.Options;

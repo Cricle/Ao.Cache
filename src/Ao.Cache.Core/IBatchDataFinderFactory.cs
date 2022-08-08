@@ -1,7 +1,7 @@
 ﻿namespace Ao.Cache
 {
-    public interface IBatchDataFinderFactory<TIdentity, TEntity>
+    public interface IBatchDataFinderFactory
     {
-        IBatchDataFinder<TIdentity, TEntity> Create(IBatchDataAccesstor<TIdentity, TEntity> accesstor);
+        IBatchDataFinder<TIdentity, TEntity> Create<TIdentity, TEntity>(IBatchDataAccesstor<TIdentity, TEntity> accesstor);
     }
 }

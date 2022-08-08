@@ -6,21 +6,8 @@ using System.Threading.Tasks;
 
 namespace Ao.Cache
 {
-    public abstract class BatchDataFinderBase<TIdentity, TEntity> : IIdentityGenerater<TIdentity>, IBatchDataFinder<TIdentity, TEntity>, IBatchRenewalable<TIdentity>, IBatchDataFinder, IBatchRenewalable, IDataFinderOptions<TIdentity, TEntity>
+    public abstract class BatchDataFinderBase<TIdentity, TEntity> : OptionalDataFinder<TIdentity, TEntity>, IIdentityGenerater<TIdentity>, IBatchDataFinder<TIdentity, TEntity>, IBatchRenewalable<TIdentity>, IBatchDataFinder, IBatchRenewalable, IDataFinderOptions<TIdentity, TEntity>
     {
-        protected BatchDataFinderBase()
-        {
-            Options = DefaultDataFinderOptions<TIdentity, TEntity>.Default;
-        }
-
-        private IDataFinderOptions<TIdentity, TEntity> options;
-
-        public IDataFinderOptions<TIdentity, TEntity> Options
-        {
-            get => options;
-            set => options = value ?? DefaultDataFinderOptions<TIdentity, TEntity>.Default;
-        }
-
         public abstract Task<long> DeleteAsync(IReadOnlyList<TIdentity> identity);
         public abstract Task<IDictionary<TIdentity, bool>> ExistsAsync(IReadOnlyList<TIdentity> identity);
 
