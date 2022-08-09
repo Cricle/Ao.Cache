@@ -2,8 +2,11 @@
 using Ao.Cache.CastleProxy.Interceptors;
 using Ao.Cache.CastleProxy.Model;
 using Ao.Cache.InLitedb;
+using Ao.Cache.InMemory;
 using Ao.Cache.InRedis;
 using Ao.Cache.Serizlier.SpanJson;
+using Ao.Cache.Serizlier.TextJson;
+using Ao.Cache.Serizlier.MessagePack;
 using DryIoc;
 using DryIoc.Microsoft.DependencyInjection;
 using LiteDB;
@@ -21,18 +24,17 @@ namespace Ao.Cache.CastleProxy.Sample
     {
         static void Main(string[] args)
         {
-            //ThreadPool.SetMinThreads(100, 100);
             var ser = new ServiceCollection();
             ser.AddSingleton<GetTime>();
             ser.AddSingleton<LockTime>();
             ser.AddCastleCacheProxy();
+            var s = ConfigurationOptions.Parse("127.0.0.1:6379");
+            s.SocketManager = SocketManager.ThreadPool;
             var pool = ConnectionMultiplexerPoolFactory.Create(
-                poolSize: 1024,
-                configuration: "127.0.0.1:6379",
+                poolSize: 100,
+                configurationOptions: s,
                 connectionSelectionStrategy: ConnectionSelectionStrategy.RoundRobin);
             ser.AddScoped<IConnectionMultiplexer>(x => pool.GetAsync().GetAwaiter().GetResult().Connection);
-            //var s = ConfigurationOptions.Parse("127.0.0.1:6379");
-            //s.SocketManager = new SocketManager(workerCount: 5, options: SocketManager.SocketManagerOptions.None); ;
             //ser.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(s));
             ser.AddScoped(x => x.GetRequiredService<IConnectionMultiplexer>().GetDatabase());
             ser.AddSingleton<IDistributedLockFactory>(p =>
@@ -44,8 +46,8 @@ namespace Ao.Cache.CastleProxy.Sample
                   }
             })));
             ser.AddSingleton<ILockerFactory, RedisLockFactory>();
-            ser.AddSingleton<IEntityConvertor, SpanJsonEntityConvertor>();
-            ser.AddSingleton(typeof(IEntityConvertor<>), typeof(SpanJsonEntityConvertor<>));
+            ser.AddSingleton<IEntityConvertor, MessagePackEntityConvertor>();
+            ser.AddSingleton(typeof(IEntityConvertor<>), typeof(MessagePackEntityConvertor<>));
             ser.AddSingleton(typeof(IDataFinderFactory), typeof(RedisDataFinderFactory));
             //var litedb = new LiteDatabase("a.db");
             //var d = litedb.GetCacheCollection();
@@ -55,7 +57,7 @@ namespace Ao.Cache.CastleProxy.Sample
             //ser.AddSingleton(typeof(IDataFinderFactory), typeof(LitedbCacheFactory));
 
             //ser.AddSingleton<ILockerFactory, MemoryLockFactory>();
-            //ser.AddSingleton(typeof(IDataFinderFactory<,>), typeof(InMemoryCacheFinderFactory<,>));
+            //ser.AddSingleton(typeof(IDataFinderFactory), typeof(InMemoryCacheFinderFactory));
             //ser.AddMemoryCache();
             //ser.AddSingleton(typeof(IDataFinder<,>), typeof(DefaultInMemoryCacheFinder<,>));
 
@@ -95,26 +97,26 @@ namespace Ao.Cache.CastleProxy.Sample
         {
             var gt = provider.GetRequiredService<GetTime>();
             var finderFc = provider.GetRequiredService<AutoCacheService<DtObj>>();
+            //for (int q = 0; q < 3; q++)
+            //{
+            //    //Thread.Sleep(TimeSpan.FromMilliseconds(300));
+            //    var task = new Task[1];
+            //    var sw = Stopwatch.GetTimestamp();
+            //    for (int j = 0; j < task.Length; j++)
+            //    {
+            //        task[j] =await Task.Factory.StartNew(async () =>
+            //        {
+            //            var n =await gt.NowTime1(q, 0);
+            //        });
+            //    }
+            //    await Task.WhenAll(task);
+            //    var ed = Stopwatch.GetTimestamp();
+            //    Console.WriteLine(new TimeSpan(ed - sw));
+            //}
             for (int q = 0; q < 3; q++)
             {
                 //Thread.Sleep(TimeSpan.FromMilliseconds(300));
-                var task = new Task[1];
-                var sw = Stopwatch.GetTimestamp();
-                for (int j = 0; j < task.Length; j++)
-                {
-                    task[j] =await Task.Factory.StartNew(async () =>
-                    {
-                        var n =await gt.NowTime1(q, 0);
-                    });
-                }
-                await Task.WhenAll(task);
-                var ed = Stopwatch.GetTimestamp();
-                Console.WriteLine(new TimeSpan(ed - sw));
-            }
-            for (int q = 0; q < 3; q++)
-            {
-                //Thread.Sleep(TimeSpan.FromMilliseconds(300));
-                var task = new Task[100000];
+                var task = new Task[1_000_000];
                 var sw = Stopwatch.GetTimestamp();
                 for (int j = 0; j < task.Length; j++)
                 {
@@ -182,10 +184,10 @@ namespace Ao.Cache.CastleProxy.Sample
 
         [AutoCache]
         [AutoCacheOptions(CanRenewal = false)]
-        public virtual async Task<DtObj> NowTime1(int id, [AutoCacheSkipPart] long dd)
+        public virtual Task<DtObj> NowTime1(int id, [AutoCacheSkipPart] long dd)
         {
             //Console.WriteLine("yerp");
-            return new DtObj { Time = DateTime.Now };
+            return Task.FromResult(new DtObj { Time = DateTime.Now });
         }
     }
     public class DtObj

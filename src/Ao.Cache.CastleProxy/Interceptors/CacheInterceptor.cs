@@ -99,7 +99,27 @@ namespace Ao.Cache.CastleProxy.Interceptors
                 return (TOut)(object)res;
             };
         }
+        class M
+        {
+            private static readonly Dictionary<MethodInfo, AutoCacheOptionsAttribute> m = new Dictionary<MethodInfo, AutoCacheOptionsAttribute>();
+            private static readonly object locker = new object();
 
+            public static AutoCacheOptionsAttribute Get(MethodInfo info)
+            {
+                if (!m.TryGetValue(info,out var attr))
+                {
+                    lock (locker)
+                    {
+                        if (!m.TryGetValue(info, out attr))
+                        {
+                            attr=info.GetCustomAttribute<AutoCacheOptionsAttribute>();
+                            m[info]=attr;
+                        }
+                    }
+                }
+                return attr;
+            }
+        }
         protected async Task<AutoCacheResult<TResult>> CoreInterceptAsync<TResult>(IInvocation invocation, IInvocationProceedInfo proceedInfo, Func<Task<TResult>> proceed)
         {
             var rr = new AutoCacheResult<TResult>();
@@ -107,7 +127,7 @@ namespace Ao.Cache.CastleProxy.Interceptors
             {
                 var finderFactory = scope.ServiceProvider.GetRequiredService<IDataFinderFactory>();
                 var finder = finderFactory.Create(new CastleDataAccesstor<UnwindObject, TResult> { Proceed = proceed });
-                var attr = invocation.Method.GetCustomAttribute<AutoCacheOptionsAttribute>();
+                var attr = M.Get(invocation.Method);
                 var opt = IgnoreHeadDataFinderOptions<TResult>.Options;
 
                 if (attr != null)

@@ -9,6 +9,8 @@ namespace Ao.Cache.CastleProxy.Annotations
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
     public class AutoCacheOptionsAttribute : Attribute
     {
+        public static readonly TimeSpan? DefaultCacheTime = TimeSpan.FromSeconds(3);
+
         public AutoCacheOptionsAttribute()
         {
         }
@@ -20,7 +22,7 @@ namespace Ao.Cache.CastleProxy.Annotations
 
         public bool CanRenewal { get; set; }
 
-        public TimeSpan? CacheTime { get; }
+        public TimeSpan? CacheTime { get; } = DefaultCacheTime;
 
         public bool Renewal { get; set; }
     }
