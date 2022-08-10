@@ -56,10 +56,10 @@ namespace Ao.Cache.CastleProxy.Sample
             //ser.AddSingleton(d);
             //ser.AddSingleton(typeof(IDataFinderFactory), typeof(LitedbCacheFactory));
 
-            //ser.AddSingleton<ILockerFactory, MemoryLockFactory>();
-            //ser.AddSingleton(typeof(IDataFinderFactory), typeof(InMemoryCacheFinderFactory));
-            //ser.AddMemoryCache();
-            //ser.AddSingleton(typeof(IDataFinder<,>), typeof(DefaultInMemoryCacheFinder<,>));
+            ser.AddSingleton<ILockerFactory, MemoryLockFactory>();
+            ser.AddSingleton(typeof(IDataFinderFactory), typeof(InMemoryCacheFinderFactory));
+            ser.AddMemoryCache();
+            ser.AddSingleton(typeof(IDataFinder<,>), typeof(DefaultInMemoryCacheFinder<,>));
 
             var icon = new Container(Rules.MicrosoftDependencyInjectionRules)
                 .WithDependencyInjectionAdapter(ser, null, RegistrySharing.CloneAndDropCache);
@@ -116,7 +116,7 @@ namespace Ao.Cache.CastleProxy.Sample
             for (int q = 0; q < 3; q++)
             {
                 //Thread.Sleep(TimeSpan.FromMilliseconds(300));
-                var task = new Task[1_000_000];
+                var task = new Task[1_000];
                 var sw = Stopwatch.GetTimestamp();
                 for (int j = 0; j < task.Length; j++)
                 {
@@ -125,7 +125,7 @@ namespace Ao.Cache.CastleProxy.Sample
                         var rd = new Task[1];
                         for (int q = 0; q < rd.Length; q++)
                         {
-                            rd[q]= gt.NowTime1(q, 0);
+                            rd[q]= gt.NowTime(q, 0);
                         }
                         await Task.WhenAll(rd);
                     });
@@ -176,10 +176,10 @@ namespace Ao.Cache.CastleProxy.Sample
     public class GetTime
     {
         [AutoCache]
-        public virtual AutoCacheResult<DtObj> NowTime(int id, [AutoCacheSkipPart] double dd)
+        public virtual Task<AutoCacheResult<DtObj>> NowTime(int id, [AutoCacheSkipPart] double dd)
         {
             //Console.WriteLine("yerp");
-            return new AutoCacheResult<DtObj> { RawData = new DtObj { Time= DateTime.Now } };
+            return Task.FromResult(new AutoCacheResult<DtObj> { RawData = new DtObj { Time = DateTime.Now } });
         }
 
         [AutoCache]
