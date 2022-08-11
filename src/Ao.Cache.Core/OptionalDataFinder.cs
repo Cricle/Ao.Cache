@@ -1,8 +1,8 @@
 ﻿namespace Ao.Cache
 {
-    public abstract class OptionalDataFinder<TIdentity, TEntity>
+    public class OptionalDataFinder<TIdentity, TEntity>
     {
-        protected OptionalDataFinder()
+        public OptionalDataFinder()
         {
             Options = DefaultDataFinderOptions<TIdentity, TEntity>.Default;
         }
