@@ -42,6 +42,7 @@ namespace Ao.Cache.Benchmarks.Actions
             icon.AsyncIntercept(typeof(GetTime), typeof(CacheInterceptor));
             provider = icon.BuildServiceProvider();
             getTime = provider.GetService<GetTime>();
+            
             Raw();
             NoResult();
             HasResult();

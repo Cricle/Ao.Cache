@@ -1,4 +1,5 @@
-﻿using BenchmarkDotNet.Running;
+﻿using Ao.Cache.Benchmarks.Actions;
+using BenchmarkDotNet.Running;
 
 namespace Ao.Cache.Benchmarks
 {
@@ -7,7 +8,8 @@ namespace Ao.Cache.Benchmarks
         static void Main(string[] args)
         {
             //var r = new AutoCacheRun();
-            //r.Times = 10000;
+            //r.Times = 1;
+            //r.Concurrent = 1;
             //r.Setup();
 
             //r.HasResult();

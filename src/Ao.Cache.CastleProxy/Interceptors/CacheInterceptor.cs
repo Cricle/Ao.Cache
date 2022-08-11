@@ -101,10 +101,10 @@ namespace Ao.Cache.CastleProxy.Interceptors
         }
         class M
         {
-            private static readonly Dictionary<MethodInfo, AutoCacheOptionsAttribute> m = new Dictionary<MethodInfo, AutoCacheOptionsAttribute>();
+            private static readonly Dictionary<NamedInterceptorKey, AutoCacheDecoratorBaseAttribute[]> m = new Dictionary<NamedInterceptorKey, AutoCacheDecoratorBaseAttribute[]>();
             private static readonly object locker = new object();
 
-            public static AutoCacheOptionsAttribute Get(MethodInfo info)
+            public static AutoCacheDecoratorBaseAttribute[] Get(NamedInterceptorKey info)
             {
                 if (!m.TryGetValue(info,out var attr))
                 {
@@ -112,8 +112,20 @@ namespace Ao.Cache.CastleProxy.Interceptors
                     {
                         if (!m.TryGetValue(info, out attr))
                         {
-                            attr=info.GetCustomAttribute<AutoCacheOptionsAttribute>();
-                            m[info]=attr;
+                            var attrs = new List<AutoCacheDecoratorBaseAttribute>();
+                            var typeAttr = info.TargetType.GetCustomAttributes<AutoCacheDecoratorBaseAttribute>();
+                            if (typeAttr!=null)
+                            {
+                                attrs.AddRange(typeAttr);
+                            }
+                            var methodAttr=info.Method.GetCustomAttributes<AutoCacheDecoratorBaseAttribute>();
+                            if (methodAttr!=null)
+                            {
+                                attrs.AddRange(methodAttr);
+                            }
+                            attrs.Sort((a, b) => a.Order - b.Order);
+                            attr = attrs.ToArray();
+                            m[info] = attr;
                         }
                     }
                 }
@@ -127,18 +139,16 @@ namespace Ao.Cache.CastleProxy.Interceptors
             {
                 var finderFactory = scope.ServiceProvider.GetRequiredService<IDataFinderFactory>();
                 var finder = finderFactory.Create(new CastleDataAccesstor<UnwindObject, TResult> { Proceed = proceed });
-                var attr = M.Get(invocation.Method);
-                var opt = IgnoreHeadDataFinderOptions<TResult>.Options;
-
-                if (attr != null)
-                {
-                    opt.CacheTime = attr.CacheTime;
-                    opt.IsCanRenewal = attr.CanRenewal;
-                }
-                finder.Options = opt;
+                var attr = M.Get(new NamedInterceptorKey(invocation.TargetType, invocation.Method));
 
                 var key = new NamedInterceptorKey(invocation.TargetType, invocation.Method);
                 var winObj = NamedHelper.GetUnwindObject(key, invocation.Arguments);
+                var ctx = new AutoCacheDecoratorContext<TResult>(
+                    invocation, proceedInfo, scope.ServiceProvider, finder, winObj);
+                for (int i = 0; i < attr.Length; i++)
+                {
+                    await attr[i].DecorateAsync(ctx);
+                }
                 var res = await finder.FindInCacheAsync(winObj);
                 if (res == null)
                 {
@@ -146,15 +156,20 @@ namespace Ao.Cache.CastleProxy.Interceptors
                     await finder.SetInCacheAsync(winObj, res);
                     rr.RawData = res;
                     rr.Status = AutoCacheStatus.MethodHit;
+                    for (int i = 0; i < attr.Length; i++)
+                    {
+                        await attr[i].FoundInMethodAsync(ctx,res);
+                    }
                     return rr;
                 }
-                if (attr != null && attr.Renewal)
-                {
-                    await finder.RenewalAsync(winObj);
-                }
+                
                 rr.Status = AutoCacheStatus.CacheHit;
                 rr.RawData = res;
                 invocation.ReturnValue = res;
+                for (int i = 0; i < attr.Length; i++)
+                {
+                    await attr[i].FoundInCacheAsync(ctx, res);
+                }
                 return rr;
             }
         }
