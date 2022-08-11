@@ -1,7 +1,7 @@
-<h2 style="text-align:center">
+<h2 align="center">
 Ao.Cache
 </h2>
-<h3 style="text-align:center">
+<h3 align="center">
 A fast, easy, scalable cache and lock middleware
 </h3>
 
