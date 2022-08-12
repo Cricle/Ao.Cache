@@ -441,3 +441,6 @@ uploadnuget.ps1
 
 .codacy-coverage/**/*.*
 .sonarqube/**/*.*
+/test/Ao.Cache.Benchmarks/student.db-wal
+/test/Ao.Cache.Benchmarks/student.db-shm
+/test/Ao.Cache.Benchmarks/student.db
