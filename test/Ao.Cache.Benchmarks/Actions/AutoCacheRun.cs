@@ -1,12 +1,13 @@
 ﻿using Ao.Cache.CastleProxy.Annotations;
 using Ao.Cache.CastleProxy.Interceptors;
 using Ao.Cache.CastleProxy.Model;
-using Ao.Cache.InMemory;
+using Ao.Cache.Serizlier.MessagePack;
 using BenchmarkDotNet.Attributes;
 using DryIoc;
 using DryIoc.Microsoft.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -40,10 +41,14 @@ namespace Ao.Cache.Benchmarks.Actions
             ser.AddScoped<GetTime>();
             ser.AddScoped<IDataAccesstor<int, Student>, AAccesstor>();
             ser.AddCastleCacheProxy();
-            ser.AddScoped<ILockerFactory, MemoryLockFactory>();
-            ser.AddMemoryCache();
-            ser.AddScoped(typeof(IDataFinderFactory), typeof(InMemoryCacheFinderFactory));
-            ser.AddScoped(typeof(IDataFinder<,>), typeof(DefaultInMemoryCacheFinder<,>));
+
+            var s = ConfigurationOptions.Parse("127.0.0.1:6379");
+            ser.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(s));
+            ser.AddScoped(x => x.GetRequiredService<IConnectionMultiplexer>().GetDatabase());
+            ser.AddDistributedLockFactory();
+            ser.AddSingleton<IEntityConvertor, MessagePackEntityConvertor>();
+            ser.AddSingleton(typeof(IEntityConvertor<>), typeof(MessagePackEntityConvertor<>));
+            ser.AddInRedisFinder();
 
             var icon = new Container(Rules.MicrosoftDependencyInjectionRules)
                 .WithDependencyInjectionAdapter(ser, null, RegistrySharing.CloneAndDropCache);
@@ -186,20 +191,10 @@ namespace Ao.Cache.Benchmarks.Actions
 
         public async Task<Student> Raw(int id)
         {
-            try
+            using (var dbc = dbContextFactory.CreateDbContext())
             {
-                using (var dbc = dbContextFactory.CreateDbContext())
-                {
-                    return await dbc.Students.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
-                }
-
+                return await dbc.Students.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
             }
-            catch (Exception ex)
-            {
-
-                throw;
-            }
-
         }
     }
 }

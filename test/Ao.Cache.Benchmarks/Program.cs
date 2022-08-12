@@ -12,7 +12,6 @@ namespace Ao.Cache.Benchmarks
             //r.Concurrent = 1;
             //r.Setup();
 
-            //r.HasResult();
             BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run();
         }
     }
