@@ -71,11 +71,12 @@ namespace Ao.Cache.Benchmarks.Actions
                 }
             }
             var t = new Task[4];
-            t[0]=Raw();
+            t[0] = Raw();
             t[1] = NoResult();
             t[2] = HasResult();
             t[3] = UseProvider();
             Task.WhenAll(t).GetAwaiter().GetResult();
+            //NoResult().GetAwaiter().GetResult();
         }
 
         private async Task Run(Func<int,Task> action)

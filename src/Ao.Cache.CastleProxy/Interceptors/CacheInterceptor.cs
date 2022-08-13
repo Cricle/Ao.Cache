@@ -34,11 +34,13 @@ namespace Ao.Cache.CastleProxy.Interceptors
         }
         class ActualTypeInfos
         {
-            public Type ActualType { get; set; }
+            public Type ActualType;
 
-            public Type FinderType { get; set; }
+            public Type FinderType;
 
-            public Func<CacheInterceptor, IInvocation, IInvocationProceedInfo, object, object> Method { get; set; }
+            public bool TypesEquals;
+
+            public Func<CacheInterceptor, IInvocation, IInvocationProceedInfo, object, object> Method;
         }
         private static readonly object actionTypeLocker = new object();
 
@@ -51,11 +53,12 @@ namespace Ao.Cache.CastleProxy.Interceptors
                 {
                     if (!actualTypes.TryGetValue(type, out t))
                     {
-                        t = new ActualTypeInfos { ActualType = type };
+                        t = new ActualTypeInfos { ActualType = type, TypesEquals=true };
                         if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(AutoCacheResult<>))
                         {
                             t.ActualType = type.GenericTypeArguments[0];
                             t.Method = CompileMethod(type, t.ActualType);
+                            t.TypesEquals = false;
                         }
                         t.FinderType = typeof(IDataFinder<,>).MakeGenericType(typeof(UnwindObject), t.ActualType);
                         actualTypes[type] = t;
@@ -91,7 +94,7 @@ namespace Ao.Cache.CastleProxy.Interceptors
         {
             return async () =>
             {
-                var res = await proceed(invocation, proceedInfo);
+                var res = await proceed(invocation, proceedInfo).ConfigureAwait(false);
                 if (res is AutoCacheResult<TOut> o)
                 {
                     return o.RawData;
@@ -138,7 +141,7 @@ namespace Ao.Cache.CastleProxy.Interceptors
             using (var scope = ServiceScopeFactory.CreateScope())
             {
                 var finderFactory = scope.ServiceProvider.GetRequiredService<IDataFinderFactory>();
-                var finder = finderFactory.Create(new CastleDataAccesstor<UnwindObject, TResult> { Proceed = proceed });
+                var finder = finderFactory.Create(new CastleDataAccesstor<UnwindObject, TResult> (proceed));
                 var attr = M.Get(new NamedInterceptorKey(invocation.TargetType, invocation.Method));
 
                 var key = new NamedInterceptorKey(invocation.TargetType, invocation.Method);
@@ -147,18 +150,18 @@ namespace Ao.Cache.CastleProxy.Interceptors
                     invocation, proceedInfo, scope.ServiceProvider, finder, winObj);
                 for (int i = 0; i < attr.Length; i++)
                 {
-                    await attr[i].DecorateAsync(ctx);
+                    await attr[i].DecorateAsync(ctx).ConfigureAwait(false);
                 }
-                var res = await finder.FindInCacheAsync(winObj);
+                var res = await finder.FindInCacheAsync(winObj).ConfigureAwait(false);
                 if (res == null)
                 {
-                    res = await proceed();
-                    await finder.SetInCacheAsync(winObj, res);
+                    res = await proceed().ConfigureAwait(false);
+                    await finder.SetInCacheAsync(winObj, res).ConfigureAwait(false);
                     rr.RawData = res;
                     rr.Status = AutoCacheStatus.MethodHit;
                     for (int i = 0; i < attr.Length; i++)
                     {
-                        await attr[i].FoundInMethodAsync(ctx,res);
+                        await attr[i].FoundInMethodAsync(ctx,res).ConfigureAwait(false);
                     }
                     return rr;
                 }
@@ -168,7 +171,7 @@ namespace Ao.Cache.CastleProxy.Interceptors
                 invocation.ReturnValue = res;
                 for (int i = 0; i < attr.Length; i++)
                 {
-                    await attr[i].FoundInCacheAsync(ctx, res);
+                    await attr[i].FoundInCacheAsync(ctx, res).ConfigureAwait(false);
                 }
                 return rr;
             }
@@ -196,7 +199,7 @@ namespace Ao.Cache.CastleProxy.Interceptors
             var originType = typeof(TResult);
             if (!HasAutoCache(originType, invocation))
             {
-                var res = await proceed(invocation, proceedInfo);
+                var res = await proceed(invocation, proceedInfo).ConfigureAwait(false);
                 if (res is IAutoCacheResult result)
                 {
                     result.Status = AutoCacheStatus.Skip;
@@ -204,9 +207,9 @@ namespace Ao.Cache.CastleProxy.Interceptors
                 return res;
             }
             var actualTypeInfo = GetActionType(originType);
-            if (originType == actualTypeInfo.ActualType)
+            if (actualTypeInfo.TypesEquals)
             {
-                var res = await CoreInterceptAsync(invocation, proceedInfo, () => proceed(invocation, proceedInfo));
+                var res = await CoreInterceptAsync(invocation, proceedInfo, () => proceed(invocation, proceedInfo)).ConfigureAwait(false);
                 return res.RawData;
             }
             var rr = await (Task<TResult>)actualTypeInfo.Method(this, invocation, proceedInfo, proceed);

@@ -61,8 +61,8 @@ namespace Ao.Cache.CastleProxy
         public UnwindObject GetUnwindObject(in NamedInterceptorKey key, params object[] args)
         {
             var lst = GetArgIndexs(key);
-            var objs = MakeArgsWithHeader(lst, args);
-            return new UnwindObject(objs, StringTransfer);
+            var objs = MakeArgs(lst, args);
+            return new UnwindObject(lst.Header, objs, StringTransfer);
         }
         protected virtual IStringTransfer GetDefaultStringTransfer(in NamedInterceptorKey key)
         {

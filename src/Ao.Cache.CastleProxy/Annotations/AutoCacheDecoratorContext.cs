@@ -3,7 +3,7 @@ using System;
 
 namespace Ao.Cache.CastleProxy.Annotations
 {
-    public class AutoCacheDecoratorContext<TResult>
+    public readonly struct AutoCacheDecoratorContext<TResult>
     {
         public IInvocation Invocation { get; }
 

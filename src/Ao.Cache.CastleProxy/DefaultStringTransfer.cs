@@ -16,16 +16,14 @@ namespace Ao.Cache.CastleProxy
 
         public string Spliter { get; }
 
-        public string Combine(params object[] args)
+        public string Combine(object header, params object[] args)
         {
             switch (args.Length)
             {
                 case 0:
-                    return string.Empty;
+                    return ToString(header);
                 case 1:
-                    return ToString(args[0]);
-                case 2:
-                    return string.Concat(ToString(args[0]), Spliter, ToString(args[1]));
+                    return string.Concat(ToString(header), Spliter, ToString(args[0]));
                 default:
                     return string.Join(Spliter, args);
             }
