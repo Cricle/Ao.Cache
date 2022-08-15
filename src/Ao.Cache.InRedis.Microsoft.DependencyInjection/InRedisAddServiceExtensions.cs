@@ -27,7 +27,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<ILockerFactory, RedisLockFactory>();
             services.AddSingleton(typeof(IDataFinderFactory), typeof(RedisDataFinderFactory));
             services.AddScoped(typeof(IDataFinder<,>), typeof(DefaultBitRedisDataFinder<,>));
-            services.AddScoped(typeof(IBatchCacheFinder<,>), typeof(DefaultBitRedisBatchFinder<,>));
+            services.AddScoped(typeof(IBatchDataFinder<,>), typeof(DefaultBitRedisBatchFinder<,>));
             return services;
         }
     }

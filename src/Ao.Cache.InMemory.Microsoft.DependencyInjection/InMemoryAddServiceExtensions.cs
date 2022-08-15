@@ -11,7 +11,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<ILockerFactory, MemoryLockFactory>();
             services.AddSingleton(typeof(IDataFinderFactory), typeof(InMemoryCacheFinderFactory));
             services.AddScoped(typeof(IDataFinder<,>), typeof(DefaultInMemoryCacheFinder<,>));
-            services.AddScoped(typeof(IBatchCacheFinder<,>), typeof(DefaultInMemoryBatchCacheFinder<,>));
+            services.AddScoped(typeof(IBatchDataFinder<,>), typeof(DefaultInMemoryBatchCacheFinder<,>));
             return services;
         }
     }
