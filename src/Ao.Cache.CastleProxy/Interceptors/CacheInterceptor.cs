@@ -102,12 +102,12 @@ namespace Ao.Cache.CastleProxy.Interceptors
                 return (TOut)(object)res;
             };
         }
-        class M
+        class DecoratorHelper
         {
             private static readonly Dictionary<NamedInterceptorKey, AutoCacheDecoratorBaseAttribute[]> m = new Dictionary<NamedInterceptorKey, AutoCacheDecoratorBaseAttribute[]>();
             private static readonly object locker = new object();
 
-            public static AutoCacheDecoratorBaseAttribute[] Get(NamedInterceptorKey info)
+            public static AutoCacheDecoratorBaseAttribute[] Get(in NamedInterceptorKey info)
             {
                 if (!m.TryGetValue(info,out var attr))
                 {
@@ -142,9 +142,9 @@ namespace Ao.Cache.CastleProxy.Interceptors
             {
                 var finderFactory = scope.ServiceProvider.GetRequiredService<IDataFinderFactory>();
                 var finder = finderFactory.Create(new CastleDataAccesstor<UnwindObject, TResult> (proceed));
-                var attr = M.Get(new NamedInterceptorKey(invocation.TargetType, invocation.Method));
-
                 var key = new NamedInterceptorKey(invocation.TargetType, invocation.Method);
+                var attr = DecoratorHelper.Get(key);
+
                 var winObj = NamedHelper.GetUnwindObject(key, invocation.Arguments);
                 var ctx = new AutoCacheDecoratorContext<TResult>(
                     invocation, proceedInfo, scope.ServiceProvider, finder, winObj);
@@ -215,12 +215,6 @@ namespace Ao.Cache.CastleProxy.Interceptors
             var rr = await (Task<TResult>)actualTypeInfo.Method(this, invocation, proceedInfo, proceed);
             invocation.ReturnValue = rr;
             return rr;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static AutoCacheAttribute GetAutoCache(IInvocation invocation)
-        {
-            return invocation.TargetType.GetCustomAttribute<AutoCacheAttribute>() ?? invocation.Method.GetCustomAttribute<AutoCacheAttribute>();
         }
     }
 }

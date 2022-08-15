@@ -5,12 +5,12 @@ using System.Threading.Tasks;
 
 namespace Ao.Cache.InRedis
 {
-    public class DefaultBitRedisBatchFinder<TIdentity, TEntity> : BitRedisBatchFinder<TIdentity, TEntity>
+    public class DefaultBitRedisBatchFinder<TIdentity, TEntity> : BitRedisBatchFinder<TIdentity, TEntity>,IWithBatchDataAccesstorFinder<TIdentity,TEntity>
     {
         public DefaultBitRedisBatchFinder(IDatabase database,
             IBatchDataAccesstor<TIdentity, TEntity> dataAccesstor,
             IEntityConvertor entityConvertor)
-            : base(entityConvertor)
+            : base(database,entityConvertor)
         {
             if (entityConvertor is null)
             {
@@ -18,16 +18,9 @@ namespace Ao.Cache.InRedis
             }
 
             DataAccesstor = dataAccesstor ?? throw new ArgumentNullException(nameof(dataAccesstor));
-            Database = database ?? throw new ArgumentNullException(nameof(database));
         }
-        public IDatabase Database { get; }
 
         public IBatchDataAccesstor<TIdentity, TEntity> DataAccesstor { get; }
-
-        public override IDatabase GetDatabase()
-        {
-            return Database;
-        }
 
         protected override Task<IDictionary<TIdentity, TEntity>> OnFindInDbAsync(IReadOnlyList<TIdentity> identities)
         {

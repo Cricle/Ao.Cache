@@ -10,7 +10,7 @@ namespace Ao.Cache.Benchmarks
         static void Main(string[] args)
         {
             //var r = new AutoCacheRun();
-            //r.Times = 10000;
+            //r.Times = 1_000_000;
             //r.Concurrent = 1000;
             //r.Setup();
 

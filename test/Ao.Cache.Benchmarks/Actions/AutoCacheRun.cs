@@ -42,13 +42,13 @@ namespace Ao.Cache.Benchmarks.Actions
             ser.AddScoped<IDataAccesstor<int, Student>, AAccesstor>();
             ser.AddCastleCacheProxy();
 
-            var s = ConfigurationOptions.Parse("127.0.0.1:6379");
-            ser.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(s));
-            ser.AddScoped(x => x.GetRequiredService<IConnectionMultiplexer>().GetDatabase());
-            ser.AddDistributedLockFactory();
-            ser.AddSingleton<IEntityConvertor, MessagePackEntityConvertor>();
-            ser.AddSingleton(typeof(IEntityConvertor<>), typeof(MessagePackEntityConvertor<>));
-            ser.AddInRedisFinder();
+            //var s = ConfigurationOptions.Parse("127.0.0.1:6379");
+            //ser.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(s));
+            //ser.AddScoped(x => x.GetRequiredService<IConnectionMultiplexer>().GetDatabase());
+            //ser.AddDistributedLockFactory();
+            //ser.AddSingleton<IEntityConvertor, MessagePackEntityConvertor>();
+            //ser.AddSingleton(typeof(IEntityConvertor<>), typeof(MessagePackEntityConvertor<>));
+            ser.AddInMemoryFinder();
 
             var icon = new Container(Rules.MicrosoftDependencyInjectionRules)
                 .WithDependencyInjectionAdapter(ser, null, RegistrySharing.CloneAndDropCache);

@@ -4,12 +4,12 @@ using System.Threading.Tasks;
 
 namespace Ao.Cache.InRedis
 {
-    public class DefaultBitRedisDataFinder<TIdentity, TEntity>: BitRedisDataFinder<TIdentity, TEntity>
+    public class DefaultBitRedisDataFinder<TIdentity, TEntity>: BitRedisDataFinder<TIdentity, TEntity>,IWithDataAccesstorFinder<TIdentity, TEntity>
     {
         public DefaultBitRedisDataFinder(IDatabase database,
             IDataAccesstor<TIdentity, TEntity> dataAccesstor,
             IEntityConvertor entityConvertor)
-            : base(entityConvertor)
+            : base(database,entityConvertor)
         {
             if (entityConvertor is null)
             {
@@ -17,16 +17,9 @@ namespace Ao.Cache.InRedis
             }
 
             DataAccesstor = dataAccesstor ?? throw new ArgumentNullException(nameof(dataAccesstor));
-            Database = database ?? throw new ArgumentNullException(nameof(database));
         }
-        public IDatabase Database { get; }
 
         public IDataAccesstor<TIdentity, TEntity> DataAccesstor { get; }
-
-        public override IDatabase GetDatabase()
-        {
-            return Database;
-        }
 
         protected override Task<TEntity> OnFindInDbAsync(TIdentity identity)
         {
