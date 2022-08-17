@@ -1,10 +1,22 @@
-﻿using Castle.DynamicProxy;
+﻿using Ao.Cache.CastleProxy.Model;
+using Castle.DynamicProxy;
+using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Threading.Tasks;
 
 namespace Ao.Cache.CastleProxy.Annotations
 {
-    public readonly struct AutoCacheDecoratorContext<TResult>
+    public class AutoCacheDecoratorContext<TResult>
     {
+        public AutoCacheDecoratorContext(IInvocation invocation, IInvocationProceedInfo invocationProceedInfo, IServiceProvider serviceProvider, IDataFinder<UnwindObject, TResult> dataFinder, UnwindObject identity)
+        {
+            Invocation = invocation;
+            InvocationProceedInfo = invocationProceedInfo;
+            ServiceProvider = serviceProvider;
+            DataFinder = dataFinder;
+            Identity = identity;
+        }
+
         public IInvocation Invocation { get; }
 
         public IInvocationProceedInfo InvocationProceedInfo { get; }
@@ -15,13 +27,5 @@ namespace Ao.Cache.CastleProxy.Annotations
 
         public UnwindObject Identity { get; }
 
-        public AutoCacheDecoratorContext(IInvocation invocation, IInvocationProceedInfo invocationProceedInfo, IServiceProvider serviceProvider, IDataFinder<UnwindObject, TResult> dataFinder, UnwindObject identity)
-        {
-            Invocation = invocation;
-            InvocationProceedInfo = invocationProceedInfo;
-            ServiceProvider = serviceProvider;
-            DataFinder = dataFinder;
-            Identity = identity;
-        }
     }
 }

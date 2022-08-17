@@ -206,15 +206,50 @@ namespace Ao.Cache.CastleProxy.Interceptors
                 }
                 return res;
             }
-            var actualTypeInfo = GetActionType(originType);
-            if (actualTypeInfo.TypesEquals)
+            var key = new NamedInterceptorKey(invocation.TargetType, invocation.Method);
+            var attr = DecoratorHelper.Get(key);
+            var ctx = new AutoCacheInvokeDecoratorContext<TResult>(invocation, proceedInfo, ServiceScopeFactory, proceed);
+            for (int i = 0; i < attr.Length; i++)
             {
-                var res = await CoreInterceptAsync(invocation, proceedInfo, () => proceed(invocation, proceedInfo)).ConfigureAwait(false);
-                return res.RawData;
+                await attr[i].InterceptBeginAsync(ctx);
             }
-            var rr = await (Task<TResult>)actualTypeInfo.Method(this, invocation, proceedInfo, proceed);
-            invocation.ReturnValue = rr;
-            return rr;
+            try
+            {
+                var actualTypeInfo = GetActionType(originType);
+                if (actualTypeInfo.TypesEquals)
+                {
+                    var res = await CoreInterceptAsync(invocation, proceedInfo, () => proceed(invocation, proceedInfo)).ConfigureAwait(false);
+                    var result = new AutoCacheInvokeResultContext<TResult>(res.RawData, res, null);
+                    for (int i = 0; i < attr.Length; i++)
+                    {
+                        await attr[i].InterceptEndAsync(ctx, result);
+                    }
+                    return res.RawData;
+                }
+                var rr = await (Task<TResult>)actualTypeInfo.Method(this, invocation, proceedInfo, proceed);
+                invocation.ReturnValue = rr;
+                var cacheResult = new AutoCacheInvokeResultContext<TResult>(rr, rr as IAutoCacheResult, null);
+                for (int i = 0; i < attr.Length; i++)
+                {
+                    await attr[i].InterceptEndAsync(ctx, cacheResult);
+                }
+                return rr;
+            }
+            catch (Exception ex)
+            {
+                for (int i = 0; i < attr.Length; i++)
+                {
+                    await attr[i].InterceptExceptionAsync(ctx, ex);
+                }
+                throw;
+            }
+            finally
+            {
+                for (int i = 0; i < attr.Length; i++)
+                {
+                    await attr[i].InterceptFinallyAsync(ctx);
+                }
+            }
         }
     }
 }

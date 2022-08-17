@@ -9,11 +9,13 @@
 
   <ItemGroup>
     <PackageReference Include="DryIoc.Microsoft.DependencyInjection" Version="6.0.2" />
-    <PackageReference Include="Structing.DryInterceptor" Version="1.3.2-preview.9" />
+    <PackageReference Include="Structing.DryInterceptor" Version="1.3.3-preview.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Ao.Cache.CastleProxy\Ao.Cache.CastleProxy.csproj" />
+    <ProjectReference Include="..\..\src\Ao.Cache.InMemory.Microsoft.DependencyInjection\Ao.Cache.InMemory.Microsoft.DependencyInjection.csproj" />
+    <ProjectReference Include="..\..\src\Ao.Cache.InMemory\Ao.Cache.InMemory.csproj" />
     <ProjectReference Include="..\..\src\Ao.Cache.InRedis.Microsoft.DependencyInjection\Ao.Cache.InRedis.Microsoft.DependencyInjection.csproj" />
     <ProjectReference Include="..\..\src\Ao.Cache.InRedis\Ao.Cache.InRedis.csproj" />
     <ProjectReference Include="..\..\src\Ao.Cache.Serizlier.MessagePack\Ao.Cache.Serizlier.MessagePack.csproj" />

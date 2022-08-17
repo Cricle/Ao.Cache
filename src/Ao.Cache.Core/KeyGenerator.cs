@@ -12,7 +12,7 @@ namespace Ao.Cache
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string Concat(string header, params object[] parts)
         {
-            return ConcatWithSplit(header, DefaultSplit, parts);
+            return ConcatWithSplit(header, DefaultSplit,ref parts);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string Concat(string header, object part1)
