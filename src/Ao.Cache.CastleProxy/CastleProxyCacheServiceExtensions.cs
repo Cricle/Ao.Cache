@@ -11,7 +11,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<ICacheNamedHelper>(DefaultCacheNamedHelper.Default);
             services.AddSingleton<CacheInterceptor>();
             services.AddSingleton<LockInterceptor>();
-            services.AddSingleton(typeof(AutoCacheService<>));
+            services.AddSingleton<AutoCacheService>();
             return services;
         }
     }

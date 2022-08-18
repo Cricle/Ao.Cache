@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Ao.Cache.CastleProxy
 {
-    public class AutoCacheService<TEntity>
+    public class AutoCacheService
     {
         public AutoCacheService(IDataFinderFactory finderFactory, ICacheNamedHelper namedHelper)
         {
@@ -15,29 +15,24 @@ namespace Ao.Cache.CastleProxy
 
         public ICacheNamedHelper NamedHelper { get; }
 
-        public IDataFinder<UnwindObject, TEntity> GetEmpty()
+        public IDataFinder<UnwindObject, TEntity> GetEmpty<TEntity>()
         {
             var finder = FinderFactory.CreateEmpty<UnwindObject,TEntity>();
             SetIgnoreHead(finder);
             return finder;
         }
-        public IDataFinder<UnwindObject, TEntity> Get(IDataAccesstor<UnwindObject, TEntity> accesstor)
+        public IDataFinder<UnwindObject, TEntity> Get<TEntity>(IDataAccesstor<UnwindObject, TEntity> accesstor)
         {
             var finder = FinderFactory.Create(accesstor);
             SetIgnoreHead(finder);
             return finder;
         }
-        private static void SetIgnoreHead(IDataFinder<UnwindObject, TEntity> finder)
+        private static void SetIgnoreHead<TEntity>(IDataFinder<UnwindObject, TEntity> finder)
         {
             if (finder is DataFinderBase<UnwindObject, TEntity> igen)
             {
                 igen.Options = IgnoreHeadDataFinderOptions<TEntity>.Options;
             }
-        }
-        public Task<bool> DeleteAsync(in UnwindObject unwindObject)
-        {
-            var finder = GetEmpty();
-            return finder.DeleteAsync(unwindObject);
         }
     }
 }

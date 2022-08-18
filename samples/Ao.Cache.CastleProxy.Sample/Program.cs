@@ -30,8 +30,8 @@ namespace Ao.Cache.CastleProxy.Sample
             ser.AddDistributedLockFactory();
             ser.AddSingleton<IEntityConvertor, MessagePackEntityConvertor>();
             ser.AddSingleton(typeof(IEntityConvertor<>),typeof(MessagePackEntityConvertor<>));
-            //ser.AddInMemoryFinder();
-            ser.AddInRedisFinder();
+            ser.AddInMemoryFinder();
+            //ser.AddInRedisFinder();
 
             var icon = new Container(Rules.MicrosoftDependencyInjectionRules)
                 .WithDependencyInjectionAdapter(ser, null, RegistrySharing.CloneAndDropCache);
@@ -40,10 +40,18 @@ namespace Ao.Cache.CastleProxy.Sample
             icon.AsyncIntercept<LockTime, LockInterceptor>();
             var provider = icon.BuildServiceProvider();
             var scope = provider.CreateScope();
+            var sw = Stopwatch.GetTimestamp();
             RunCache(scope.ServiceProvider).GetAwaiter().GetResult();
+            ShowDescript($"耗时:{new TimeSpan(Stopwatch.GetTimestamp() - sw)}");
+            sw = Stopwatch.GetTimestamp();
             RunCacheWithStatus(scope.ServiceProvider).GetAwaiter().GetResult();
+            ShowDescript($"耗时:{new TimeSpan(Stopwatch.GetTimestamp() - sw)}");
+            sw = Stopwatch.GetTimestamp();
             RunLock(scope.ServiceProvider).GetAwaiter().GetResult();
+            ShowDescript($"耗时:{new TimeSpan(Stopwatch.GetTimestamp() - sw)}");
+            sw = Stopwatch.GetTimestamp();
             RunLockCache(scope.ServiceProvider).GetAwaiter().GetResult();
+            ShowDescript($"耗时:{new TimeSpan(Stopwatch.GetTimestamp() - sw)}");
         }
         private static void ShowTitle(string text)
         {
@@ -51,13 +59,19 @@ namespace Ao.Cache.CastleProxy.Sample
             Console.WriteLine(text);
             Console.ResetColor();
         }
+        private static void ShowDescript(string text)
+        {
+            Console.BackgroundColor = ConsoleColor.DarkBlue;
+            Console.WriteLine(text);
+            Console.ResetColor();
+        }
         private static async Task RunLockCache(IServiceProvider provider)
         {
             ShowTitle("Run lock cache");
             var gt = provider.GetRequiredService<LockCache>();
-            var finderFc = provider.GetRequiredService<AutoCacheService<DateTime?>>();
+            var finderFc = provider.GetRequiredService<AutoCacheService>();
             await finderFc.DeleteAsync<LockCache, DateTime?>(x => x.Now());//Clear up
-            var tasks = new Task[10];
+            var tasks = new Task[5000];
             var times = new ConcurrentBag<DateTime>();
             for (int i = 0; i < tasks.Length; i++)
             {
@@ -83,7 +97,7 @@ namespace Ao.Cache.CastleProxy.Sample
         {
             ShowTitle("Run cache");
             var gt = provider.GetRequiredService<GetTime>();
-            var finderFc = provider.GetRequiredService<AutoCacheService<DtObj>>();
+            var finderFc = provider.GetRequiredService<AutoCacheService>();
             await finderFc.DeleteAsync<GetTime, DtObj>(x => x.NowTime1(1, 0));//Clear up
             var r1 = await gt.NowTime1(1, 0);
             Console.WriteLine($"First:{r1.Time:yyyy:MM:dd HH:mm:ss.ffff}");
@@ -98,7 +112,7 @@ namespace Ao.Cache.CastleProxy.Sample
         {
             ShowTitle("Run cache with status");
             var gt = provider.GetRequiredService<GetTime>();
-            var finderFc = provider.GetRequiredService<AutoCacheService<DtObj>>();
+            var finderFc = provider.GetRequiredService<AutoCacheService>();
             await finderFc.DeleteAsync<GetTime, DtObj>(x => x.NowTime(1, 0));//Clear up
             var r1 = await gt.NowTime(1, 0);
             Console.WriteLine($"First:{r1.RawData.Time:yyyy:MM:dd HH:mm:ss.ffff}, is {r1.Status}");
@@ -147,6 +161,7 @@ namespace Ao.Cache.CastleProxy.Sample
         public virtual async Task<DateTime?> Now()
         {
             await Task.Yield();
+            Console.WriteLine("命中方法啦！");
             return DateTime.Now;
         }
     }

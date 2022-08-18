@@ -155,15 +155,38 @@ namespace Ao.Cache.CastleProxy.Interceptors
                 var res = await finder.FindInCacheAsync(winObj).ConfigureAwait(false);
                 if (res == null)
                 {
-                    res = await proceed().ConfigureAwait(false);
-                    await finder.SetInCacheAsync(winObj, res).ConfigureAwait(false);
-                    rr.RawData = res;
-                    rr.Status = AutoCacheStatus.MethodHit;
+                    var resultBox = new AutoCacheResultBox<TResult>();
                     for (int i = 0; i < attr.Length; i++)
                     {
-                        await attr[i].FoundInMethodAsync(ctx,res).ConfigureAwait(false);
+                        await attr[i].FindInMethodBeginAsync(ctx, resultBox).ConfigureAwait(false);
                     }
-                    return rr;
+                    try
+                    {
+                        if (resultBox.HasResult)
+                        {
+                            res = resultBox.Result;
+                            rr.Status = AutoCacheStatus.Intercept;
+                        }
+                        else
+                        {
+                            res = await proceed().ConfigureAwait(false);
+                            await finder.SetInCacheAsync(winObj, res).ConfigureAwait(false);
+                            rr.Status = AutoCacheStatus.MethodHit;
+                        }
+                        rr.RawData = res;
+                        for (int i = 0; i < attr.Length; i++)
+                        {
+                            await attr[i].FindInMethodEndAsync(ctx, res, resultBox.HasResult).ConfigureAwait(false);
+                        }
+                        return rr;
+                    }
+                    finally
+                    {
+                        for (int i = 0; i < attr.Length; i++)
+                        {
+                            await attr[i].FindInMethodFinallyAsync(ctx).ConfigureAwait(false);
+                        }
+                    }
                 }
                 
                 rr.Status = AutoCacheStatus.CacheHit;

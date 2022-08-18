@@ -34,7 +34,15 @@ namespace Ao.Cache.CastleProxy.Annotations
             return TaskHelper.ComplatedTask;
         }
 
-        public virtual Task FoundInMethodAsync<TResult>(AutoCacheDecoratorContext<TResult> context, TResult result)
+        public virtual Task FindInMethodEndAsync<TResult>(AutoCacheDecoratorContext<TResult> context, TResult result,bool isFromIntercept)
+        {
+            return TaskHelper.ComplatedTask;
+        }
+        public virtual Task FindInMethodBeginAsync<TResult>(AutoCacheDecoratorContext<TResult> context,AutoCacheResultBox<TResult> resultBox)
+        {
+            return TaskHelper.ComplatedTask;
+        }
+        public virtual Task FindInMethodFinallyAsync<TResult>(AutoCacheDecoratorContext<TResult> context)
         {
             return TaskHelper.ComplatedTask;
         }

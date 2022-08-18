@@ -45,48 +45,50 @@ namespace Ao.Cache.CastleProxy.Annotations
 
         public TimeSpan LockTime { get; set; } = DefaultLockTime;
 
-        public override async Task InterceptBeginAsync<TResult>(AutoCacheInvokeDecoratorContext<TResult> context)
+        public override async Task FindInMethodBeginAsync<TResult>(AutoCacheDecoratorContext<TResult> context, AutoCacheResultBox<TResult> resultBox)
         {
             if (Lock)
             {
-                using (var scope = context.ServiceScopeFactory.CreateScope())
+                var lockFactory = context.ServiceProvider.GetRequiredService<ILockerFactory>();
+                var nameHelper = context.ServiceProvider.GetRequiredService<ICacheNamedHelper>();
+                var lockResult = await LockHelper.GetLockAsync(context.Invocation, lockFactory, nameHelper, LockTime);
+                if (lockResult.Type != RunLockResultTypes.SkipNoLocker)
                 {
-                    var lockFactory = scope.ServiceProvider.GetRequiredService<ILockerFactory>();
-                    var nameHelper = scope.ServiceProvider.GetRequiredService<ICacheNamedHelper>();
-                    var lockResult = await LockHelper.GetLockAsync(context.Invocation, lockFactory, nameHelper, LockTime);
-                    if (lockResult.Type != RunLockResultTypes.SkipNoLocker)
+                    if (!lockResult.IsLocked)
                     {
-                        if (!lockResult.IsLocked)
-                        {
-                            await GetLockFailAsync(context, lockResult);
-                        }
-                        context.Feature[LockerKey] = lockResult.Locker;
+                        await GetLockFailAsync(context, lockResult);
+                    }
+                    var res = await context.DataFinder.FindInCacheAsync(context.Identity);
+                    if (res != null)
+                    {
+                        resultBox.SetResult(res);
+                        lockResult.Dispose();
+                    }
+                    else
+                    {
+                        context.Features[LockerKey] = lockResult.Locker;
                     }
                 }
             }
         }
-        protected virtual Task GetLockFailAsync<TResult>(AutoCacheInvokeDecoratorContext<TResult> context, RunLockResult lockResult)
+        public override Task FindInMethodFinallyAsync<TResult>(AutoCacheDecoratorContext<TResult> context)
+        {
+            if (Lock)
+            {
+                if (context.Features.Contains(LockerKey) && context.Features[LockerKey] is ILocker locker)
+                {
+                    locker.Dispose();
+                }
+            }
+            return base.FindInMethodFinallyAsync(context);
+        }
+        protected virtual Task GetLockFailAsync<TResult>(AutoCacheDecoratorContext<TResult> context, RunLockResult lockResult)
         {
             throw new GetLockFailException { locker = lockResult.Locker };
         }
-        public override Task InterceptFinallyAsync<TResult>(AutoCacheInvokeDecoratorContext<TResult> context)
-        {
-            if (Lock)
-            {
-                try
-                {
-                    if (context.Feature.Contains(LockerKey) && context.Feature[LockerKey] is ILocker locker)
-                    {
-                        locker.Dispose();
-                    }
-                }
-                catch { }
-            }
-            return base.InterceptFinallyAsync(context);
-        }
         public override Task DecorateAsync<TResult>(AutoCacheDecoratorContext<TResult> context)
         {
-            DefaultDataFinderOptions<UnwindObject, TResult> opt = null;
+            DefaultDataFinderOptions<UnwindObject, TResult> opt;
             if (context.DataFinder.Options is DefaultDataFinderOptions<UnwindObject, TResult>)
             {
                 opt = (DefaultDataFinderOptions<UnwindObject, TResult>)context.DataFinder.Options;
