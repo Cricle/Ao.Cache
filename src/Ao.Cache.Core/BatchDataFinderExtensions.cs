@@ -14,7 +14,7 @@ namespace Ao.Cache
                 throw new ArgumentNullException(nameof(finder));
             }
             var val = await finder.FindInCacheAsync(identity).ConfigureAwait(false);
-            if (ReferenceEquals(val, default(TEntity)))
+            if (val == null)
             {
                 return await finder.FindInDbAsync(identity, cache).ConfigureAwait(false);
             }
