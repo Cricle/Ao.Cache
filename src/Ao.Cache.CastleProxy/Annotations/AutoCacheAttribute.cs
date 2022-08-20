@@ -14,8 +14,7 @@ namespace Ao.Cache.CastleProxy.Annotations
 
         public override Task DecorateAsync<TResult>(AutoCacheDecoratorContext<TResult> context)
         {
-            var opt = IgnoreHeadDataFinderOptions<TResult>.Options;
-            context.DataFinder.Options = opt;
+            context.DataFinder.Options = IgnoreHeadDataFinderOptions<TResult>.Options;
             return base.DecorateAsync(context);
         }
     }

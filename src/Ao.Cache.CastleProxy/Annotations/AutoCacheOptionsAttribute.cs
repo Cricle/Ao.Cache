@@ -15,9 +15,15 @@ namespace Ao.Cache.CastleProxy.Annotations
     {
         public static readonly object LockerKey = "Features.Locker";
 
-        public static readonly TimeSpan? DefaultCacheTime = TimeSpan.FromSeconds(3);
+        public static TimeSpan? DefaultCacheTime { get; set; } = TimeSpan.FromSeconds(3);
 
-        public static readonly TimeSpan DefaultLockTime = TimeSpan.FromSeconds(20);
+        public static TimeSpan DefaultLockTime { get; set; } = TimeSpan.FromSeconds(20);
+
+        public static bool DefaultCanRenewal { get; set; } = false;
+
+        public static bool DefaultRenewal { get; set; } = false;
+
+        public static bool DefaultLock { get; set; } = false;
 
         public AutoCacheOptionsAttribute()
         {
@@ -35,13 +41,13 @@ namespace Ao.Cache.CastleProxy.Annotations
             }
         }
 
-        public bool CanRenewal { get; set; }
+        public bool CanRenewal { get; set; } = DefaultCanRenewal;
 
         public TimeSpan? CacheTime { get; } = DefaultCacheTime;
 
-        public bool Renewal { get; set; }
+        public bool Renewal { get; set; } = DefaultRenewal;
 
-        public bool Lock { get; set; }
+        public bool Lock { get; set; } = DefaultLock;
 
         public TimeSpan LockTime { get; set; } = DefaultLockTime;
 
