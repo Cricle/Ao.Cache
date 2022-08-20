@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace Ao.Cache.CastleProxy
 {
@@ -29,10 +30,23 @@ namespace Ao.Cache.CastleProxy
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public string ToString(object data)
         {
-            return data?.ToString() ?? string.Empty;
+            if (data == null)
+            {
+                return string.Empty;
+            }
+            if (data is string str)
+            {
+                return str;
+            }
+            var t = TypeDescriptor.GetConverter(data);
+            if (t == null)
+            {
+                return data.ToString();
+            }
+            return t.ConvertToString(data);
         }
     }
 }

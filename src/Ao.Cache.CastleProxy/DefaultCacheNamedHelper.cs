@@ -31,7 +31,7 @@ namespace Ao.Cache.CastleProxy
             var retArgs = ArrayMaker.Make<object>(indexs.Count);
             for (int i = 0; i < indexs.Count; i++)
             {
-                args[i] = args[indexs[i]];
+                retArgs[i] = args[indexs[i]];
             }
             return retArgs;
         }
@@ -60,7 +60,15 @@ namespace Ao.Cache.CastleProxy
         }
         public UnwindObject GetUnwindObject(in NamedInterceptorKey key, object[] args)
         {
+            return GetUnwindObject(key, args, false);
+        }
+        public UnwindObject GetUnwindObject(in NamedInterceptorKey key, object[] args,bool ignoreIndex)
+        {
             var lst = GetArgIndexs(key);
+            if (ignoreIndex)
+            {
+                return new UnwindObject(lst.Header, args, StringTransfer);
+            }
             var objs = MakeArgs(lst, args);
             return new UnwindObject(lst.Header, objs, StringTransfer);
         }

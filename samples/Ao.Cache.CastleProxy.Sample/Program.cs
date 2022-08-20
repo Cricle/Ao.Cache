@@ -11,6 +11,7 @@ using StackExchange.Redis;
 using Structing.DryInterceptor;
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Globalization;
 using System.Reflection;
 
 namespace Ao.Cache.CastleProxy.Sample
@@ -169,7 +170,7 @@ namespace Ao.Cache.CastleProxy.Sample
     {
         [AutoCache]
         [AutoCacheOptions(CanRenewal = false)]
-        public virtual Task<AutoCacheResult<DtObj>> NowTime(int id, [AutoCacheSkipPart] double dd)
+        public virtual Task<AutoCacheResult<DtObj>> NowTime( int id, [AutoCacheSkipPart] double dd)
         {
             //Console.WriteLine("yerp");
             return Task.FromResult(new AutoCacheResult<DtObj> { RawData = new DtObj { Time = DateTime.Now } });
