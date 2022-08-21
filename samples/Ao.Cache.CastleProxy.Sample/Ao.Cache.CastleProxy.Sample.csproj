@@ -18,6 +18,7 @@
     <ProjectReference Include="..\..\src\Ao.Cache.InRedis.Microsoft.DependencyInjection\Ao.Cache.InRedis.Microsoft.DependencyInjection.csproj" />
     <ProjectReference Include="..\..\src\Ao.Cache.InRedis\Ao.Cache.InRedis.csproj" />
     <ProjectReference Include="..\..\src\Ao.Cache.Serizlier.MessagePack\Ao.Cache.Serizlier.MessagePack.csproj" />
+    <ProjectReference Include="..\..\src\Ao.Cache.Serizlier.SpanJson\Ao.Cache.Serizlier.SpanJson.csproj" />
   </ItemGroup>
 
 </Project>
