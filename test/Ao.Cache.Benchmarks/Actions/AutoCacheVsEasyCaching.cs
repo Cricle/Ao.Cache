@@ -9,10 +9,10 @@ namespace Ao.Cache.Benchmarks.Actions
     [MemoryDiagnoser]
     public class AutoCacheVsEasyCaching:AutoCacheRunBase
     {
-        [Params(50_000, 200_000)]
+        [Params(500, 1000)]
         public int Times { get; set; }
 
-        [Params(100,500)]
+        [Params(10,100)]
         public int Concurrent { get; set; }
 
         [Params(true,false)]
