@@ -6,7 +6,7 @@ namespace LiteDB
     {
         public static ILiteCollection<LiteCacheEntity> GetCacheCollection(this ILiteDatabase db, BsonAutoId id= BsonAutoId.ObjectId)
         {
-            return db.GetCollection<LiteCacheEntity>();
+            return db.GetCollection<LiteCacheEntity>(id);
         }
         public static ILiteCollection<LiteCacheEntity> GetCacheCollection(this ILiteDatabase db,string name, BsonAutoId id = BsonAutoId.ObjectId)
         {

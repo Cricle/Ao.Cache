@@ -7,7 +7,9 @@
   <ItemGroup>
     <PackageReference Include="MessagePack" Version="2.3.85" />
   </ItemGroup>
- 
+  <ItemGroup>
+    <Compile Include="../Shareds/Encodings/*.cs"/>
+  </ItemGroup>
   
   <ItemGroup>
     <ProjectReference Include="..\Ao.Cache.Core\Ao.Cache.Core.csproj" />

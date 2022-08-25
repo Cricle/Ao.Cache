@@ -1,5 +1,6 @@
 ﻿using SpanJson;
 using System;
+using System.Text;
 
 namespace Ao.Cache.Serizlier.SpanJson
 {
@@ -33,7 +34,10 @@ namespace Ao.Cache.Serizlier.SpanJson
         {
             return JsonSerializer.Generic.Utf8.Serialize(entry);
         }
-
+        public TEntity ToEntry(in ReadOnlySpan<byte> bytes)
+        {
+            return JsonSerializer.Generic.Utf8.Deserialize<TEntity>(bytes);
+        }
         public TEntity ToEntry(byte[] bytes)
         {
             return JsonSerializer.Generic.Utf8.Deserialize<TEntity>(bytes);

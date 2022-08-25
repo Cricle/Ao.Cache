@@ -1,5 +1,6 @@
 ﻿using MessagePack.Resolvers;
 using System;
+using System.Text;
 using MP = MessagePack;
 
 namespace Ao.Cache.Serizlier.MessagePack
@@ -43,6 +44,10 @@ namespace Ao.Cache.Serizlier.MessagePack
         }
 
         public object ToEntry(byte[] bytes, Type type)
+        {
+            return MP.MessagePackSerializer.Deserialize(type, bytes, Options);
+        }
+        public object ToEntry(in ReadOnlyMemory<byte> bytes, Type type)
         {
             return MP.MessagePackSerializer.Deserialize(type, bytes, Options);
         }
