@@ -10,13 +10,14 @@ namespace Ao.Cache.CastleProxy.Annotations
 {
     public class AutoCacheDecoratorContext<TResult>
     {
-        public AutoCacheDecoratorContext(IInvocation invocation, IInvocationProceedInfo invocationProceedInfo, IServiceProvider serviceProvider, IDataFinder<UnwindObject, TResult> dataFinder, UnwindObject identity)
+        public AutoCacheDecoratorContext(IInvocation invocation, IInvocationProceedInfo invocationProceedInfo, IServiceProvider serviceProvider, IDataFinder<UnwindObject, TResult> dataFinder,in UnwindObject identity, AutoCacheResult<TResult> result)
         {
             Invocation = invocation;
             InvocationProceedInfo = invocationProceedInfo;
             ServiceProvider = serviceProvider;
             DataFinder = dataFinder;
             Identity = identity;
+            Result = result;
             Features = new Dictionary<object, object>(0);
         }
 
@@ -31,5 +32,7 @@ namespace Ao.Cache.CastleProxy.Annotations
         public UnwindObject Identity { get; }
 
         public IDictionary Features { get; }
+
+        public AutoCacheResult<TResult> Result { get; }
     }
 }

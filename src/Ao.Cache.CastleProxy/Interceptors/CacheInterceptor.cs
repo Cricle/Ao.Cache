@@ -147,7 +147,7 @@ namespace Ao.Cache.CastleProxy.Interceptors
 
                 var winObj = NamedHelper.GetUnwindObject(key, invocation.Arguments);
                 var ctx = new AutoCacheDecoratorContext<TResult>(
-                    invocation, proceedInfo, scope.ServiceProvider, finder, winObj);
+                    invocation, proceedInfo, scope.ServiceProvider, finder, winObj,rr);
                 for (int i = 0; i < attr.Length; i++)
                 {
                     await attr[i].DecorateAsync(ctx).ConfigureAwait(false);
