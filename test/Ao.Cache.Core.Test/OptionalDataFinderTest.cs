@@ -25,7 +25,7 @@ namespace Ao.Cache.Core.Test
             var finder = new OptionalDataFinder<int, int>();
             var opt = new NullDataFinderOptions<int, int>();
             finder.Options = opt;
-            Assert.Equals(finder.Options, opt);
+            Assert.AreEqual(finder.Options, opt);
         }
     }
 }

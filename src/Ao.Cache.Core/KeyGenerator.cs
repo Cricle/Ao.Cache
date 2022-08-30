@@ -66,6 +66,10 @@ namespace Ao.Cache
             {
                 throw new ArgumentNullException(nameof(parts));
             }
+            if (parts.Length == 0)
+            {
+                return header;
+            }
             for (int i = 0; i < parts.Length; i++)
             {
                 var item = parts[i];
@@ -77,12 +81,5 @@ namespace Ao.Cache
             return string.Concat(header, split, string.Join(split, parts));
         }
 
-        [ThreadStatic]
-        private static readonly Random random = new Random();
-
-        public static TimeSpan GetEmitTime(in TimeSpan time)
-        {
-            return time.Add(TimeSpan.FromMilliseconds(random.Next(10, 100)));
-        }
     }
 }

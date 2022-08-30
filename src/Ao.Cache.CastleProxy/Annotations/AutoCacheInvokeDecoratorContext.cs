@@ -31,8 +31,9 @@ namespace Ao.Cache.CastleProxy.Annotations
             InvocationProceedInfo = invocationProceedInfo;
             ServiceScopeFactory = serviceScopeFactory;
             Proceed = proceed;
-            Feature = new Dictionary<object, object>(0);
         }
+
+        private IDictionary feature;
 
         public IInvocation Invocation { get; }
 
@@ -42,6 +43,16 @@ namespace Ao.Cache.CastleProxy.Annotations
 
         public Func<IInvocation, IInvocationProceedInfo, Task<TResult>> Proceed { get; }
 
-        public IDictionary Feature { get; }
+        public IDictionary Feature
+        {
+            get
+            {
+                if (feature == null)
+                {
+                    feature = new Dictionary<object, object>();
+                }
+                return feature;
+            }
+        }
     }
 }
