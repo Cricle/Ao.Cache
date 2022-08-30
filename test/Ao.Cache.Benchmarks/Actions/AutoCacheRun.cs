@@ -1,24 +1,22 @@
 ﻿using BenchmarkDotNet.Attributes;
 using Microsoft.Extensions.DependencyInjection;
-using System.Collections.Generic;
-using System.IO;
 using System.Threading.Tasks;
 
 namespace Ao.Cache.Benchmarks.Actions
 {
     [MemoryDiagnoser]
-    public class AutoCacheRun: AutoCacheRunBase
+    public class AutoCacheRun : AutoCacheRunBase
     {
         [Params(10_000, 20_000)]
         public int Times { get; set; }
 
         [Params(1000, 5000)]
-        public int Concurrent { get; set; }        
+        public int Concurrent { get; set; }
 
         [Benchmark(Baseline = true)]
         public async Task Raw()
         {
-            await Run(Times,Concurrent,async i =>
+            await Run(Times, Concurrent, async i =>
             {
                 using (var scope = provider.CreateScope())
                 {

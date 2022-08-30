@@ -21,7 +21,7 @@ namespace Ao.Cache.InLitedb
 
         public IDataFinder<TIdentity, TEntry> Create<TIdentity, TEntry>(IDataAccesstor<TIdentity, TEntry> accesstor)
         {
-            return new DefaultLitedbCacheFinder<TIdentity, TEntry>(Database,Collection, EntityConvertor, accesstor);
+            return new DefaultLitedbCacheFinder<TIdentity, TEntry>(Database, Collection, EntityConvertor, accesstor);
         }
 
         public IBatchDataFinder<TIdentity, TEntry> Create<TIdentity, TEntry>(IBatchDataAccesstor<TIdentity, TEntry> accesstor)

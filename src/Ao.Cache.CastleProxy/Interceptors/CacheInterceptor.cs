@@ -6,12 +6,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace Ao.Cache.CastleProxy.Interceptors
 {
-    public class CacheInterceptor : NamedInterceptor
+    public class CacheInterceptor : AsyncInterceptorBase, IInterceptor
     {
         public CacheInterceptor(IServiceScopeFactory serviceScopeFactory,
             IStringTransfer stringTransfer,
@@ -53,7 +52,7 @@ namespace Ao.Cache.CastleProxy.Interceptors
                 {
                     if (!actualTypes.TryGetValue(type, out t))
                     {
-                        t = new ActualTypeInfos { ActualType = type, TypesEquals=true };
+                        t = new ActualTypeInfos { ActualType = type, TypesEquals = true };
                         if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(AutoCacheResult<>))
                         {
                             t.ActualType = type.GenericTypeArguments[0];
@@ -109,7 +108,7 @@ namespace Ao.Cache.CastleProxy.Interceptors
 
             public static AutoCacheDecoratorBaseAttribute[] Get(in NamedInterceptorKey info)
             {
-                if (!m.TryGetValue(info,out var attr))
+                if (!m.TryGetValue(info, out var attr))
                 {
                     lock (locker)
                     {
@@ -117,12 +116,12 @@ namespace Ao.Cache.CastleProxy.Interceptors
                         {
                             var attrs = new List<AutoCacheDecoratorBaseAttribute>();
                             var typeAttr = info.TargetType.GetCustomAttributes<AutoCacheDecoratorBaseAttribute>();
-                            if (typeAttr!=null)
+                            if (typeAttr != null)
                             {
                                 attrs.AddRange(typeAttr);
                             }
-                            var methodAttr=info.Method.GetCustomAttributes<AutoCacheDecoratorBaseAttribute>();
-                            if (methodAttr!=null)
+                            var methodAttr = info.Method.GetCustomAttributes<AutoCacheDecoratorBaseAttribute>();
+                            if (methodAttr != null)
                             {
                                 attrs.AddRange(methodAttr);
                             }
@@ -141,13 +140,13 @@ namespace Ao.Cache.CastleProxy.Interceptors
             using (var scope = ServiceScopeFactory.CreateScope())
             {
                 var finderFactory = scope.ServiceProvider.GetRequiredService<IDataFinderFactory>();
-                var finder = finderFactory.Create(new CastleDataAccesstor<UnwindObject, TResult> (proceed));
+                var finder = finderFactory.Create(new CastleDataAccesstor<UnwindObject, TResult>(proceed));
                 var key = new NamedInterceptorKey(invocation.TargetType, invocation.Method);
                 var attr = DecoratorHelper.Get(key);
 
                 var winObj = NamedHelper.GetUnwindObject(key, invocation.Arguments);
                 var ctx = new AutoCacheDecoratorContext<TResult>(
-                    invocation, proceedInfo, scope.ServiceProvider, finder, winObj,rr);
+                    invocation, proceedInfo, scope.ServiceProvider, finder, winObj);
                 for (int i = 0; i < attr.Length; i++)
                 {
                     await attr[i].DecorateAsync(ctx).ConfigureAwait(false);
@@ -188,7 +187,7 @@ namespace Ao.Cache.CastleProxy.Interceptors
                         }
                     }
                 }
-                
+
                 rr.Status = AutoCacheStatus.CacheHit;
                 rr.RawData = res;
                 invocation.ReturnValue = res;
@@ -273,6 +272,11 @@ namespace Ao.Cache.CastleProxy.Interceptors
                     await attr[i].InterceptFinallyAsync(ctx);
                 }
             }
+        }
+
+        public void Intercept(IInvocation invocation)
+        {
+            InterceptSynchronous(invocation);
         }
     }
 }

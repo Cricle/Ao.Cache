@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Ao.Cache
 {
-    public abstract class DataFinderBase<TIdentity, TEntity> : OptionalDataFinder<TIdentity,TEntity>, IIdentityGenerater<TIdentity>, IDataFinder<TIdentity, TEntity>, IDataFinder, IDataFinderOptions<TIdentity, TEntity>
+    public abstract class DataFinderBase<TIdentity, TEntity> : OptionalDataFinder<TIdentity, TEntity>, IIdentityGenerater<TIdentity>, IDataFinder<TIdentity, TEntity>, IDataFinder, IDataFinderOptions<TIdentity, TEntity>
     {
         public async Task<TEntity> FindInCacheAsync(TIdentity identity)
         {

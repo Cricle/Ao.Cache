@@ -14,7 +14,7 @@ namespace Ao.Cache
 
         Task<IDictionary<object, bool>> ExistsAsync(IList identity);
     }
-    public interface IBatchDataFinder<TIdentity, TEntity> : IWithDataFinderOptions<TIdentity,TEntity>,IBatchCacheFinder<TIdentity, TEntity>, IBatchPhysicalFinder<TIdentity, TEntity>, IBatchRenewalable<TIdentity>
+    public interface IBatchDataFinder<TIdentity, TEntity> : IWithDataFinderOptions<TIdentity, TEntity>, IBatchCacheFinder<TIdentity, TEntity>, IBatchPhysicalFinder<TIdentity, TEntity>, IBatchRenewalable<TIdentity>
     {
         Task<long> DeleteAsync(IReadOnlyList<TIdentity> identity);
 

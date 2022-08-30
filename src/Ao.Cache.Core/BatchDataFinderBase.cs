@@ -14,10 +14,10 @@ namespace Ao.Cache
         public async Task<IDictionary<TIdentity, TEntity>> FindInCacheAsync(IReadOnlyList<TIdentity> identity)
         {
             var entity = await CoreFindInCacheAsync(identity);
-            if (entity.Count!=0)
+            if (entity.Count != 0)
             {
                 var renewals = entity.Keys.Where(x => CanRenewal(x)).ToList();
-                if (renewals.Count!=0)
+                if (renewals.Count != 0)
                 {
                     await RenewalAsync(renewals);
                 }
@@ -120,7 +120,7 @@ namespace Ao.Cache
             var map = new Dictionary<TIdentity, TimeSpan?>(input.Count);
             foreach (var item in input)
             {
-                var time=GetCacheTime(item);
+                var time = GetCacheTime(item);
                 map[item] = time;
             }
             return RenewalAsync(map);

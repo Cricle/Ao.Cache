@@ -1,4 +1,3 @@
-using Ao.Cache.InRedis;
 using Ao.Cache.InRedis.HashList.Finders;
 using Microsoft.AspNetCore.Mvc;
 using StackExchange.Redis;

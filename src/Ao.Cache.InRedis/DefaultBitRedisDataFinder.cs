@@ -4,12 +4,12 @@ using System.Threading.Tasks;
 
 namespace Ao.Cache.InRedis
 {
-    public class DefaultBitRedisDataFinder<TIdentity, TEntity>: BitRedisDataFinder<TIdentity, TEntity>,IWithDataAccesstorFinder<TIdentity, TEntity>
+    public class DefaultBitRedisDataFinder<TIdentity, TEntity> : BitRedisDataFinder<TIdentity, TEntity>, IWithDataAccesstorFinder<TIdentity, TEntity>
     {
         public DefaultBitRedisDataFinder(IDatabase database,
             IDataAccesstor<TIdentity, TEntity> dataAccesstor,
             IEntityConvertor entityConvertor)
-            : base(database,entityConvertor)
+            : base(database, entityConvertor)
         {
             if (entityConvertor is null)
             {

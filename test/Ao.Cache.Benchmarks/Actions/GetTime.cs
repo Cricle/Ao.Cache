@@ -18,14 +18,14 @@ namespace Ao.Cache.Benchmarks.Actions
         [AutoCacheOptions(CanRenewal = false)]
         public virtual async Task<AutoCacheResult<Student>> NowTime(int id)
         {
-            return new AutoCacheResult<Student> { RawData =await Raw(id) };
+            return new AutoCacheResult<Student> { RawData = await Raw(id) };
         }
 
         [AutoCache]
-        [AutoCacheOptions(CanRenewal =false)]
+        [AutoCacheOptions(CanRenewal = false)]
         public virtual async Task<Student> NowTime1(int id)
         {
-           return await Raw(id);
+            return await Raw(id);
         }
 
         public async Task<Student> Raw(int id)

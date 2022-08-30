@@ -22,7 +22,7 @@ namespace Ao.Cache
         {
             get
             {
-                if (Count==0)
+                if (Count == 0)
                 {
                     return null;
                 }

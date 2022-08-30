@@ -36,7 +36,7 @@ namespace Ao.Cache.InRedis
             var data = await Database.StringGetAsync(key);
             if (data.HasValue)
             {
-                return (TEntity)EntityConvertor.ToEntry(data,typeof(TEntity));
+                return (TEntity)EntityConvertor.ToEntry(data, typeof(TEntity));
             }
             return default;
         }

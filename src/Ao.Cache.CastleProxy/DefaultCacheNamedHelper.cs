@@ -62,7 +62,7 @@ namespace Ao.Cache.CastleProxy
         {
             return GetUnwindObject(key, args, false);
         }
-        public UnwindObject GetUnwindObject(in NamedInterceptorKey key, object[] args,bool ignoreIndex)
+        public UnwindObject GetUnwindObject(in NamedInterceptorKey key, object[] args, bool ignoreIndex)
         {
             var lst = GetArgIndexs(key);
             if (ignoreIndex)
@@ -100,7 +100,7 @@ namespace Ao.Cache.CastleProxy
                     if (!cacheMap.TryGetValue(key, out val))
                     {
                         var methodArgs = key.Method.GetParameters();
-                        var used = new List<int>();
+                        var used = new List<int>(methodArgs.Length);
                         for (int i = 0; i < methodArgs.Length; i++)
                         {
                             var methodArg = methodArgs[i];

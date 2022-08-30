@@ -1,5 +1,4 @@
 ﻿using Ao.Cache.CastleProxy.Interceptors;
-using System.Threading.Tasks;
 
 namespace Ao.Cache.CastleProxy
 {
@@ -17,7 +16,7 @@ namespace Ao.Cache.CastleProxy
 
         public IDataFinder<UnwindObject, TEntity> GetEmpty<TEntity>()
         {
-            var finder = FinderFactory.CreateEmpty<UnwindObject,TEntity>();
+            var finder = FinderFactory.CreateEmpty<UnwindObject, TEntity>();
             SetIgnoreHead(finder);
             return finder;
         }

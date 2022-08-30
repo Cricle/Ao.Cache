@@ -12,7 +12,7 @@ namespace Ao.Cache.InLitedb
             ILiteCollection<LiteCacheEntity> collection,
             IEntityConvertor entityConvertor,
             IBatchDataAccesstor<TIdentity, TEntry> dataAccesstor)
-            : base(database,collection, entityConvertor)
+            : base(database, collection, entityConvertor)
         {
             DataAccesstor = dataAccesstor ?? throw new ArgumentNullException(nameof(dataAccesstor));
         }

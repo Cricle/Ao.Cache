@@ -9,9 +9,9 @@ namespace Ao.Cache.CastleProxy
         private static readonly object locker = new object();
         private static readonly Dictionary<Type, FieldInfo> fieldInfos = new Dictionary<Type, FieldInfo>();
 
-        public static FieldInfo GetActualFieldInfo (Type type)
+        public static FieldInfo GetActualFieldInfo(Type type)
         {
-            if (!fieldInfos.TryGetValue(type,out var t))
+            if (!fieldInfos.TryGetValue(type, out var t))
             {
                 lock (locker)
                 {

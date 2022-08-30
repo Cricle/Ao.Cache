@@ -1,8 +1,4 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Ao.Cache.Core.Test
 {
@@ -12,7 +8,7 @@ namespace Ao.Cache.Core.Test
         [TestMethod]
         public void DefaultIsDefaultDataFinderOptions()
         {
-            var finder = new OptionalDataFinder<int,int>();
+            var finder = new OptionalDataFinder<int, int>();
             Assert.IsInstanceOfType(finder.Options, typeof(DefaultDataFinderOptions<int, int>));
         }
         [TestMethod]

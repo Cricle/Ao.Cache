@@ -1,7 +1,6 @@
 ﻿using Ao.Cache.Serizlier.TextJson;
 using LiteDB;
 using System;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace Ao.Cache.InLitedb.Cmd
@@ -18,7 +17,7 @@ namespace Ao.Cache.InLitedb.Cmd
             {
                 var d = litedb.GetCacheCollection();
                 d.EnsureIndex();
-                var finder = new LitedbCacheFactory(litedb,d, TextJsonEntityConvertor.Default);
+                var finder = new LitedbCacheFactory(litedb, d, TextJsonEntityConvertor.Default);
                 var f = finder.Create(new DataAsstor());
                 var q = await f.FindAsync(123);
                 Console.WriteLine(q);

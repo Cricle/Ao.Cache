@@ -10,9 +10,9 @@ namespace Ao.Cache.InLitedb
 {
     public abstract class LitedbBatchCacheFinder<TIdentity, TEntry> : BatchDataFinderBase<TIdentity, TEntry>
     {
-        protected LitedbBatchCacheFinder(ILiteDatabase database,ILiteCollection<LiteCacheEntity> collection, IEntityConvertor entityConvertor)
+        protected LitedbBatchCacheFinder(ILiteDatabase database, ILiteCollection<LiteCacheEntity> collection, IEntityConvertor entityConvertor)
         {
-            Database=database ?? throw new ArgumentNullException(nameof(database));
+            Database = database ?? throw new ArgumentNullException(nameof(database));
             Collection = collection ?? throw new ArgumentNullException(nameof(collection));
             EntityConvertor = entityConvertor ?? throw new ArgumentNullException(nameof(entityConvertor));
         }
@@ -91,12 +91,12 @@ namespace Ao.Cache.InLitedb
             foreach (var item in ds)
             {
                 var v = keys.Map.FirstOrDefault(x => x.Value == item.Identity);
-                if (v.Value!=null&& input.TryGetValue(v.Key,out var cacheTime))
+                if (v.Value != null && input.TryGetValue(v.Key, out var cacheTime))
                 {
-                    item.ExpireTime= cacheTime == null ? (DateTime?)null : now.Add(cacheTime.Value);
+                    item.ExpireTime = cacheTime == null ? (DateTime?)null : now.Add(cacheTime.Value);
                 }
             }
-            var res=Collection.Update(ds);
+            var res = Collection.Update(ds);
             return Task.FromResult<long>(res);
         }
 
@@ -173,7 +173,7 @@ namespace Ao.Cache.InLitedb
                 var item = ds[i];
                 var idxIndex = Array.IndexOf(scanKeys, item.Identity);
                 var iden = identity[idxIndex];
-                res[iden] = (TEntry)EntityConvertor.ToEntry(item.Data,typeof(TEntry));
+                res[iden] = (TEntry)EntityConvertor.ToEntry(item.Data, typeof(TEntry));
             }
             return Task.FromResult<IDictionary<TIdentity, TEntry>>(res);
         }

@@ -67,7 +67,7 @@ namespace Ao.Cache
                     res[item.Key] = true;
                 }
                 exists.RemoveAll(x => exists.Contains(x));
-                if (exists.Count==0)
+                if (exists.Count == 0)
                 {
                     break;
                 }
@@ -129,7 +129,7 @@ namespace Ao.Cache
         }
         public async Task<long> RenewalAsync(IReadOnlyList<TIdentity> input)
         {
-            if (Count==0)
+            if (Count == 0)
             {
                 return 0;
             }
@@ -139,7 +139,7 @@ namespace Ao.Cache
                 tasks[i] = this[i].RenewalAsync(input);
             }
             await Task.WhenAll(tasks);
-            return tasks.Max(x=>x.Result);
+            return tasks.Max(x => x.Result);
         }
 
         public async Task<long> RenewalAsync(IDictionary<TIdentity, TimeSpan?> input)

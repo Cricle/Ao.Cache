@@ -7,15 +7,15 @@ using System.Threading.Tasks;
 namespace Ao.Cache.Benchmarks.Actions
 {
     [MemoryDiagnoser]
-    public class AutoCacheVsEasyCaching:AutoCacheRunBase
+    public class AutoCacheVsEasyCaching : AutoCacheRunBase
     {
         [Params(500, 1000)]
         public int Times { get; set; }
 
-        [Params(10,100)]
+        [Params(10, 100)]
         public int Concurrent { get; set; }
 
-        [Params(true,false)]
+        [Params(true, false)]
         public bool IsUseRedis { get; set; }
 
         protected override bool UseRedis()

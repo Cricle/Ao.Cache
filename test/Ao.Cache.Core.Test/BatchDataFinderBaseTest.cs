@@ -2,8 +2,6 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Ao.Cache.Core.Test
@@ -17,7 +15,7 @@ namespace Ao.Cache.Core.Test
             var r = 0L;
             foreach (var item in identity)
             {
-                if(Datas.TryRemove(item,out _))
+                if (Datas.TryRemove(item, out _))
                 {
                     r++;
                 }
@@ -54,7 +52,7 @@ namespace Ao.Cache.Core.Test
             var m = new Dictionary<TIdentity, TEntity>();
             foreach (var item in identity)
             {
-                if (Datas.TryGetValue(item,out var val))
+                if (Datas.TryGetValue(item, out var val))
                 {
                     m[item] = val;
                 }

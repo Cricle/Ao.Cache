@@ -1,23 +1,92 @@
 ﻿using Ao.Cache.CastleProxy.Annotations;
+using Ao.Cache.CastleProxy.Events;
 using Ao.Cache.CastleProxy.Interceptors;
 using Ao.Cache.CastleProxy.Model;
-using Ao.Cache.Serizlier.MessagePack;
 using Ao.Cache.Serizlier.SpanJson;
-using Castle.DynamicProxy;
 using DryIoc;
-using DryIoc.ImTools;
 using DryIoc.Microsoft.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Redis;
-using Structing.DryInterceptor;
-using Structing.DryInterceptor.Annotations;
 using System.Collections.Concurrent;
 using System.Diagnostics;
-using System.Globalization;
-using System.Reflection;
 
 namespace Ao.Cache.CastleProxy.Sample
 {
+    class RedisAdapter : IEventAdapter
+    {
+        public RedisAdapter(IConnectionMultiplexer connectionMultiplexer, IEntityConvertor objectTransfer)
+        {
+            ConnectionMultiplexer = connectionMultiplexer;
+            ObjectTransfer = objectTransfer;
+            Subscriber = ConnectionMultiplexer.GetSubscriber();
+        }
+
+        public IConnectionMultiplexer ConnectionMultiplexer { get; }
+
+        public ISubscriber Subscriber { get; }
+
+        public IEntityConvertor ObjectTransfer { get; }
+
+        public async Task<EventPublishResult> PublishAsync<T>(string channel, T data)
+        {
+            var res = await Subscriber.PublishAsync(channel, ObjectTransfer.ToBytes(data,typeof(T)));
+            return new EventPublishResult(true);
+        }
+
+        public Task<IDisposable> SubscribeAsync<T>(string channel, IEventReceiver<T> receiver)
+        {
+            var res = new SubscribeToken<T>
+            {
+                Channel = channel,
+                EventReceiver = receiver,
+                ObjectTransfer = ObjectTransfer,
+                Subscriber = Subscriber
+            };
+            res.Start();
+            return Task.FromResult<IDisposable>(res);
+
+        }
+        class SubscribeToken<T>: SubscribeTokenBase
+        {
+            public IEventReceiver<T> EventReceiver;
+
+            protected override Action<RedisChannel, RedisValue> CreateMethod()
+            {
+                return (_, v) =>
+                {
+                    EventReceiver.OnReceivedAsync(Channel, Case<T>(v)).ConfigureAwait(false);
+                };
+            }
+        }
+        abstract class SubscribeTokenBase:IDisposable
+        {
+            public Action<RedisChannel, RedisValue> Key;
+
+            public RedisChannel Channel;
+
+            public ISubscriber Subscriber;
+
+            public IEntityConvertor ObjectTransfer;
+
+            public void Start()
+            {
+                Key = CreateMethod();
+                Subscriber.Subscribe(Channel, Key);
+            }
+
+            protected abstract Action<RedisChannel, RedisValue> CreateMethod();
+
+            protected T Case<T>(in RedisValue value)
+            {
+                return (T)ObjectTransfer.ToEntry(value,typeof(T));
+            }
+
+            public void Dispose()
+            {
+                Subscriber.Unsubscribe(Channel,Key);
+            }
+        }
+    }
     internal class Program
     {
         static void Main(string[] args)
@@ -26,7 +95,8 @@ namespace Ao.Cache.CastleProxy.Sample
             ser.AddSingleton<GetTime>();
             ser.AddSingleton<LockTime>();
             ser.AddSingleton<LockCache>();
-            ser.AddSingleton<IGetTime,NoGetTime>();
+            ser.AddSingleton<IEventAdapter, RedisAdapter>();
+            ser.AddSingleton<IGetTime, NoGetTime>();
             ser.AddCastleCacheProxy();
             var s = ConfigurationOptions.Parse("127.0.0.1:6379");
             ser.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(s));
@@ -44,6 +114,13 @@ namespace Ao.Cache.CastleProxy.Sample
             icon.AsyncIntercept<LockTime, LockInterceptor>();
             icon.AsyncIntercept<IGetTime, CacheInterceptor>();
             var provider = icon.BuildServiceProvider();
+            provider.GetRequiredService<IEventAdapter>()
+                .SubscribeAsync(EventHelper.GetChannelKey<DtObj>(null),
+                new DelegateEventReceiver<AutoCacheEventPublishState<DtObj>>((_, a) =>
+                {
+                    Console.WriteLine($"是{a.Type}, 我是监听=======>" + a.Data.Time);
+                    return Task.CompletedTask;
+                }));
             var scope = provider.CreateScope();
             var sw = Stopwatch.GetTimestamp();
             RunCache(scope.ServiceProvider).GetAwaiter().GetResult();
@@ -83,7 +160,7 @@ namespace Ao.Cache.CastleProxy.Sample
             var times = new ConcurrentBag<DateTime>();
             for (int i = 0; i < tasks.Length; i++)
             {
-                tasks[i] =await Task.Factory.StartNew(async () =>
+                tasks[i] = await Task.Factory.StartNew(async () =>
                 {
                     var d = await gt.Now();
                     times.Add(d.Value);
@@ -161,7 +238,7 @@ namespace Ao.Cache.CastleProxy.Sample
             var sw = Stopwatch.GetTimestamp();
             await Task.WhenAll(tsk);
             var ed = Stopwatch.GetTimestamp();
-            Console.WriteLine($"并发加法{tsk.Length}次*10结果:"+t.A);
+            Console.WriteLine($"并发加法{tsk.Length}次*10结果:" + t.A);
         }
     }
     public class LockTime
@@ -214,7 +291,8 @@ namespace Ao.Cache.CastleProxy.Sample
     {
         [AutoCache]
         [AutoCacheOptions(CanRenewal = false)]
-        public virtual Task<AutoCacheResult<DtObj>> NowTime( int id, [AutoCacheSkipPart] double dd)
+        [AutoCacheEvent]
+        public virtual Task<AutoCacheResult<DtObj>> NowTime(int id, [AutoCacheSkipPart] double dd)
         {
             //Console.WriteLine("yerp");
             return Task.FromResult(new AutoCacheResult<DtObj> { RawData = new DtObj { Time = DateTime.Now } });

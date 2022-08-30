@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Ao.Cache.CastleProxy
@@ -17,7 +16,7 @@ namespace Ao.Cache.CastleProxy
             public static Delegate Get(Expression expression)
             {
                 var h = ExpressionHasher.GetHashCode(expression);
-                if (!expressionMap.TryGetValue(h, out var dele)||
+                if (!expressionMap.TryGetValue(h, out var dele) ||
                     !dele.TryGetTarget(out var d))
                 {
                     lock (syncRoot)
@@ -51,7 +50,7 @@ namespace Ao.Cache.CastleProxy
             }
             return type;
         }
-        public static Task<bool> ExistsAsync<T, TEntity>(this AutoCacheService service,object instance, Expression<Func<T, Task<TEntity>>> call, bool cacheCall = true)
+        public static Task<bool> ExistsAsync<T, TEntity>(this AutoCacheService service, object instance, Expression<Func<T, Task<TEntity>>> call, bool cacheCall = true)
         {
             var type = GetAcutalType<T>(instance);
             var winObj = GetUnwindObject(service.NamedHelper, type, call, cacheCall);
@@ -61,21 +60,21 @@ namespace Ao.Cache.CastleProxy
         public static Task<bool> SetInCacheAsync<T, TEntity>(this AutoCacheService service, object instance, TEntity entity, Expression<Func<T, Task<TEntity>>> call, bool cacheCall = true)
         {
             var type = GetAcutalType<T>(instance);
-            var winObj = GetUnwindObject( service.NamedHelper, type, call, cacheCall);
+            var winObj = GetUnwindObject(service.NamedHelper, type, call, cacheCall);
             var finder = service.GetEmpty<TEntity>();
             return finder.SetInCacheAsync(winObj, entity);
         }
         public static Task<bool> DeleteAsync<T, TEntity>(this AutoCacheService service, object instance, Expression<Func<T, Task<TEntity>>> call, bool cacheCall = true)
         {
             var type = GetAcutalType<T>(instance);
-            var winObj = GetUnwindObject( service.NamedHelper, type, call, cacheCall);
+            var winObj = GetUnwindObject(service.NamedHelper, type, call, cacheCall);
             var finder = service.GetEmpty<TEntity>();
             return finder.DeleteAsync(winObj);
         }
         public static Task<bool> RenewalAsync<T, TEntity>(this AutoCacheService service, object instance, TimeSpan? cacheTime, Expression<Func<T, Task<TEntity>>> call, bool cacheCall = true)
         {
             var type = GetAcutalType<T>(instance);
-            var winObj = GetUnwindObject( service.NamedHelper, type, call, cacheCall);
+            var winObj = GetUnwindObject(service.NamedHelper, type, call, cacheCall);
             var finder = service.GetEmpty<TEntity>();
             return finder.RenewalAsync(winObj, cacheTime);
         }
@@ -83,44 +82,44 @@ namespace Ao.Cache.CastleProxy
 
         public static Task<bool> ExistsAsync<T, TEntity>(this AutoCacheService service, Type type, Expression<Func<T, Task>> call, bool cacheCall = true)
         {
-            var winObj = GetUnwindObject( service.NamedHelper, type, call, cacheCall);
+            var winObj = GetUnwindObject(service.NamedHelper, type, call, cacheCall);
             var finder = service.GetEmpty<TEntity>();
             return finder.ExistsAsync(winObj);
         }
         public static Task<bool> SetInCacheAsync<T, TEntity>(this AutoCacheService service, Type type, TEntity entity, Expression<Func<T, Task>> call, bool cacheCall = true)
         {
-            var winObj = GetUnwindObject( service.NamedHelper, type, call, cacheCall);
+            var winObj = GetUnwindObject(service.NamedHelper, type, call, cacheCall);
             var finder = service.GetEmpty<TEntity>();
             return finder.SetInCacheAsync(winObj, entity);
         }
         public static Task<bool> DeleteAsync<T, TEntity>(this AutoCacheService service, Type type, Expression<Func<T, Task>> call, bool cacheCall = true)
         {
-            var winObj = GetUnwindObject( service.NamedHelper, type, call, cacheCall);
+            var winObj = GetUnwindObject(service.NamedHelper, type, call, cacheCall);
             var finder = service.GetEmpty<TEntity>();
             return finder.DeleteAsync(winObj);
         }
         public static Task<bool> RenewalAsync<T, TEntity>(this AutoCacheService service, Type type, TimeSpan? cacheTime, Expression<Func<T, Task>> call, bool cacheCall = true)
         {
-            var winObj = GetUnwindObject( service.NamedHelper, type, call, cacheCall);
+            var winObj = GetUnwindObject(service.NamedHelper, type, call, cacheCall);
             var finder = service.GetEmpty<TEntity>();
             return finder.RenewalAsync(winObj, cacheTime);
         }
 
         public static Task<bool> ExistsAsync<T, TEntity>(this AutoCacheService service, Type type, Expression<Action<T>> call, bool cacheCall = true)
         {
-            var winObj = GetUnwindObject( service.NamedHelper, type, call, cacheCall);
+            var winObj = GetUnwindObject(service.NamedHelper, type, call, cacheCall);
             var finder = service.GetEmpty<TEntity>();
             return finder.ExistsAsync(winObj);
         }
         public static Task<bool> SetInCacheAsync<T, TEntity>(this AutoCacheService service, Type type, TEntity entity, Expression<Action<T>> call, bool cacheCall = true)
         {
-            var winObj = GetUnwindObject( service.NamedHelper, type, call, cacheCall);
+            var winObj = GetUnwindObject(service.NamedHelper, type, call, cacheCall);
             var finder = service.GetEmpty<TEntity>();
             return finder.SetInCacheAsync(winObj, entity);
         }
-        public static Task<bool> DeleteAsync<T, TEntity>(this AutoCacheService service,Type type, Expression<Action<T>> call, bool cacheCall = true)
+        public static Task<bool> DeleteAsync<T, TEntity>(this AutoCacheService service, Type type, Expression<Action<T>> call, bool cacheCall = true)
         {
-            var winObj = GetUnwindObject( service.NamedHelper, type, call, cacheCall);
+            var winObj = GetUnwindObject(service.NamedHelper, type, call, cacheCall);
             var finder = service.GetEmpty<TEntity>();
             return finder.DeleteAsync(winObj);
         }
@@ -157,7 +156,7 @@ namespace Ao.Cache.CastleProxy
         }
 
 
-        public static Task<bool> ExistsAsync<T, TEntity>(this AutoCacheService service, Expression<Func<T,Task>> call, bool cacheCall = true)
+        public static Task<bool> ExistsAsync<T, TEntity>(this AutoCacheService service, Expression<Func<T, Task>> call, bool cacheCall = true)
         {
             var winObj = GetUnwindObject(service.NamedHelper, call, cacheCall);
             var finder = service.GetEmpty<TEntity>();
@@ -188,13 +187,13 @@ namespace Ao.Cache.CastleProxy
             var finder = service.GetEmpty<TEntity>();
             return finder.ExistsAsync(winObj);
         }
-        public static Task<bool> SetInCacheAsync<T, TEntity>(this AutoCacheService service,TEntity entity, Expression<Action<T>> call, bool cacheCall = true)
+        public static Task<bool> SetInCacheAsync<T, TEntity>(this AutoCacheService service, TEntity entity, Expression<Action<T>> call, bool cacheCall = true)
         {
             var winObj = GetUnwindObject(service.NamedHelper, call, cacheCall);
             var finder = service.GetEmpty<TEntity>();
             return finder.SetInCacheAsync(winObj, entity);
         }
-        public static Task<bool> DeleteAsync<T,TEntity>(this AutoCacheService service, Expression<Action<T>> call, bool cacheCall = true)
+        public static Task<bool> DeleteAsync<T, TEntity>(this AutoCacheService service, Expression<Action<T>> call, bool cacheCall = true)
         {
             var winObj = GetUnwindObject(service.NamedHelper, call, cacheCall);
             var finder = service.GetEmpty<TEntity>();
@@ -210,7 +209,7 @@ namespace Ao.Cache.CastleProxy
         {
             return GetUnwindObject(service.NamedHelper, call, cacheCall);
         }
-        private static UnwindObject GetUnwindObject(Type tt,ICacheNamedHelper helper, MethodCallExpression exp, bool cacheCall = true)
+        private static UnwindObject GetUnwindObject(Type tt, ICacheNamedHelper helper, MethodCallExpression exp, bool cacheCall = true)
         {
             var vals = helper.GetArgIndexs(
                 new NamedInterceptorKey(tt, exp.Method));
@@ -241,9 +240,9 @@ namespace Ao.Cache.CastleProxy
                     }
                 }
             }
-            return helper.GetUnwindObject(new NamedInterceptorKey(tt, exp.Method), args,true);
+            return helper.GetUnwindObject(new NamedInterceptorKey(tt, exp.Method), args, true);
         }
-        public static UnwindObject GetUnwindObject<T>(this ICacheNamedHelper helper,Type type, Expression<Action<T>> call, bool cacheCall = true)
+        public static UnwindObject GetUnwindObject<T>(this ICacheNamedHelper helper, Type type, Expression<Action<T>> call, bool cacheCall = true)
         {
             if (call.Body is MethodCallExpression exp)
             {
@@ -251,7 +250,7 @@ namespace Ao.Cache.CastleProxy
             }
             throw new NotSupportedException(call.Body.ToString());
         }
-        public static UnwindObject GetUnwindObject<T,TResult>(this ICacheNamedHelper helper, Type type,Expression<Func<T, Task<TResult>>> call, bool cacheCall = true)
+        public static UnwindObject GetUnwindObject<T, TResult>(this ICacheNamedHelper helper, Type type, Expression<Func<T, Task<TResult>>> call, bool cacheCall = true)
         {
             if (call.Body is MethodCallExpression exp)
             {
@@ -259,7 +258,7 @@ namespace Ao.Cache.CastleProxy
             }
             throw new NotSupportedException(call.Body.ToString());
         }
-        public static UnwindObject GetUnwindObject<T>(this ICacheNamedHelper helper,Type type, Expression<Func<T, Task>> call, bool cacheCall = true)
+        public static UnwindObject GetUnwindObject<T>(this ICacheNamedHelper helper, Type type, Expression<Func<T, Task>> call, bool cacheCall = true)
         {
             if (call.Body is MethodCallExpression exp)
             {
@@ -267,7 +266,7 @@ namespace Ao.Cache.CastleProxy
             }
             throw new NotSupportedException(call.Body.ToString());
         }
-        public static UnwindObject GetUnwindObject<T>(this ICacheNamedHelper helper, Expression<Action<T>> call,bool cacheCall= true)
+        public static UnwindObject GetUnwindObject<T>(this ICacheNamedHelper helper, Expression<Action<T>> call, bool cacheCall = true)
         {
             if (call.Body is MethodCallExpression exp)
             {
@@ -275,7 +274,7 @@ namespace Ao.Cache.CastleProxy
             }
             throw new NotSupportedException(call.Body.ToString());
         }
-        public static UnwindObject GetUnwindObject<T>(this ICacheNamedHelper helper, Expression<Func<T,Task>> call, bool cacheCall = true)
+        public static UnwindObject GetUnwindObject<T>(this ICacheNamedHelper helper, Expression<Func<T, Task>> call, bool cacheCall = true)
         {
             if (call.Body is MethodCallExpression exp)
             {
@@ -283,7 +282,7 @@ namespace Ao.Cache.CastleProxy
             }
             throw new NotSupportedException(call.Body.ToString());
         }
-        public static UnwindObject GetUnwindObject<T,TResult>(this ICacheNamedHelper helper, Expression<Func<T, Task<TResult>>> call, bool cacheCall = true)
+        public static UnwindObject GetUnwindObject<T, TResult>(this ICacheNamedHelper helper, Expression<Func<T, Task<TResult>>> call, bool cacheCall = true)
         {
             if (call.Body is MethodCallExpression exp)
             {
@@ -299,7 +298,7 @@ namespace Ao.Cache.CastleProxy
             var finder = service.GetEmpty<TEntity>();
             return finder.ExistsAsync(winObj);
         }
-        public static Task<bool> SetInCacheAsync<TEntity>(this AutoCacheService service,TEntity entity, Type targetType, string methodName, params object[] args)
+        public static Task<bool> SetInCacheAsync<TEntity>(this AutoCacheService service, TEntity entity, Type targetType, string methodName, params object[] args)
         {
             var winObj = GetUnwindObject(service.NamedHelper, targetType, methodName, args);
             var finder = service.GetEmpty<TEntity>();
@@ -311,7 +310,7 @@ namespace Ao.Cache.CastleProxy
             var finder = service.GetEmpty<TEntity>();
             return finder.DeleteAsync(winObj);
         }
-        public static Task<bool> RenewalAsync<TEntity>(this AutoCacheService service,TimeSpan? cacheTime, Type targetType, string methodName, params object[] args)
+        public static Task<bool> RenewalAsync<TEntity>(this AutoCacheService service, TimeSpan? cacheTime, Type targetType, string methodName, params object[] args)
         {
             var winObj = GetUnwindObject(service.NamedHelper, targetType, methodName, args);
             var finder = service.GetEmpty<TEntity>();

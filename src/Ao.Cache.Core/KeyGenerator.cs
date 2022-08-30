@@ -12,7 +12,7 @@ namespace Ao.Cache
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string Concat(string header, params object[] parts)
         {
-            return ConcatWithSplit(header, DefaultSplit,ref parts);
+            return ConcatWithSplit(header, DefaultSplit, ref parts);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string Concat(string header, object part1)
@@ -57,10 +57,10 @@ namespace Ao.Cache
         public static string ConcatCopyWithSplit(string header, string split, object[] parts)
         {
             var cpParts = new object[parts.Length];
-            Array.Copy(parts, cpParts,parts.Length);
+            Array.Copy(parts, cpParts, parts.Length);
             return ConcatWithSplit(header, split, ref cpParts);
         }
-        public static string ConcatWithSplit(string header, string split,ref object[] parts)
+        public static string ConcatWithSplit(string header, string split, ref object[] parts)
         {
             if (parts is null)
             {

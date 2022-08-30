@@ -8,7 +8,7 @@ namespace Ao.Cache
 
         public bool IsCanRenewal { get; set; } = true;
 
-        public TimeSpan? CacheTime { get; set; }= DataFinderConst.DefaultCacheTime;
+        public TimeSpan? CacheTime { get; set; } = DataFinderConst.DefaultCacheTime;
 
         public virtual bool CanRenewal(TIdentity identity)
         {

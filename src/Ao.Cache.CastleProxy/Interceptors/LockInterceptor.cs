@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Ao.Cache.CastleProxy.Interceptors
 {
-    public class LockInterceptor : NamedInterceptor
+    public class LockInterceptor : AsyncInterceptorBase, IInterceptor
     {
         public LockInterceptor(ILockerFactory lockerFactory, ICacheNamedHelper namedHelper)
         {
@@ -20,11 +20,11 @@ namespace Ao.Cache.CastleProxy.Interceptors
 
         protected override async Task InterceptAsync(IInvocation invocation, IInvocationProceedInfo proceedInfo, Func<IInvocation, IInvocationProceedInfo, Task> proceed)
         {
-            var locker = await LockHelper.GetLockAsync(invocation, LockerFactory,NamedHelper);
+            var locker = await LockHelper.GetLockAsync(invocation, LockerFactory, NamedHelper);
             await OnGotLockResultAsync(invocation, proceedInfo, locker);
-            if (locker.Locker!=null)
+            if (locker.Locker != null)
             {
-                if (locker.Type == RunLockResultTypes.InLocker&&
+                if (locker.Type == RunLockResultTypes.InLocker &&
                     locker.Locker.IsAcquired)
                 {
                     using (locker.Locker)
@@ -42,7 +42,7 @@ namespace Ao.Cache.CastleProxy.Interceptors
                 await proceed(invocation, proceedInfo);
             }
         }
-        protected virtual Task GetLockFailAsync(IInvocation invocation, IInvocationProceedInfo proceedInfo, Func<IInvocation, IInvocationProceedInfo, Task> proceed,RunLockResult result)
+        protected virtual Task GetLockFailAsync(IInvocation invocation, IInvocationProceedInfo proceedInfo, Func<IInvocation, IInvocationProceedInfo, Task> proceed, RunLockResult result)
         {
             throw new GetLockFailException { locker = result.Locker };
         }
@@ -56,7 +56,7 @@ namespace Ao.Cache.CastleProxy.Interceptors
         }
         protected override async Task<TResult> InterceptAsync<TResult>(IInvocation invocation, IInvocationProceedInfo proceedInfo, Func<IInvocation, IInvocationProceedInfo, Task<TResult>> proceed)
         {
-            var locker = await LockHelper.GetLockAsync(invocation, LockerFactory,NamedHelper);
+            var locker = await LockHelper.GetLockAsync(invocation, LockerFactory, NamedHelper);
             await OnGotLockResultAsync(invocation, proceedInfo, locker);
             if (locker.Locker != null)
             {
@@ -65,7 +65,7 @@ namespace Ao.Cache.CastleProxy.Interceptors
                 {
                     using (locker.Locker)
                     {
-                       return await proceed(invocation, proceedInfo);
+                        return await proceed(invocation, proceedInfo);
                     }
                 }
                 else
@@ -77,6 +77,11 @@ namespace Ao.Cache.CastleProxy.Interceptors
             {
                 return await proceed(invocation, proceedInfo);
             }
+        }
+
+        public void Intercept(IInvocation invocation)
+        {
+            InterceptSynchronous(invocation);
         }
     }
     public static class LockHelper

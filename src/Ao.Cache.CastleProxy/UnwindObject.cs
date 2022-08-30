@@ -4,7 +4,7 @@ namespace Ao.Cache.CastleProxy
 {
     public readonly struct UnwindObject : IEquatable<UnwindObject>
     {
-        public UnwindObject(object header,object[] objects, IStringTransfer objectTransfer)
+        public UnwindObject(object header, object[] objects, IStringTransfer objectTransfer)
         {
             Header = header ?? throw new ArgumentNullException(nameof(header));
             Objects = objects ?? throw new ArgumentNullException(nameof(objects));
@@ -19,7 +19,7 @@ namespace Ao.Cache.CastleProxy
 
         public override string ToString()
         {
-            return ObjectTransfer.Combine(Header,Objects);
+            return ObjectTransfer.Combine(Header, Objects);
         }
         public override int GetHashCode()
         {

@@ -4,7 +4,6 @@ using RedLockNet;
 using RedLockNet.SERedis;
 using RedLockNet.SERedis.Configuration;
 using StackExchange.Redis;
-using System.IO;
 
 namespace Microsoft.Extensions.DependencyInjection
 {

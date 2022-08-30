@@ -16,7 +16,7 @@ namespace Ao.Cache
                 {
                     if (!TypeNameCaches.TryGetValue(type, out name))
                     {
-                        name = string.Concat(type.Namespace,".", GetFriendlyName(type));
+                        name = string.Concat(type.Namespace, ".", GetFriendlyName(type));
                         TypeNameCaches[type] = name;
                     }
                 }

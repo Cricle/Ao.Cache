@@ -1,15 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Ao.Cache.Benchmarks
 {
-    public class StudentDbContext:DbContext
+    public class StudentDbContext : DbContext
     {
         public StudentDbContext(DbContextOptions options) : base(options)
         {

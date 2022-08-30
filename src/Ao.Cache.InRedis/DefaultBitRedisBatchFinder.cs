@@ -5,12 +5,12 @@ using System.Threading.Tasks;
 
 namespace Ao.Cache.InRedis
 {
-    public class DefaultBitRedisBatchFinder<TIdentity, TEntity> : BitRedisBatchFinder<TIdentity, TEntity>,IWithBatchDataAccesstorFinder<TIdentity,TEntity>
+    public class DefaultBitRedisBatchFinder<TIdentity, TEntity> : BitRedisBatchFinder<TIdentity, TEntity>, IWithBatchDataAccesstorFinder<TIdentity, TEntity>
     {
         public DefaultBitRedisBatchFinder(IDatabase database,
             IBatchDataAccesstor<TIdentity, TEntity> dataAccesstor,
             IEntityConvertor entityConvertor)
-            : base(database,entityConvertor)
+            : base(database, entityConvertor)
         {
             if (entityConvertor is null)
             {

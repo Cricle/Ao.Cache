@@ -4,6 +4,6 @@
     {
         string ToString(object data);
 
-        string Combine(object header,params object[] args);
+        string Combine(object header, params object[] args);
     }
 }

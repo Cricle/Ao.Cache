@@ -1,5 +1,4 @@
-﻿using Ao.Cache.CastleProxy.Model;
-using System;
+﻿using System;
 using System.Threading.Tasks;
 
 namespace Ao.Cache.CastleProxy.Annotations
@@ -20,7 +19,7 @@ namespace Ao.Cache.CastleProxy.Annotations
         {
             return TaskHelper.ComplatedTask;
         }
-        public virtual Task InterceptExceptionAsync<TResult>(AutoCacheInvokeDecoratorContext<TResult> context,Exception exception)
+        public virtual Task InterceptExceptionAsync<TResult>(AutoCacheInvokeDecoratorContext<TResult> context, Exception exception)
         {
             return TaskHelper.ComplatedTask;
         }
@@ -34,11 +33,11 @@ namespace Ao.Cache.CastleProxy.Annotations
             return TaskHelper.ComplatedTask;
         }
 
-        public virtual Task FindInMethodEndAsync<TResult>(AutoCacheDecoratorContext<TResult> context, TResult result,bool isFromIntercept)
+        public virtual Task FindInMethodEndAsync<TResult>(AutoCacheDecoratorContext<TResult> context, TResult result, bool isFromIntercept)
         {
             return TaskHelper.ComplatedTask;
         }
-        public virtual Task FindInMethodBeginAsync<TResult>(AutoCacheDecoratorContext<TResult> context,AutoCacheResultBox<TResult> resultBox)
+        public virtual Task FindInMethodBeginAsync<TResult>(AutoCacheDecoratorContext<TResult> context, AutoCacheResultBox<TResult> resultBox)
         {
             return TaskHelper.ComplatedTask;
         }

@@ -34,7 +34,7 @@ namespace Ao.Cache.Serizlier.SpanJson
 
         public string TransferToString<T>(T obj)
         {
-            var bs= SpanJsonEntityConvertor<T>.Default.ToBytes(obj);
+            var bs = SpanJsonEntityConvertor<T>.Default.ToBytes(obj);
             return Encoding.GetString(bs);
         }
     }

@@ -94,7 +94,7 @@ namespace Ao.Cache.InRedis
                 var data = datas[i];
                 if (data.HasValue)
                 {
-                    map[keyMap[keys[i]]] = (TEntity)EntityConvertor.ToEntry(data,typeof(TEntity));
+                    map[keyMap[keys[i]]] = (TEntity)EntityConvertor.ToEntry(data, typeof(TEntity));
                 }
             }
             return map;

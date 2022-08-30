@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+﻿using System;
 using System.Runtime.CompilerServices;
 
 namespace Ao.Cache.CastleProxy
@@ -11,7 +11,7 @@ namespace Ao.Cache.CastleProxy
 
         public DefaultStringTransfer(string spliter)
         {
-            Spliter = spliter ?? throw new System.ArgumentNullException(nameof(spliter));
+            Spliter = spliter ?? throw new ArgumentNullException(nameof(spliter));
         }
 
 
@@ -41,12 +41,7 @@ namespace Ao.Cache.CastleProxy
             {
                 return str;
             }
-            var t = TypeDescriptor.GetConverter(data);
-            if (t == null)
-            {
-                return data.ToString();
-            }
-            return t.ConvertToString(data);
+            return Convert.ToString(data);
         }
     }
 }

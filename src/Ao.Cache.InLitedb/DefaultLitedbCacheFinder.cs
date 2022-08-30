@@ -5,13 +5,13 @@ using System.Threading.Tasks;
 
 namespace Ao.Cache.InLitedb
 {
-    public class DefaultLitedbCacheFinder<TIdentity, TEntry> : LitedbCacheFinder<TIdentity, TEntry>,IWithDataAccesstorFinder<TIdentity,TEntry>
+    public class DefaultLitedbCacheFinder<TIdentity, TEntry> : LitedbCacheFinder<TIdentity, TEntry>, IWithDataAccesstorFinder<TIdentity, TEntry>
     {
         public DefaultLitedbCacheFinder(ILiteDatabase database,
             ILiteCollection<LiteCacheEntity> collection,
             IEntityConvertor entityConvertor,
-            IDataAccesstor<TIdentity, TEntry> dataAccesstor) 
-            : base(database,collection, entityConvertor)
+            IDataAccesstor<TIdentity, TEntry> dataAccesstor)
+            : base(database, collection, entityConvertor)
         {
             DataAccesstor = dataAccesstor ?? throw new ArgumentNullException(nameof(dataAccesstor));
         }

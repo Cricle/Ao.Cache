@@ -27,7 +27,7 @@ namespace Ao.Cache.Serizlier.TextJson
 
         public byte[] ToBytes(object entry, Type type)
         {
-            return Encoding.GetBytes(ToString(entry,type));
+            return Encoding.GetBytes(ToString(entry, type));
         }
         public string ToString(object entry, Type type)
         {
@@ -39,7 +39,7 @@ namespace Ao.Cache.Serizlier.TextJson
         }
         public object ToEntry(string str, Type type)
         {
-            var bytes=Encoding.GetBytes(str);
+            var bytes = Encoding.GetBytes(str);
             return JsonSerializer.Deserialize(bytes, type, Options);
         }
     }
