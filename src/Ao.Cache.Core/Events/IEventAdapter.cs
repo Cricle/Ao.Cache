@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace Ao.Cache.CastleProxy.Events
+namespace Ao.Cache.Events
 {
     public interface IEventAdapter
     {

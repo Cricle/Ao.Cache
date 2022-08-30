@@ -1,5 +1,5 @@
-﻿using Ao.Cache.CastleProxy.Events;
-using Ao.Cache.CastleProxy.Model;
+﻿using Ao.Cache.CastleProxy.Model;
+using Ao.Cache.Events;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Threading.Tasks;

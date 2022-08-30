@@ -1,7 +1,7 @@
 ﻿using Ao.Cache.CastleProxy.Annotations;
-using Ao.Cache.CastleProxy.Events;
 using Ao.Cache.CastleProxy.Interceptors;
 using Ao.Cache.CastleProxy.Model;
+using Ao.Cache.Events;
 using Ao.Cache.Serizlier.SpanJson;
 using DryIoc;
 using DryIoc.Microsoft.DependencyInjection;
@@ -290,15 +290,15 @@ namespace Ao.Cache.CastleProxy.Sample
     public class GetTime
     {
         [AutoCache]
-        [AutoCacheOptions(CanRenewal = false)]
-        [AutoCacheEvent]
+        [AutoCacheOptions]
+        [AutoCacheEvent(PublishType = AutoCacheEventPublishTypes.CacheFound | AutoCacheEventPublishTypes.MethodFound)]
         public virtual Task<AutoCacheResult<DtObj>> NowTime(int id, [AutoCacheSkipPart] double dd)
         {
             //Console.WriteLine("yerp");
             return Task.FromResult(new AutoCacheResult<DtObj> { RawData = new DtObj { Time = DateTime.Now } });
         }
         [AutoCache]
-        [AutoCacheOptions(CanRenewal = false)]
+        [AutoCacheOptions]
         public virtual Task<DtObj> NowTime1(int id, [AutoCacheSkipPart] long dd)
         {
             //Console.WriteLine("yerp");

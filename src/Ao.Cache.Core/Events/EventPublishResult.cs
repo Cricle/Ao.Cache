@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Ao.Cache.CastleProxy.Events
+namespace Ao.Cache.Events
 {
     public class EventPublishResult
     {
