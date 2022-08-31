@@ -1,4 +1,4 @@
-﻿namespace Ao.Cache.CastleProxy.Annotations
+﻿namespace Ao.Cache.Events
 {
     public static class EventHelper
     {
