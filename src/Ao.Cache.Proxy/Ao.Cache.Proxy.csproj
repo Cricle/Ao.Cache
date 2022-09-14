@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <Import Project="..\..\eng\pkg.props" />
   <PropertyGroup>
@@ -6,21 +6,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Castle.Core.AsyncInterceptor" Version="2.1.0" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Ao.Cache.Core\Ao.Cache.Core.csproj" />
-    <ProjectReference Include="..\Ao.Cache.Proxy\Ao.Cache.Proxy.csproj" />
   </ItemGroup>
-
   <ItemGroup Condition="'$(TargetFramework)' != 'net452'">
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net452'">
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="1.1.1" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="../Ao.Cache.Proxy/Annotations/TaskHelper.cs"/>
-  </ItemGroup>
+
 </Project>

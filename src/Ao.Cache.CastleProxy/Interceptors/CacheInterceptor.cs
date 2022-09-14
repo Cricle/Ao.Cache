@@ -1,5 +1,7 @@
-﻿using Ao.Cache.CastleProxy.Annotations;
-using Ao.Cache.CastleProxy.Model;
+﻿using Ao.Cache.Proxy;
+using Ao.Cache.Proxy.Annotations;
+using Ao.Cache.Proxy.Interceptors;
+using Ao.Cache.Proxy.Model;
 using Castle.DynamicProxy;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -39,7 +41,7 @@ namespace Ao.Cache.CastleProxy.Interceptors
 
             public bool TypesEquals;
 
-            public Func<CacheInterceptor, IInvocation, IInvocationProceedInfo, object, object> Method;
+            public Func<CacheInterceptor, IInvocationInfo, object, object> Method;
         }
         private static readonly object actionTypeLocker = new object();
 
@@ -66,34 +68,34 @@ namespace Ao.Cache.CastleProxy.Interceptors
             }
             return t;
         }
-        private static Func<CacheInterceptor, IInvocation, IInvocationProceedInfo, object, object> CompileMethod(Type prevType, Type actualType)
+        private static Func<CacheInterceptor, IInvocationInfo, object, object> CompileMethod(Type prevType, Type actualType)
         {
-            var coreInterceptMethod = typeof(CacheInterceptor).GetMethod(nameof(CoreInterceptAsync), BindingFlags.Instance | BindingFlags.NonPublic);
+            var coreInterceptMethod = typeof(InterceptLayout).GetMethod(nameof(InterceptLayout.RunAsync), 
+                BindingFlags.Instance | BindingFlags.NonPublic);
             var method = coreInterceptMethod.MakeGenericMethod(actualType);
-            var par0 = Expression.Parameter(typeof(CacheInterceptor));
-            var par1 = Expression.Parameter(typeof(IInvocation));
-            var par2 = Expression.Parameter(typeof(IInvocationProceedInfo));
+            var par0 = Expression.Parameter(typeof(InterceptLayout));
+            var par1 = Expression.Parameter(typeof(IInvocationInfo));
             var par3 = Expression.Parameter(typeof(object));
 
             var par3Convert = Expression.Convert(par3,
-                typeof(Func<,,>).MakeGenericType(typeof(IInvocation), typeof(IInvocationProceedInfo), typeof(Task<>).MakeGenericType(prevType)));
+                typeof(Func<,,>).MakeGenericType(typeof(IInvocation), typeof(Task<>).MakeGenericType(prevType)));
 
             var caseMethod = typeof(CacheInterceptor).GetMethod(nameof(Case), BindingFlags.Static | BindingFlags.Instance | BindingFlags.NonPublic)
                 .MakeGenericMethod(prevType, actualType);
 
 
-            var par3Case = Expression.Call(null, caseMethod, par1, par2, par3Convert);
+            var par3Case = Expression.Call(null, caseMethod, par1, par3Convert);
 
-            var body = Expression.Call(par0, method, par1, par2, par3Case);
-            return Expression.Lambda<Func<CacheInterceptor, IInvocation, IInvocationProceedInfo, object, object>>(body,
-                par0, par1, par2, par3).Compile();
+            var body = Expression.Call(par0, method, par1, par3Case);
+            return Expression.Lambda<Func<CacheInterceptor, IInvocationInfo, object, object>>(body,
+                par0, par1, par3).Compile();
         }
 
-        private static Func<Task<TOut>> Case<TResult, TOut>(IInvocation invocation, IInvocationProceedInfo proceedInfo, Func<IInvocation, IInvocationProceedInfo, Task<TResult>> proceed)
+        private static Func<Task<TOut>> Case<TResult, TOut>(IInvocationInfo invocation, Func<IInvocationInfo, Task<TResult>> proceed)
         {
             return async () =>
             {
-                var res = await proceed(invocation, proceedInfo).ConfigureAwait(false);
+                var res = await proceed(invocation).ConfigureAwait(false);
                 if (res is AutoCacheResult<TOut> o)
                 {
                     return o.RawData;
@@ -101,125 +103,12 @@ namespace Ao.Cache.CastleProxy.Interceptors
                 return (TOut)(object)res;
             };
         }
-        class DecoratorHelper
-        {
-            private static readonly Dictionary<NamedInterceptorKey, AutoCacheDecoratorBaseAttribute[]> m = new Dictionary<NamedInterceptorKey, AutoCacheDecoratorBaseAttribute[]>();
-            private static readonly object locker = new object();
-
-            public static AutoCacheDecoratorBaseAttribute[] Get(in NamedInterceptorKey info)
-            {
-                if (!m.TryGetValue(info, out var attr))
-                {
-                    lock (locker)
-                    {
-                        if (!m.TryGetValue(info, out attr))
-                        {
-                            var attrs = new List<AutoCacheDecoratorBaseAttribute>();
-                            var typeAttr = info.TargetType.GetCustomAttributes<AutoCacheDecoratorBaseAttribute>();
-                            if (typeAttr != null)
-                            {
-                                attrs.AddRange(typeAttr);
-                            }
-                            var methodAttr = info.Method.GetCustomAttributes<AutoCacheDecoratorBaseAttribute>();
-                            if (methodAttr != null)
-                            {
-                                attrs.AddRange(methodAttr);
-                            }
-                            attrs.Sort((a, b) => a.Order - b.Order);
-                            attr = attrs.ToArray();
-                            m[info] = attr;
-                        }
-                    }
-                }
-                return attr;
-            }
-        }
-        protected async Task<AutoCacheResult<TResult>> CoreInterceptAsync<TResult>(IInvocation invocation, IInvocationProceedInfo proceedInfo, Func<Task<TResult>> proceed)
-        {
-            var rr = new AutoCacheResult<TResult>();
-            using (var scope = ServiceScopeFactory.CreateScope())
-            {
-                var finderFactory = scope.ServiceProvider.GetRequiredService<IDataFinderFactory>();
-                var finder = finderFactory.Create(new CastleDataAccesstor<UnwindObject, TResult>(proceed));
-                var key = new NamedInterceptorKey(invocation.TargetType, invocation.Method);
-                var attr = DecoratorHelper.Get(key);
-
-                var winObj = NamedHelper.GetUnwindObject(key, invocation.Arguments);
-                var ctx = new AutoCacheDecoratorContext<TResult>(
-                    invocation, proceedInfo, scope.ServiceProvider, finder, winObj);
-                for (int i = 0; i < attr.Length; i++)
-                {
-                    await attr[i].DecorateAsync(ctx).ConfigureAwait(false);
-                }
-                var res = await finder.FindInCacheAsync(winObj).ConfigureAwait(false);
-                if (res == null)
-                {
-                    var resultBox = new AutoCacheResultBox<TResult>();
-                    for (int i = 0; i < attr.Length; i++)
-                    {
-                        await attr[i].FindInMethodBeginAsync(ctx, resultBox).ConfigureAwait(false);
-                    }
-                    try
-                    {
-                        if (resultBox.HasResult)
-                        {
-                            res = resultBox.Result;
-                            rr.Status = AutoCacheStatus.Intercept;
-                        }
-                        else
-                        {
-                            res = await proceed().ConfigureAwait(false);
-                            await finder.SetInCacheAsync(winObj, res).ConfigureAwait(false);
-                            rr.Status = AutoCacheStatus.MethodHit;
-                        }
-                        rr.RawData = res;
-                        for (int i = 0; i < attr.Length; i++)
-                        {
-                            await attr[i].FindInMethodEndAsync(ctx, res, resultBox.HasResult).ConfigureAwait(false);
-                        }
-                        return rr;
-                    }
-                    finally
-                    {
-                        for (int i = 0; i < attr.Length; i++)
-                        {
-                            await attr[i].FindInMethodFinallyAsync(ctx).ConfigureAwait(false);
-                        }
-                    }
-                }
-
-                rr.Status = AutoCacheStatus.CacheHit;
-                rr.RawData = res;
-                invocation.ReturnValue = res;
-                for (int i = 0; i < attr.Length; i++)
-                {
-                    await attr[i].FoundInCacheAsync(ctx, res).ConfigureAwait(false);
-                }
-                return rr;
-            }
-        }
-        private static readonly object hasAutoCacheLocker = new object();
-        private static readonly Dictionary<Type, bool> hasAutoCache = new Dictionary<Type, bool>();
-        private static bool HasAutoCache(Type tuple, IInvocation invocation)
-        {
-            if (!hasAutoCache.TryGetValue(tuple, out var b))
-            {
-                lock (hasAutoCacheLocker)
-                {
-                    if (!hasAutoCache.TryGetValue(tuple, out b))
-                    {
-                        b = (invocation.TargetType.GetCustomAttribute<AutoCacheAttribute>() ??
-                            invocation.Method.GetCustomAttribute<AutoCacheAttribute>()) != null;
-                        hasAutoCache[tuple] = b;
-                    }
-                }
-            }
-            return b;
-        }
+        
         protected override async Task<TResult> InterceptAsync<TResult>(IInvocation invocation, IInvocationProceedInfo proceedInfo, Func<IInvocation, IInvocationProceedInfo, Task<TResult>> proceed)
         {
             var originType = typeof(TResult);
-            if (!HasAutoCache(originType, invocation))
+            if (!AutoCacheAssertions.HasAutoCache(invocation.TargetType)&&
+                !AutoCacheAssertions.HasAutoCache(invocation.Method))
             {
                 var res = await proceed(invocation, proceedInfo).ConfigureAwait(false);
                 if (res is IAutoCacheResult result)
@@ -230,7 +119,7 @@ namespace Ao.Cache.CastleProxy.Interceptors
             }
             var key = new NamedInterceptorKey(invocation.TargetType, invocation.Method);
             var attr = DecoratorHelper.Get(key);
-            var ctx = new AutoCacheInvokeDecoratorContext<TResult>(invocation, proceedInfo, ServiceScopeFactory, proceed);
+            var ctx = new AutoCacheInvokeDecoratorContext<TResult>(new InvocationInfo(invocation), ServiceScopeFactory);
             for (int i = 0; i < attr.Length; i++)
             {
                 await attr[i].InterceptBeginAsync(ctx);
@@ -240,7 +129,8 @@ namespace Ao.Cache.CastleProxy.Interceptors
                 var actualTypeInfo = GetActionType(originType);
                 if (actualTypeInfo.TypesEquals)
                 {
-                    var res = await CoreInterceptAsync(invocation, proceedInfo, () => proceed(invocation, proceedInfo)).ConfigureAwait(false);
+                    var layout = new InterceptLayout(ServiceScopeFactory, NamedHelper);
+                    var res = await layout.RunAsync(new InvocationInfo(invocation), () => proceed(invocation, proceedInfo)).ConfigureAwait(false);
                     var result = new AutoCacheInvokeResultContext<TResult>(res.RawData, res, null);
                     for (int i = 0; i < attr.Length; i++)
                     {
@@ -248,7 +138,7 @@ namespace Ao.Cache.CastleProxy.Interceptors
                     }
                     return res.RawData;
                 }
-                var rr = await (Task<TResult>)actualTypeInfo.Method(this, invocation, proceedInfo, proceed);
+                var rr = await (Task<TResult>)actualTypeInfo.Method(this, new InvocationInfo(invocation), proceed);
                 invocation.ReturnValue = rr;
                 var cacheResult = new AutoCacheInvokeResultContext<TResult>(rr, rr as IAutoCacheResult, null);
                 for (int i = 0; i < attr.Length; i++)
