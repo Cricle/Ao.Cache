@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -7,18 +7,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Ao.Cache.CastleProxy" Version="1.2.1" />
+    <PackageReference Include="Ao.Cache.InRedis.Microsoft.DependencyInjection" Version="1.2.1" />
+    <PackageReference Include="Ao.Cache.Serizlier.TextJson" Version="1.2.1" />
     <PackageReference Include="DryIoc.Microsoft.DependencyInjection" Version="6.0.2" />
     <PackageReference Include="Structing.DryInterceptor" Version="1.3.3-preview.2" />
   </ItemGroup>
 
-  <ItemGroup>
+  <!--<ItemGroup>
     <ProjectReference Include="..\..\src\Ao.Cache.CastleProxy\Ao.Cache.CastleProxy.csproj" />
-    <ProjectReference Include="..\..\src\Ao.Cache.InMemory.Microsoft.DependencyInjection\Ao.Cache.InMemory.Microsoft.DependencyInjection.csproj" />
-    <ProjectReference Include="..\..\src\Ao.Cache.InMemory\Ao.Cache.InMemory.csproj" />
     <ProjectReference Include="..\..\src\Ao.Cache.InRedis.Microsoft.DependencyInjection\Ao.Cache.InRedis.Microsoft.DependencyInjection.csproj" />
-    <ProjectReference Include="..\..\src\Ao.Cache.InRedis\Ao.Cache.InRedis.csproj" />
-    <ProjectReference Include="..\..\src\Ao.Cache.Serizlier.MessagePack\Ao.Cache.Serizlier.MessagePack.csproj" />
     <ProjectReference Include="..\..\src\Ao.Cache.Serizlier.SpanJson\Ao.Cache.Serizlier.SpanJson.csproj" />
-  </ItemGroup>
+  </ItemGroup>-->
 
 </Project>

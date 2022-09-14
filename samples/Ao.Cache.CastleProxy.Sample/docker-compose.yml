@@ -1,0 +1,13 @@
+version: '3.9'
+
+services:
+  redis:
+    image: redis:latest
+    ports:
+      - 6379:6379
+  myapp:
+    build: 
+      dockerfile: Dockerfile
+      context: .
+    depends_on:
+      - redis

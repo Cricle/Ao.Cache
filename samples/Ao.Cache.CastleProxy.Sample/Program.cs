@@ -2,7 +2,7 @@
 using Ao.Cache.CastleProxy.Interceptors;
 using Ao.Cache.CastleProxy.Model;
 using Ao.Cache.Events;
-using Ao.Cache.Serizlier.SpanJson;
+using Ao.Cache.Serizlier.TextJson;
 using DryIoc;
 using DryIoc.Microsoft.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
@@ -98,12 +98,14 @@ namespace Ao.Cache.CastleProxy.Sample
             ser.AddSingleton<IEventAdapter, RedisAdapter>();
             ser.AddSingleton<IGetTime, NoGetTime>();
             ser.AddCastleCacheProxy();
-            var s = ConfigurationOptions.Parse("127.0.0.1:6379");
+            var redisCfg = Environment.GetEnvironmentVariable("USE_DOCKER_ENV") != null ?
+                "redis:6379" : "127.0.0.1:6379";
+            var s = ConfigurationOptions.Parse(redisCfg);
             ser.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(s));
             ser.AddScoped(x => x.GetRequiredService<IConnectionMultiplexer>().GetDatabase());
             ser.AddDistributedLockFactory();
-            ser.AddSingleton<IEntityConvertor, SpanJsonEntityConvertor>();
-            ser.AddSingleton(typeof(IEntityConvertor<>), typeof(SpanJsonEntityConvertor<>));
+            ser.AddSingleton<IEntityConvertor, TextJsonEntityConvertor>();
+            ser.AddSingleton(typeof(IEntityConvertor<>), typeof(TextJsonEntityConvertor<>));
             //ser.AddInMemoryFinder();
             ser.AddInRedisFinder();
 
@@ -198,14 +200,14 @@ namespace Ao.Cache.CastleProxy.Sample
             ShowTitle("Run cache");
             var gt = provider.GetRequiredService<GetTime>();
             var finderFc = provider.GetRequiredService<AutoCacheService>();
-            await finderFc.DeleteAsync<GetTime, DtObj>(x => x.NowTime1(1, 0));//Clear up
-            var r1 = await gt.NowTime1(1, 0);
+            await finderFc.DeleteAsync<GetTime, DtObj>(x => x.NowTime1(1));//Clear up
+            var r1 = await gt.NowTime1(1);
             Console.WriteLine($"First:{r1.Time:yyyy:MM:dd HH:mm:ss.ffff}");
-            var r2 = await gt.NowTime1(1, 0);
+            var r2 = await gt.NowTime1(1);
             Console.WriteLine($"Second:{r1.Time:yyyy:MM:dd HH:mm:ss.ffff}");
-            var delRes = await finderFc.DeleteAsync<GetTime, DtObj>(x => x.NowTime1(1, 0));
+            var delRes = await finderFc.DeleteAsync<GetTime, DtObj>(x => x.NowTime1(1));
             Console.WriteLine($"Deleted Result:{delRes}");
-            var r3 = await gt.NowTime1(1, 0);
+            var r3 = await gt.NowTime1(1);
             Console.WriteLine($"Deleted after:{r3.Time:yyyy:MM:dd HH:mm:ss.ffff}");
         }
         private static async Task RunCacheWithStatus(IServiceProvider provider)
@@ -298,8 +300,7 @@ namespace Ao.Cache.CastleProxy.Sample
             return Task.FromResult(new AutoCacheResult<DtObj> { RawData = new DtObj { Time = DateTime.Now } });
         }
         [AutoCache]
-        [AutoCacheOptions]
-        public virtual Task<DtObj> NowTime1(int id, [AutoCacheSkipPart] long dd)
+        public virtual Task<DtObj> NowTime1(int id)
         {
             //Console.WriteLine("yerp");
             return Task.FromResult(new DtObj { Time = DateTime.Now });
