@@ -86,7 +86,7 @@ namespace Ao.Cache.Proxy.Annotations
         }
         protected virtual Task GetLockFailAsync<TResult>(AutoCacheDecoratorContext<TResult> context, RunLockResult lockResult)
         {
-            throw new GetLockFailException { locker = lockResult.Locker };
+            throw new GetLockFailException { Locker = lockResult.Locker };
         }
         public override Task DecorateAsync<TResult>(AutoCacheDecoratorContext<TResult> context)
         {

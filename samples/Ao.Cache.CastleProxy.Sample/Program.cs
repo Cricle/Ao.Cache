@@ -1,7 +1,8 @@
-﻿using Ao.Cache.CastleProxy.Annotations;
-using Ao.Cache.CastleProxy.Interceptors;
-using Ao.Cache.CastleProxy.Model;
+﻿using Ao.Cache.CastleProxy.Interceptors;
 using Ao.Cache.Events;
+using Ao.Cache.Proxy;
+using Ao.Cache.Proxy.Annotations;
+using Ao.Cache.Proxy.Model;
 using Ao.Cache.Serizlier.TextJson;
 using DryIoc;
 using DryIoc.Microsoft.DependencyInjection;
@@ -95,6 +96,8 @@ namespace Ao.Cache.CastleProxy.Sample
             ser.AddSingleton<GetTime>();
             ser.AddSingleton<LockTime>();
             ser.AddSingleton<LockCache>();
+            ser.AddSingleton<CacheInterceptor>();
+            ser.AddSingleton<LockInterceptor>();
             ser.AddSingleton<IEventAdapter, RedisAdapter>();
             ser.AddSingleton<IGetTime, NoGetTime>();
             ser.AddCastleCacheProxy();
@@ -232,9 +235,10 @@ namespace Ao.Cache.CastleProxy.Sample
             var tsk = new Task[5];
             for (int i = 0; i < tsk.Length; i++)
             {
+                var q = i;
                 tsk[i] = Task.Factory.StartNew(() =>
                 {
-                    t.Inc(10);
+                    t.Inc(q);
                 });
             }
             var sw = Stopwatch.GetTimestamp();
