@@ -37,25 +37,25 @@ namespace Ao.Cache.MethodBoundaryAspect.Interceptors
             typeof(IAsyncMethodHandle).GetMethod(nameof(IAsyncMethodHandle.HandleExceptionAsync));
 
         private static readonly Dictionary<Type, HandleMerge> handleDelegate = new Dictionary<Type, HandleMerge>();
-        private static readonly Dictionary<MethodInfo, MethodReturnInfo> isTaskWithSouce = new Dictionary<MethodInfo, MethodReturnInfo>();
+        private static readonly Dictionary<Type, MethodReturnInfo> isTaskWithSouce = new Dictionary<Type, MethodReturnInfo>();
         private static readonly object syncRootHandleDelegate = new object();
         private static readonly object syncRootisTaskWithSouce = new object();
 
-        private static MethodReturnInfo GetTaskResultType(MethodInfo method)
+        private static MethodReturnInfo GetTaskResultType(Type type)
         {
-            if (!isTaskWithSouce.TryGetValue(method, out var ifo))
+            if (!isTaskWithSouce.TryGetValue(type, out var ifo))
             {
                 lock (syncRootisTaskWithSouce)
                 {
-                    if (!isTaskWithSouce.TryGetValue(method, out ifo))
+                    if (!isTaskWithSouce.TryGetValue(type, out ifo))
                     {
                         var @case = MethodReturnCase.Other;
-                        if (method.ReturnType == typeof(Task))
+                        if (type == typeof(Task))
                         {
                             @case = MethodReturnCase.Task;
                         }
-                        else if (typeof(Task).IsAssignableFrom(method.ReturnType) &&
-                            method.ReturnType.IsGenericType)
+                        else if (typeof(Task).IsAssignableFrom(type) &&
+                            type.IsGenericType)
                         {
                             @case = MethodReturnCase.TaskResult;
                         }
@@ -66,9 +66,9 @@ namespace Ao.Cache.MethodBoundaryAspect.Interceptors
                         ifo = new MethodReturnInfo
                         {
                             Case = @case,
-                            ReturnGenericType = @case == MethodReturnCase.TaskResult ? method.ReturnType.GenericTypeArguments[0] : null
+                            ReturnGenericType = @case == MethodReturnCase.TaskResult ? type.GenericTypeArguments[0] : null
                         };
-                        isTaskWithSouce[method] = ifo;
+                        isTaskWithSouce[type] = ifo;
                     }
                 }
             }
@@ -108,8 +108,7 @@ namespace Ao.Cache.MethodBoundaryAspect.Interceptors
 
         public static bool AsyncIntercept(MethodExecutionArgs arg, IAsyncMethodHandle handle, MethodBoundaryMethods method)
         {
-            var methodInfo = (MethodInfo)arg.Method;
-            var rt = GetTaskResultType(methodInfo);
+            var rt = GetTaskResultType(((MethodInfo)arg.Method).ReturnType);
             if (rt.Case == MethodReturnCase.TaskResult)
             {
                 var merge = GetHandleDelegate(rt.ReturnGenericType);
@@ -127,7 +126,7 @@ namespace Ao.Cache.MethodBoundaryAspect.Interceptors
                     default:
                         break;
                 }
-                arg.ReturnValue = del.DynamicInvoke(handle,
+                arg.ReturnValue = del(handle,
                     arg,
                     arg.ReturnValue,
                     mergeDel);

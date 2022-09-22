@@ -7,12 +7,13 @@ namespace Ao.Cache.Benchmarks
     {
         static void Main(string[] args)
         {
-            //var r = new AutoCacheRun();
-            //r.Times = 20_000;
-            //r.Concurrent = 1000;
-            //r.Setup();
+            var r = new AutoCacheRun();
+            r.Times = 200_000;
+            r.Concurrent = 10000;
+            r.Setup();
+            r.MethodBound().GetAwaiter().GetResult();
 
-            BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run();
+            //BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run();
         }
     }
 }

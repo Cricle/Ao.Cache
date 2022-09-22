@@ -41,6 +41,7 @@ namespace Ao.Cache.Benchmarks.Actions
             }
             await Task.WhenAll(tasks);
         }
+
         [GlobalSetup]
         public void Setup()
         {
@@ -53,6 +54,7 @@ namespace Ao.Cache.Benchmarks.Actions
                 x.UseSqlite("Data Source=student.db;");
             });
             ser.AddSingleton<GetTime>();
+            ser.AddSingleton<GetTimeCt>();
             ser.AddSingleton<IDataAccesstor<int, Student>, AAccesstor>();
             ser.WithCastleCacheProxy();
             Regist(ser);
@@ -74,6 +76,7 @@ namespace Ao.Cache.Benchmarks.Actions
                 .WithDependencyInjectionAdapter(ser, null, RegistrySharing.CloneAndDropCache);
             icon.AsyncIntercept(typeof(GetTime), typeof(CacheInterceptor));
             provider = icon.BuildServiceProvider();
+            MethodBoundaryAspect.Interceptors.GlobalMethodBoundary.ServiceScopeFactory = provider.GetRequiredService<IServiceScopeFactory>();
             using (var scope = provider.CreateScope())
             {
                 var db = scope.ServiceProvider.GetRequiredService<StudentDbContext>();

@@ -50,6 +50,18 @@ namespace Ao.Cache.Benchmarks.Actions
             });
         }
         [Benchmark]
+        public async Task MethodBound()
+        {
+            await Run(Times, Concurrent, async i =>
+            {
+                using (var scope = provider.CreateScope())
+                {
+                    var getTime = provider.GetService<GetTimeCt>();
+                    await getTime.NowTime(i % 5);
+                }
+            });
+        }
+        [Benchmark]
         public async Task UseProvider()
         {
             await Run(Times, Concurrent, async i =>

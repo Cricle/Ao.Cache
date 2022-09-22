@@ -7,10 +7,6 @@ using System.Threading.Tasks;
 
 namespace Ao.Cache.Proxy
 {
-    public struct MyStruct
-    {
-
-    }
     public class InterceptLayout
     {
         public InterceptLayout(IServiceScopeFactory serviceScopeFactory, ICacheNamedHelper namedHelper)
