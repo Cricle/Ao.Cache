@@ -50,7 +50,7 @@ namespace Ao.Cache.Benchmarks.Actions
             });
         }
         [Benchmark]
-        public async Task MethodBound()
+        public async Task MethodBoundNoResult()
         {
             await Run(Times, Concurrent, async i =>
             {
@@ -58,6 +58,18 @@ namespace Ao.Cache.Benchmarks.Actions
                 {
                     var getTime = provider.GetService<GetTimeCt>();
                     await getTime.NowTime(i % 5);
+                }
+            });
+        }
+        [Benchmark]
+        public async Task MethodBoundResult()
+        {
+            await Run(Times, Concurrent, async i =>
+            {
+                using (var scope = provider.CreateScope())
+                {
+                    var getTime = provider.GetService<GetTimeCt>();
+                    await getTime.NowTime1(i % 5);
                 }
             });
         }

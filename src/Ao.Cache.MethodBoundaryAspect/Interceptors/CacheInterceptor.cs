@@ -96,7 +96,7 @@ namespace Ao.Cache.MethodBoundaryAspect.Interceptors
                 var d = token.AutoCacheResultBox.Result;
                 if (d != null)
                 {
-                    dyn.RawData = ((dynamic)token.AutoCacheResultBox.Result).RawData;
+                    dyn.RawData = token.AutoCacheResultBox.Result.RawData;
                 }
                 res= dyn;
                 return true;

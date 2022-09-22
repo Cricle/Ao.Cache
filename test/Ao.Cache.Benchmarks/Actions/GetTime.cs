@@ -11,9 +11,15 @@ namespace Ao.Cache.Benchmarks.Actions
         [AutoCache]
         [CacheInterceptor] 
         [AutoCacheOptions(CanRenewal = false)]
-        public virtual async Task<AutoCacheResult<Student>> NowTime(int id)
+        public virtual async Task<Student> NowTime(int id)
         {
-            System.Console.WriteLine("Hit");
+            return await Raw(id);
+        }
+        [AutoCache]
+        [CacheInterceptor]
+        [AutoCacheOptions(CanRenewal = false)]
+        public virtual async Task<AutoCacheResult<Student>> NowTime1(int id)
+        {
             return new AutoCacheResult<Student> { RawData = await Raw(id) };
         }
         public async Task<Student> Raw(int id)
