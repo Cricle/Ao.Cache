@@ -3,12 +3,6 @@ using Ao.Cache.Proxy.Interceptors;
 using Ao.Cache.Proxy.Model;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Ao.Cache.Proxy
@@ -29,13 +23,13 @@ namespace Ao.Cache.Proxy
 
         public ICacheNamedHelper NamedHelper { get; }
 
-        public bool HasAutoCache<TResult>(IInvocationInfo invocationInfo)
+        public bool HasAutoCache(IInvocationInfo invocationInfo)
         {
             return AutoCacheAssertions.HasAutoCache(invocationInfo.TargetType) ||
                  AutoCacheAssertions.HasAutoCache(invocationInfo.Method);
         }
 
-        public class InterceptToken<TResult>:IDisposable
+        public class InterceptToken<TResult> : IDisposable
         {
             public InterceptToken(IInvocationInfo invocationInfo, InterceptLayout layout)
             {
@@ -48,7 +42,7 @@ namespace Ao.Cache.Proxy
                 Result = new AutoCacheResult<TResult>();
                 Scope = ServiceScopeFactory.CreateScope();
                 DataFinderFactory = Scope.ServiceProvider.GetRequiredService<IDataFinderFactory>();
-                DataFinder = DataFinderFactory.CreateEmpty<UnwindObject,TResult>();
+                DataFinder = DataFinderFactory.CreateEmpty<UnwindObject, TResult>();
             }
 
             private UnwindObject? unwindObject;
@@ -71,9 +65,9 @@ namespace Ao.Cache.Proxy
             {
                 get
                 {
-                    if (autoCacheDecoratorContext==null)
+                    if (autoCacheDecoratorContext == null)
                     {
-                        autoCacheDecoratorContext = new  AutoCacheDecoratorContext<TResult>(
+                        autoCacheDecoratorContext = new AutoCacheDecoratorContext<TResult>(
                             InvocationInfo, Scope.ServiceProvider, DataFinder, UnwindObject);
                     }
                     return autoCacheDecoratorContext;
@@ -86,7 +80,7 @@ namespace Ao.Cache.Proxy
                 {
                     if (unwindObject == null)
                     {
-                        unwindObject= Layout.NamedHelper.GetUnwindObject(Key, InvocationInfo.Arguments);
+                        unwindObject = Layout.NamedHelper.GetUnwindObject(Key, InvocationInfo.Arguments);
                     }
                     return unwindObject.Value;
                 }
@@ -94,7 +88,7 @@ namespace Ao.Cache.Proxy
 
             public IDataFinderFactory DataFinderFactory { get; }
 
-            public IDataFinder<UnwindObject,TResult> DataFinder { get; }
+            public IDataFinder<UnwindObject, TResult> DataFinder { get; }
 
             public IInvocationInfo InvocationInfo { get; }
 
@@ -216,7 +210,7 @@ namespace Ao.Cache.Proxy
         //    var method = typeof(InterceptLayout).GetMethod(nameof(RunAsync))
         //        .MakeGenericMethod(actualType);
         //}
-        public async Task<AutoCacheResult<TResult>> RunAsync<TResult>(IInvocationInfo invocationInfo,Func<Task<TResult>> proceed)
+        public async Task<AutoCacheResult<TResult>> RunAsync<TResult>(IInvocationInfo invocationInfo, Func<Task<TResult>> proceed)
         {
             using (var token = CreateToken<TResult>(invocationInfo))
             {

@@ -1,5 +1,5 @@
-﻿using Ao.Cache.CastleProxy.Annotations;
-using Ao.Cache.CastleProxy.Model;
+﻿using Ao.Cache.Proxy.Annotations;
+using Ao.Cache.Proxy.Model;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 

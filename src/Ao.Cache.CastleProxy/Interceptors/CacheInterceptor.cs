@@ -31,12 +31,12 @@ namespace Ao.Cache.CastleProxy.Interceptors
         {
             return proceed(invocation, proceedInfo);
         }
-        
+
         protected override async Task<TResult> InterceptAsync<TResult>(IInvocation invocation, IInvocationProceedInfo proceedInfo, Func<IInvocation, IInvocationProceedInfo, Task<TResult>> proceed)
         {
             var ii = new InvocationInfo(invocation);
             var layout = new InterceptLayout(ServiceScopeFactory, NamedHelper);
-            if (!layout.HasAutoCache<TResult>(ii))
+            if (!layout.HasAutoCache(ii))
             {
                 var res = await proceed(invocation, proceedInfo).ConfigureAwait(false);
                 if (res is IAutoCacheResult result)
@@ -101,11 +101,13 @@ namespace Ao.Cache.CastleProxy.Interceptors
 
             static NewExpression()
             {
-                IsAutoResult = typeof(T).GetInterface(typeof(IAutoCacheResult).FullName) != null;
+                var typeT = typeof(T);
+                IsAutoResult = typeT.IsGenericType &&
+                    typeT.GetGenericTypeDefinition() == typeof(AutoCacheResult<>);
                 Creator = Expression.Lambda<Func<T>>(Expression.New(typeof(T))).Compile();
             }
         }
-        
+
         public void Intercept(IInvocation invocation)
         {
             InterceptSynchronous(invocation);

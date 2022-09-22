@@ -54,7 +54,7 @@ namespace Ao.Cache.Benchmarks.Actions
             });
             ser.AddSingleton<GetTime>();
             ser.AddSingleton<IDataAccesstor<int, Student>, AAccesstor>();
-            ser.AddCastleCacheProxy();
+            ser.WithCastleCacheProxy();
             Regist(ser);
             var s = ConfigurationOptions.Parse("127.0.0.1:6379");
             ser.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(s));

@@ -20,9 +20,9 @@ namespace Ao.Cache.Proxy
         {
             if (obj is ActualTypeInfos info)
             {
-                return info.ActualType==ActualType&&
-                    info.FinderType==FinderType&&
-                    info.TypesEquals==TypesEquals;
+                return info.ActualType == ActualType &&
+                    info.FinderType == FinderType &&
+                    info.TypesEquals == TypesEquals;
             }
             return false;
         }

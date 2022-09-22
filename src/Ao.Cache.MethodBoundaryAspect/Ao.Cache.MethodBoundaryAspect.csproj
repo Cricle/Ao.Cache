@@ -1,14 +1,9 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <Import Project="..\..\eng\pkg.props" />
   <PropertyGroup>
     <TargetFrameworks>net452;net5.0;netstandard2.0</TargetFrameworks>
   </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Castle.Core.AsyncInterceptor" Version="2.1.0" />
-    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Ao.Cache.Core\Ao.Cache.Core.csproj" />
@@ -17,5 +12,10 @@
 
   <ItemGroup>
     <Compile Include="../Ao.Cache.Proxy/Annotations/TaskHelper.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MethodBoundaryAspect.Fody" Version="2.0.145" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
   </ItemGroup>
 </Project>

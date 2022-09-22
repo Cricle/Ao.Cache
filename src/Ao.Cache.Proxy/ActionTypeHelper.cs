@@ -1,9 +1,6 @@
 ﻿using Ao.Cache.Proxy.Model;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Ao.Cache.Proxy
 {
@@ -28,7 +25,7 @@ namespace Ao.Cache.Proxy
                             typeEquals = false;
                         }
                         var finderType = typeof(IDataFinder<,>).MakeGenericType(typeof(UnwindObject), actualType);
-                        t = new ActualTypeInfos(actualType,finderType,typeEquals);
+                        t = new ActualTypeInfos(actualType, finderType, typeEquals);
                         actualTypes[type] = t;
                     }
                 }

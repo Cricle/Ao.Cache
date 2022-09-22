@@ -96,11 +96,9 @@ namespace Ao.Cache.CastleProxy.Sample
             ser.AddSingleton<GetTime>();
             ser.AddSingleton<LockTime>();
             ser.AddSingleton<LockCache>();
-            ser.AddSingleton<CacheInterceptor>();
-            ser.AddSingleton<LockInterceptor>();
             ser.AddSingleton<IEventAdapter, RedisAdapter>();
             ser.AddSingleton<IGetTime, NoGetTime>();
-            ser.AddCastleCacheProxy();
+            ser.WithCastleCacheProxy();
             var redisCfg = Environment.GetEnvironmentVariable("USE_DOCKER_ENV") != null ?
                 "redis:6379" : "127.0.0.1:6379";
             var s = ConfigurationOptions.Parse(redisCfg);

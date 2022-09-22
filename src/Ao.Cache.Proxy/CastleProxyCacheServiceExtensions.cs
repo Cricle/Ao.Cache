@@ -1,16 +1,15 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Ao.Cache.Proxy
 {
-    public static class CastleProxyCacheServiceExtensions
+    public static class ProxyCacheServiceExtensions
     {
-        public static IServiceCollection AddCastleCacheProxy(this IServiceCollection services)
+        public static IServiceCollection AddCacheProxy(this IServiceCollection services)
         {
-            services.AddSingleton<IStringTransfer>(DefaultStringTransfer.Default);
-            services.AddSingleton<ICacheNamedHelper>(DefaultCacheNamedHelper.Default);
-            //services.AddSingleton<CacheInterceptor>();
-            //services.AddSingleton<LockInterceptor>();
-            services.AddSingleton<AutoCacheService>();
+            services.TryAddSingleton<IStringTransfer>(DefaultStringTransfer.Default);
+            services.TryAddSingleton<ICacheNamedHelper>(DefaultCacheNamedHelper.Default);
+            services.TryAddSingleton<AutoCacheService>();
             return services;
         }
     }

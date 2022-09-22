@@ -48,7 +48,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ao.Cache.InMemory.Microsoft
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ao.Cache.InRedis.Microsoft.DependencyInjection", "src\Ao.Cache.InRedis.Microsoft.DependencyInjection\Ao.Cache.InRedis.Microsoft.DependencyInjection.csproj", "{7763DB85-823A-4295-8BC5-D3576F2C19BF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ao.Cache.Proxy", "src\Ao.Cache.Proxy\Ao.Cache.Proxy.csproj", "{61921D3D-9327-4375-B33F-26D0DB70AAB2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ao.Cache.Proxy", "src\Ao.Cache.Proxy\Ao.Cache.Proxy.csproj", "{61921D3D-9327-4375-B33F-26D0DB70AAB2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ao.Cache.MethodBoundaryAspect", "src\Ao.Cache.MethodBoundaryAspect\Ao.Cache.MethodBoundaryAspect.csproj", "{6080FD70-1177-47AA-9D49-62536BD431F7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ao.Cache.MethodBoundaryProxy.Sample", "samples\Ao.Cache.MethodBoundaryProxy.Sample\Ao.Cache.MethodBoundaryProxy.Sample.csproj", "{0DA6648A-F0A9-447E-9050-D10F935FB58E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -128,6 +132,14 @@ Global
 		{61921D3D-9327-4375-B33F-26D0DB70AAB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{61921D3D-9327-4375-B33F-26D0DB70AAB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{61921D3D-9327-4375-B33F-26D0DB70AAB2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6080FD70-1177-47AA-9D49-62536BD431F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6080FD70-1177-47AA-9D49-62536BD431F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6080FD70-1177-47AA-9D49-62536BD431F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6080FD70-1177-47AA-9D49-62536BD431F7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0DA6648A-F0A9-447E-9050-D10F935FB58E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0DA6648A-F0A9-447E-9050-D10F935FB58E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0DA6648A-F0A9-447E-9050-D10F935FB58E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0DA6648A-F0A9-447E-9050-D10F935FB58E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -142,6 +154,7 @@ Global
 		{C151E00D-81F4-4C3F-9D48-24AAF3BF3BEC} = {11090D69-D856-4AD5-8862-CF560B9CBDA0}
 		{693621BF-4EF6-43DA-9FAC-C1D02F1D040D} = {11090D69-D856-4AD5-8862-CF560B9CBDA0}
 		{42CC9B09-8003-47F6-867C-E6FEA693FFDF} = {11090D69-D856-4AD5-8862-CF560B9CBDA0}
+		{0DA6648A-F0A9-447E-9050-D10F935FB58E} = {A52E7B5C-66EF-4377-847C-B1BA11168C56}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {55157C22-E7CC-4639-A568-1305AB03681E}
