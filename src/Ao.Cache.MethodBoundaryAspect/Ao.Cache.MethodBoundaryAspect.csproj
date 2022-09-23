@@ -16,6 +16,5 @@
 
   <ItemGroup>
     <PackageReference Include="MethodBoundaryAspect.Fody" Version="2.0.145" />
-    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
   </ItemGroup>
 </Project>

@@ -78,33 +78,20 @@ namespace Ao.Cache.CastleProxy.Interceptors
                     await token.FinallyAsync();
 
                 }
-                if (NewExpression<TResult>.IsAutoResult)
+                if (CacheResultNewExpression<TResult>.IsAutoResult)
                 {
-                    dynamic dyn = NewExpression<TResult>.Creator();
-                    dyn.Status = token.Result.Status;
+                    var dyn = CacheResultNewExpression<TResult>.Creator();
+                    ((IAutoCacheResult)dyn).Status = token.Result.Status;
                     var d = token.AutoCacheResultBox.Result;
                     if (d != null)
                     {
-                        dyn.RawData = ((dynamic)token.AutoCacheResultBox.Result).RawData;
+                        AutoCacheResultRawFetcher.SetRawResult(dyn,
+                            AutoCacheResultRawFetcher.GetRawResult(d, CacheResultNewExpression<TResult>.GenericType),
+                             CacheResultNewExpression<TResult>.GenericType);
                     }
                     return dyn;
                 }
                 return token.Result.RawData;
-            }
-        }
-
-        static class NewExpression<T>
-        {
-            public static readonly Func<T> Creator;
-
-            public static bool IsAutoResult;
-
-            static NewExpression()
-            {
-                var typeT = typeof(T);
-                IsAutoResult = typeT.IsGenericType &&
-                    typeT.GetGenericTypeDefinition() == typeof(AutoCacheResult<>);
-                Creator = Expression.Lambda<Func<T>>(Expression.New(typeof(T))).Compile();
             }
         }
 

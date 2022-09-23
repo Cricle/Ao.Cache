@@ -12,18 +12,14 @@ namespace Ao.Cache.MethodBoundaryAspect.Interceptors
     public class CacheInterceptor : OnMethodBoundaryAspect, IAsyncMethodHandle
     {
         private readonly IServiceScope scope;
-        private readonly IStringTransfer stringTransfer;
         private readonly ICacheNamedHelper cacheNamedHelper;
         private InterceptLayout layout;
         private InvocationInfo ii;
-        private dynamic token;
-
-        private bool skip;
+        private object token;
 
         public CacheInterceptor()
         {
             scope = GlobalMethodBoundary.CreateScope();
-            stringTransfer = scope.ServiceProvider.GetRequiredService<IStringTransfer>();
             cacheNamedHelper = scope.ServiceProvider.GetRequiredService<ICacheNamedHelper>();
         }
 
@@ -33,7 +29,6 @@ namespace Ao.Cache.MethodBoundaryAspect.Interceptors
             layout = new InterceptLayout(GlobalMethodBoundary.ServiceScopeFactory, cacheNamedHelper);
             if (!layout.HasAutoCache(ii))
             {
-                skip = true;
                 if (((MethodInfo)arg.Method).ReturnType is IAutoCacheResult result)
                 {
                     result.Status = AutoCacheStatus.Skip;
@@ -41,18 +36,14 @@ namespace Ao.Cache.MethodBoundaryAspect.Interceptors
                 return old;
             }
 
-            var token = layout.CreateToken<T>(ii);
+            var token = layout.CreateToken<T>(ii, scope);
             this.token = token;
             await token.InterceptBeginAsync();
-            var cacheRes = await token.TryFindInCacheAsync();
+            var cacheRes = await token.TryFindInCacheAsync().ConfigureAwait(false);
             if (cacheRes == null)
             {
                 await token.FindInMethodBeginAsync();
-                if (!token.AutoCacheResultBox.HasResult)
-                {
-                    arg.FlowBehavior = FlowBehavior.Continue;
-                }
-                else
+                if (token.AutoCacheResultBox.HasResult)
                 {
                     arg.FlowBehavior = FlowBehavior.Return;
                 }
@@ -65,55 +56,44 @@ namespace Ao.Cache.MethodBoundaryAspect.Interceptors
             return old;
         }
 
-        static class NewExpression<T>
-        {
-            public static readonly Func<T> Creator;
-
-            public static bool IsAutoResult;
-
-            static NewExpression()
-            {
-                var typeT = typeof(T);
-                IsAutoResult = typeT.IsGenericType &&
-                    typeT.GetGenericTypeDefinition() == typeof(AutoCacheResult<>);
-                Creator = Expression.Lambda<Func<T>>(Expression.New(typeof(T))).Compile();
-            }
-        }
-
         public async Task<T> HandleExceptionAsync<T>(MethodExecutionArgs arg, T old)
         {
-            await token.InterceptExceptionAsync(arg.Exception);
-            await token.FindInMethodFinallyAsync();
-            await token.FinallyAsync();
+            var tk = (InterceptToken<T>)token;
+            await tk.InterceptExceptionAsync(arg.Exception);
+            await tk.FindInMethodFinallyAsync();
+            await tk.FinallyAsync();
             return old;
         }
-        private bool TryGetValue<T>(out dynamic res)
+        private bool TryGetValue<T>(InterceptToken<T> token,out object res)
         {
-            if (NewExpression<T>.IsAutoResult)
+            if (CacheResultNewExpression<T>.IsAutoResult)
             {
-                dynamic dyn = NewExpression<T>.Creator();
-                dyn.Status = token.Result.Status;
+                var dyn = CacheResultNewExpression<T>.Creator();
+                ((IAutoCacheResult)dyn).Status = token.Result.Status;
                 var d = token.AutoCacheResultBox.Result;
                 if (d != null)
                 {
-                    dyn.RawData = token.AutoCacheResultBox.Result.RawData;
+                    AutoCacheResultRawFetcher.SetRawResult(dyn,
+                        AutoCacheResultRawFetcher.GetRawResult(d, CacheResultNewExpression<T>.GenericType),
+                         CacheResultNewExpression<T>.GenericType);
                 }
-                res= dyn;
+                res = dyn;
                 return true;
             }
             res = default(T);
             return false;
         }
         public async Task<T> HandleExitAsync<T>(MethodExecutionArgs arg, T old)
-        {            
-            token.AutoCacheResultBox.SetResult(old);
-            await token.FindInMethodEndAsync();
-            await token.FinallyAsync();
-            if (TryGetValue<T>(out var res))
+        {
+            var tk = (InterceptToken<T>)token;
+            tk.AutoCacheResultBox.SetResult(old);
+            await tk.FindInMethodEndAsync().ConfigureAwait(false);
+            await tk.FinallyAsync().ConfigureAwait(false);
+            if (TryGetValue(tk,out var res))
             {
-                return res;
+                return (T)res;
             }
-            return token.Result.RawData;
+            return tk.Result.RawData;
         }
 
         public override void OnEntry(MethodExecutionArgs arg)
@@ -128,7 +108,7 @@ namespace Ao.Cache.MethodBoundaryAspect.Interceptors
                 MethodBoundaryAspectHelper.AsyncIntercept(arg, this, MethodBoundaryMethods.Exit);
             }
             scope.Dispose();
-            token?.Dispose();
+            (token as IDisposable)?.Dispose();
         }
         public override void OnException(MethodExecutionArgs arg)
         {

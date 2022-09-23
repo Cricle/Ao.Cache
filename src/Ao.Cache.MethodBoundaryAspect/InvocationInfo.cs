@@ -9,7 +9,7 @@ using MethodBoundaryAspect.Fody.Attributes;
 
 namespace Ao.Cache.MethodBoundaryAspect
 {
-    internal class InvocationInfo : IInvocationInfo
+    internal struct InvocationInfo : IInvocationInfo
     {
         private readonly MethodExecutionArgs arg;
 

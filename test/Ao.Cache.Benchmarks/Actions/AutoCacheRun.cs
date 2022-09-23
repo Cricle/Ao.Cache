@@ -13,6 +13,16 @@ namespace Ao.Cache.Benchmarks.Actions
         [Params(1000, 5000)]
         public int Concurrent { get; set; }
 
+        protected override async Task OnSetup()
+        {
+            await Raw();
+            await NoResult();
+            await HasResult();
+            await MethodBoundNoResult();
+            await MethodBoundResult();
+            await UseProvider();
+        }
+
         [Benchmark(Baseline = true)]
         public async Task Raw()
         {

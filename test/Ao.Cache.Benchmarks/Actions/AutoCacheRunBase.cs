@@ -43,7 +43,7 @@ namespace Ao.Cache.Benchmarks.Actions
         }
 
         [GlobalSetup]
-        public void Setup()
+        public async Task Setup()
         {
             var ser = new ServiceCollection();
             ser.AddPooledDbContextFactory<StudentDbContext>(x =>
@@ -77,23 +77,27 @@ namespace Ao.Cache.Benchmarks.Actions
             icon.AsyncIntercept(typeof(GetTime), typeof(CacheInterceptor));
             provider = icon.BuildServiceProvider();
             MethodBoundaryAspect.Interceptors.GlobalMethodBoundary.ServiceScopeFactory = provider.GetRequiredService<IServiceScopeFactory>();
-            using (var scope = provider.CreateScope())
-            {
-                var db = scope.ServiceProvider.GetRequiredService<StudentDbContext>();
-                db.Database.EnsureCreated();
-                if (!db.Students.Any())
-                {
-                    for (int i = 0; i < 1000; i++)
-                    {
-                        db.Students.Add(new Student
-                        {
-                            Name = i.ToString() + "dsadsad"
-                        });
-                    }
-                    db.SaveChanges();
-                }
-            }
+            //using (var scope = provider.CreateScope())
+            //{
+            //    var db = scope.ServiceProvider.GetRequiredService<StudentDbContext>();
+            //    db.Database.EnsureCreated();
+            //    if (!db.Students.Any())
+            //    {
+            //        for (int i = 0; i < 1000; i++)
+            //        {
+            //            db.Students.Add(new Student
+            //            {
+            //                Name = i.ToString() + "dsadsad"
+            //            });
+            //        }
+            //        db.SaveChanges();
+            //    }
+            //}
+            await OnSetup();
         }
-
+        protected virtual Task OnSetup()
+        {
+            return Task.CompletedTask;
+        }
     }
 }
