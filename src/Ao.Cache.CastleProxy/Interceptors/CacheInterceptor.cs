@@ -50,14 +50,15 @@ namespace Ao.Cache.CastleProxy.Interceptors
                 try
                 {
                     await token.InterceptBeginAsync();
-                    if (await token.TryFindInCacheAsync() == null)
+                    var res = await token.TryFindInCacheAsync();
+                    if (res == null)
                     {
                         await token.FindInMethodBeginAsync();
                         if (!token.AutoCacheResultBox.HasResult)
                         {
                             try
                             {
-                                var res = await proceed(invocation, proceedInfo);
+                                res = await proceed(invocation, proceedInfo);
                                 token.AutoCacheResultBox.SetResult(res);
                                 await token.FindInMethodEndAsync();
                             }
@@ -66,6 +67,11 @@ namespace Ao.Cache.CastleProxy.Interceptors
                                 await token.FindInMethodFinallyAsync();
                             }
                         }
+                    }
+                    else
+                    {
+                        token.Result.RawData = res;
+                        token.AutoCacheResultBox.SetResult(res);
                     }
                 }
                 catch (Exception ex)

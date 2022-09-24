@@ -38,7 +38,8 @@ namespace Ao.Cache.Proxy.Model
                         var par1 = Expression.Parameter(typeof(object));
                         var par1Cast = Expression.Convert(par1, actType);
                         var prop = actType.GetProperty(nameof(AutoCacheResult<object>.RawData));
-                        var getter = Expression.Lambda<Func<object, object>>(Expression.Call(par1Cast, prop.GetMethod),par1)
+                        var caller= Expression.Convert(Expression.Call(par1Cast, prop.GetMethod),typeof(object));
+                        var getter = Expression.Lambda<Func<object, object>>(caller,par1)
                             .Compile();
 
                         var spar1 = Expression.Parameter(typeof(object));

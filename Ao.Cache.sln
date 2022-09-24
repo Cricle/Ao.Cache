@@ -52,7 +52,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ao.Cache.Proxy", "src\Ao.Ca
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ao.Cache.MethodBoundaryAspect", "src\Ao.Cache.MethodBoundaryAspect\Ao.Cache.MethodBoundaryAspect.csproj", "{6080FD70-1177-47AA-9D49-62536BD431F7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ao.Cache.MethodBoundaryProxy.Sample", "samples\Ao.Cache.MethodBoundaryProxy.Sample\Ao.Cache.MethodBoundaryProxy.Sample.csproj", "{0DA6648A-F0A9-447E-9050-D10F935FB58E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ao.Cache.MethodBoundaryProxy.Sample", "samples\Ao.Cache.MethodBoundaryProxy.Sample\Ao.Cache.MethodBoundaryProxy.Sample.csproj", "{0DA6648A-F0A9-447E-9050-D10F935FB58E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ao.Cache.Proxy.Test", "test\Ao.Cache.Proxy.Test\Ao.Cache.Proxy.Test.csproj", "{AF54B41B-80C1-4B07-A513-C34D609E42AC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ao.Cache.Proxy.MemoryTest", "test\Ao.Cache.Proxy.MemoryTest\Ao.Cache.Proxy.MemoryTest.csproj", "{2F0DA9B6-0C1B-4C32-9397-74530E0A7156}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -140,6 +144,14 @@ Global
 		{0DA6648A-F0A9-447E-9050-D10F935FB58E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0DA6648A-F0A9-447E-9050-D10F935FB58E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0DA6648A-F0A9-447E-9050-D10F935FB58E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF54B41B-80C1-4B07-A513-C34D609E42AC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF54B41B-80C1-4B07-A513-C34D609E42AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF54B41B-80C1-4B07-A513-C34D609E42AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF54B41B-80C1-4B07-A513-C34D609E42AC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2F0DA9B6-0C1B-4C32-9397-74530E0A7156}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F0DA9B6-0C1B-4C32-9397-74530E0A7156}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F0DA9B6-0C1B-4C32-9397-74530E0A7156}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F0DA9B6-0C1B-4C32-9397-74530E0A7156}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -155,6 +167,8 @@ Global
 		{693621BF-4EF6-43DA-9FAC-C1D02F1D040D} = {11090D69-D856-4AD5-8862-CF560B9CBDA0}
 		{42CC9B09-8003-47F6-867C-E6FEA693FFDF} = {11090D69-D856-4AD5-8862-CF560B9CBDA0}
 		{0DA6648A-F0A9-447E-9050-D10F935FB58E} = {A52E7B5C-66EF-4377-847C-B1BA11168C56}
+		{AF54B41B-80C1-4B07-A513-C34D609E42AC} = {9CF6302B-4E03-4DD5-904E-47D661131202}
+		{2F0DA9B6-0C1B-4C32-9397-74530E0A7156} = {9CF6302B-4E03-4DD5-904E-47D661131202}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {55157C22-E7CC-4639-A568-1305AB03681E}

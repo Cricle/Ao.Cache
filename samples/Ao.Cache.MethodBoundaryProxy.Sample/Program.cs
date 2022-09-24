@@ -26,7 +26,7 @@ namespace Ao.Cache.MethodBoundaryProxy.Sample
             var gt = provider.GetRequiredService<GetTime>();
             for (int i = 0; i < 5; i++)
             {
-                if (i%2==0)
+                if (i % 2 == 0)
                 {
                     var re = finderFc.DeleteAsync<GetTime, DateTime?>(x => x.NowAsync()).GetAwaiter().GetResult();
                     Console.WriteLine($"DeleteResult: {re}");

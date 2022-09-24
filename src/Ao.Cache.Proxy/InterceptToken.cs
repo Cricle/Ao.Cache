@@ -14,7 +14,7 @@ namespace Ao.Cache.Proxy
 
         public InterceptToken(IInvocationInfo invocationInfo, InterceptLayout layout, IServiceScope scope = null)
         {
-            InvocationInfo = invocationInfo;
+            InvocationInfo = invocationInfo ?? throw new ArgumentNullException(nameof(invocationInfo));
             Layout = layout;
             Key = new NamedInterceptorKey(invocationInfo.TargetType, invocationInfo.Method);
             Attributes = DecoratorHelper.Get(Key);

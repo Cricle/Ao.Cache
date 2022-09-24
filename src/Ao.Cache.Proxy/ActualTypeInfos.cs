@@ -12,8 +12,8 @@ namespace Ao.Cache.Proxy
 
         public ActualTypeInfos(Type actualType, Type finderType, bool typesEquals)
         {
-            ActualType = actualType;
-            FinderType = finderType;
+            ActualType = actualType ?? throw new ArgumentNullException(nameof(actualType));
+            FinderType = finderType ?? throw new ArgumentNullException(nameof(finderType));
             TypesEquals = typesEquals;
         }
         public override bool Equals(object obj)
