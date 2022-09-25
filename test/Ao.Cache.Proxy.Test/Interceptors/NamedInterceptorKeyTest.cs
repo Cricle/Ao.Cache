@@ -35,10 +35,15 @@ namespace Ao.Cache.Proxy.Test.Interceptors
 
             Assert.IsTrue(a.Equals(a));
             Assert.IsTrue(a.Equals((object)a));
+#pragma warning disable CS1718
+            Assert.IsTrue(a == a);
+#pragma warning restore CS1718
 
             Assert.IsFalse(a.Equals(b));
             Assert.IsFalse(a.Equals((object)b));
             Assert.IsFalse(a.Equals(default));
+
+            Assert.IsFalse(a == b);
         }
     }
 }

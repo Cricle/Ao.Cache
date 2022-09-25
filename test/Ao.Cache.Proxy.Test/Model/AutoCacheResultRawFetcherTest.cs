@@ -1,4 +1,5 @@
-﻿namespace Ao.Cache.Proxy.Test.Model
+﻿using Ao.Cache.Proxy.Model;
+namespace Ao.Cache.Proxy.Test.Model
 {
     [TestClass]
     public class AutoCacheResultRawFetcherTest

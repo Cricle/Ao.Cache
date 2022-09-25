@@ -17,10 +17,6 @@ namespace Ao.Cache.Proxy.Exceptions
         {
         }
 
-        protected GetLockFailException(SerializationInfo info, StreamingContext context) : base(info, context)
-        {
-        }
-
         public ILocker Locker { get; set; }
     }
 }

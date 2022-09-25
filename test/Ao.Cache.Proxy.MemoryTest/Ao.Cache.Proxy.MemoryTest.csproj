@@ -23,5 +23,8 @@
     <ProjectReference Include="..\..\src\Ao.Cache.InMemory\Ao.Cache.InMemory.csproj" />
     <ProjectReference Include="..\..\src\Ao.Cache.Proxy\Ao.Cache.Proxy.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Include="../Ao.Cache.Proxy.Test/Usings.cs"></Compile>
+  </ItemGroup>
 
 </Project>

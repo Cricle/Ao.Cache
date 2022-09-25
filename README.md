@@ -1,8 +1,16 @@
 <h2 align="center">
 Ao.Cache
 </h2>
+
+<div align="center">
+
+[![.NET Build](https://github.com/Cricle/Ao.Cache/actions/workflows/dotnet.yml/badge.svg)](https://github.com/Cricle/Ao.Cache/actions/workflows/dotnet.yml)
+[![codecov](https://codecov.io/gh/Cricle/Ao.Cache/branch/main/graph/badge.svg?token=pVSwE02V1L)](https://codecov.io/gh/Cricle/Ao.Cache)
+
+</div>
+
 <h3 align="center">
-A fast, easy, scalable cache and lock middleware
+A fast, easy, scalable cache and lock middleware(can compile time-dev)
 </h3>
 
 <div>
@@ -163,14 +171,18 @@ Sometimes there are such scenes, the request want find range data, but some exis
 |Ao.Cache.Core|![](https://img.shields.io/nuget/dt/Ao.Cache.Core)|
 |Ao.Cache.Redis|![](https://img.shields.io/nuget/dt/Ao.Cache.InMemory)|
 |Ao.Cache.InRedis|![](https://img.shields.io/nuget/dt/Ao.Cache.InRedis)|
-|Ao.Cache.InRedis.HashList|![](https://img.shields.io/nuget/dt/Ao.Cache.InRedis.HashList)|
 |Ao.Cache.CastleProxy|![](https://img.shields.io/nuget/dt/Ao.Cache.CastleProxy)|
 |Ao.Cache.Serizlier.MessagePack|![](https://img.shields.io/nuget/dt/Ao.Cache.Serizlier.MessagePack)|
-|Ao.Cache.Serizlier.SpanJson|![](https://img.shields.io/nuget/dtAo.Cache.Serizlier.SpanJson)|
+|Ao.Cache.Serizlier.SpanJson|![](https://img.shields.io/nuget/dt/Ao.Cache.Serizlier.SpanJson)|
 |Ao.Cache.Serizlier.TextJson|![](https://img.shields.io/nuget/dt/Ao.Cache.Serizlier.TextJson)|
+|Ao.Cache.MethodBoundaryAspect|![](https://img.shields.io/nuget/dt/Ao.Cache.MethodBoundaryAspect)|
 
 # Next
 
 - [ ] Fixed cache model
 - [ ] Add tests
 - [ ] Improve performance
+
+# Test cover
+
+![](https://codecov.io/gh/Cricle/Ao.Cache/branch/main/graphs/tree.svg?token=pVSwE02V1L)

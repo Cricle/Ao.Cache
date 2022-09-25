@@ -10,6 +10,7 @@ namespace Ao.Cache.Proxy
     public class InterceptToken<TResult> : IDisposable
     {
         private static readonly Type ResultType = typeof(TResult);
+
         public static readonly ActualTypeInfos ActualTypeInfos = ActionTypeHelper.GetActionType(ResultType);
 
         public InterceptToken(IInvocationInfo invocationInfo, InterceptLayout layout, IServiceScope scope = null)
@@ -175,6 +176,7 @@ namespace Ao.Cache.Proxy
         public void Dispose()
         {
             Scope.Dispose();
+            GC.SuppressFinalize(this);
         }
     }
 }

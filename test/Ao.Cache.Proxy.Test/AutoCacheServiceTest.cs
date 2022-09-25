@@ -1,4 +1,6 @@
-﻿namespace Ao.Cache.Proxy.Test
+﻿using Moq;
+
+namespace Ao.Cache.Proxy.Test
 {
     class NullDataFinder<TKey, TValue> : DataFinderBase<TKey, TValue>
     {

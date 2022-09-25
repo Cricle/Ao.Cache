@@ -1,4 +1,6 @@
-﻿namespace Ao.Cache.Proxy.Test
+﻿using Ao.Cache.Proxy.Model;
+
+namespace Ao.Cache.Proxy.Test
 {
     [TestClass]
     public class CacheResultNewExpressionTest
