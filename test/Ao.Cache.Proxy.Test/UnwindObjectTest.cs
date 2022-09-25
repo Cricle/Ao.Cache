@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Ao.Cache.Proxy.Test
+﻿namespace Ao.Cache.Proxy.Test
 {
     [TestClass]
     public class UnwindObjectTest
@@ -39,7 +33,7 @@ namespace Ao.Cache.Proxy.Test
 
             Assert.IsFalse(u1.Equals((object)u2));
             Assert.IsFalse(u1.Equals(null));
-            Assert.IsFalse(u1.Equals(default(UnwindObject)));
+            Assert.IsFalse(u1.Equals(default));
 
         }
         [TestMethod]

@@ -1,10 +1,6 @@
 ﻿using Ao.Cache.Proxy.Annotations;
-using Ao.Cache.Proxy.Interceptors;
-using Ao.Cache.Proxy.Model;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
 
 namespace Ao.Cache.Proxy
 {

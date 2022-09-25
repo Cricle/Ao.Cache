@@ -3,9 +3,6 @@ using Ao.Cache.Proxy.Model;
 using Castle.DynamicProxy;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Ao.Cache.CastleProxy.Interceptors

@@ -1,10 +1,5 @@
 ﻿using Ao.Cache.Proxy.Annotations;
 using Ao.Cache.Proxy.Interceptors;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Ao.Cache.Proxy.Test.Interceptors
 {

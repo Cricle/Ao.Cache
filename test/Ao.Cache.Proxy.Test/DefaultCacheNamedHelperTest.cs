@@ -1,10 +1,5 @@
 ﻿using Ao.Cache.Proxy.Annotations;
 using Ao.Cache.Proxy.Interceptors;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Ao.Cache.Proxy.Test
 {
@@ -90,7 +85,7 @@ namespace Ao.Cache.Proxy.Test
         [TestMethod]
         public void GetEmptyArg()
         {
-            var arr = new object[] {1};
+            var arr = new object[] { 1 };
             var val = DefaultCacheNamedHelper.Default.MakeArgs(
                 new NamedInterceptorValue(null, DefaultStringTransfer.Default, "aaa"),
                 arr);
@@ -99,9 +94,9 @@ namespace Ao.Cache.Proxy.Test
         [TestMethod]
         public void GetNoEmptyArg()
         {
-            var arr = new object[] { 1,2,3 };
+            var arr = new object[] { 1, 2, 3 };
             var val = DefaultCacheNamedHelper.Default.MakeArgs(
-                new NamedInterceptorValue(new int[] {0}, DefaultStringTransfer.Default, "aaa"),
+                new NamedInterceptorValue(new int[] { 0 }, DefaultStringTransfer.Default, "aaa"),
                 arr);
             Assert.AreEqual(1, val.Length);
             Assert.AreEqual(arr[0], val[0]);
@@ -120,7 +115,7 @@ namespace Ao.Cache.Proxy.Test
         [TestMethod]
         public void GetNoEmptyArgWithHeader()
         {
-            var arr = new object[] { 1,2,3 };
+            var arr = new object[] { 1, 2, 3 };
             var val = DefaultCacheNamedHelper.Default.MakeArgsWithHeader(
                 new NamedInterceptorValue(new int[] { 0 }, DefaultStringTransfer.Default, "aaa"),
                 arr);

@@ -1,12 +1,8 @@
-﻿using Ao.Cache.Events;
-using Ao.Cache.MethodBoundaryAspect.Interceptors;
+﻿using Ao.Cache.MethodBoundaryAspect.Interceptors;
 using Ao.Cache.Proxy;
 using Ao.Cache.Proxy.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Ao.Cache.MethodBoundaryProxy.Sample

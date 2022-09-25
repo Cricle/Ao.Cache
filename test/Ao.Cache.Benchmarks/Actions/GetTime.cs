@@ -1,7 +1,6 @@
 ﻿using Ao.Cache.MethodBoundaryAspect.Interceptors;
 using Ao.Cache.Proxy.Annotations;
 using Ao.Cache.Proxy.Model;
-using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 
 namespace Ao.Cache.Benchmarks.Actions
@@ -9,7 +8,7 @@ namespace Ao.Cache.Benchmarks.Actions
     class GetTimeCt
     {
         [AutoCache]
-        [CacheInterceptor] 
+        [CacheInterceptor]
         [AutoCacheOptions(CanRenewal = false)]
         public virtual async Task<Student> NowTime(int id)
         {

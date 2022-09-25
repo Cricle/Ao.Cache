@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Ao.Cache.Proxy.Test.Model
+﻿namespace Ao.Cache.Proxy.Test.Model
 {
     [TestClass]
     public class AutoCacheResultRawFetcherTest

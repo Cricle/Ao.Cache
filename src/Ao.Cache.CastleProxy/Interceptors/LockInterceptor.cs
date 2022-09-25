@@ -4,7 +4,6 @@ using Ao.Cache.Proxy.Exceptions;
 using Ao.Cache.Proxy.Interceptors;
 using Castle.DynamicProxy;
 using System;
-using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Ao.Cache.CastleProxy.Interceptors

@@ -1,12 +1,11 @@
 ﻿using Ao.Cache.CastleProxy.Interceptors;
 using DryIoc;
-using DryIoc.Microsoft.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Ao.Cache.Proxy.MemoryTest
 {
     [TestClass]
-    public class LockCaseTest:AutoTestBase
+    public class LockCaseTest : AutoTestBase
     {
         [TestMethod]
         public async Task LockAdd()
@@ -23,7 +22,7 @@ namespace Ao.Cache.Proxy.MemoryTest
 
             for (int i = 0; i < tasks.Length; i++)
             {
-                tasks[i] =await Task.Factory.StartNew(() => addSer.Add(10));
+                tasks[i] = await Task.Factory.StartNew(() => addSer.Add(10));
             }
             await Task.WhenAll(tasks);
 

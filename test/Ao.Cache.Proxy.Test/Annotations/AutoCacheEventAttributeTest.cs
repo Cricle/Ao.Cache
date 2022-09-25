@@ -1,11 +1,6 @@
 ﻿using Ao.Cache.Events;
 using Ao.Cache.Proxy.Annotations;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Ao.Cache.Proxy.Test.Annotations
 {

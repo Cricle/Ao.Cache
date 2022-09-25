@@ -1,9 +1,4 @@
 ﻿using Ao.Cache.Proxy.Interceptors;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Ao.Cache.Proxy.Test.Interceptors
 {
@@ -17,7 +12,7 @@ namespace Ao.Cache.Proxy.Test.Interceptors
             var m = t.GetMethods()[0];
 
             Assert.ThrowsException<ArgumentNullException>(() => new NamedInterceptorKey(t, null));
-            Assert.ThrowsException<ArgumentNullException>(() => new NamedInterceptorKey(null,m));
+            Assert.ThrowsException<ArgumentNullException>(() => new NamedInterceptorKey(null, m));
         }
         [TestMethod]
         public void HashCodeEqualsAndString()
@@ -43,7 +38,7 @@ namespace Ao.Cache.Proxy.Test.Interceptors
 
             Assert.IsFalse(a.Equals(b));
             Assert.IsFalse(a.Equals((object)b));
-            Assert.IsFalse(a.Equals(default(NamedInterceptorKey)));
+            Assert.IsFalse(a.Equals(default));
         }
     }
 }

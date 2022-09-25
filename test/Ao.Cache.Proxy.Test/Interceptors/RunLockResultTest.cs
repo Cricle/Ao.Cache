@@ -1,9 +1,4 @@
 ﻿using Ao.Cache.Proxy.Interceptors;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Ao.Cache.Proxy.Test.Interceptors
 {
@@ -38,9 +33,9 @@ namespace Ao.Cache.Proxy.Test.Interceptors
         [TestMethod]
         public void WithLockers()
         {
-            var locker=new NullLocker();
+            var locker = new NullLocker();
             var res = new RunLockResult(locker, RunLockResultTypes.InLocker);
-            Assert.AreEqual(locker,res.Locker);
+            Assert.AreEqual(locker, res.Locker);
             Assert.AreEqual(RunLockResultTypes.InLocker, res.Type);
         }
     }

@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace Ao.Cache.CastleProxy
 {
-    internal class InvocationInfo: IInvocationInfo
+    internal class InvocationInfo : IInvocationInfo
     {
         public InvocationInfo(IInvocation invocation)
         {

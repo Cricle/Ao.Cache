@@ -7,7 +7,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Redis;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Ao.Cache.Benchmarks.Actions

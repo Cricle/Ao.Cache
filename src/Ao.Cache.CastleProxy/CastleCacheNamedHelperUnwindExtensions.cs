@@ -1,9 +1,6 @@
 ﻿using Ao.Cache.Proxy;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Ao.Cache.CastleProxy

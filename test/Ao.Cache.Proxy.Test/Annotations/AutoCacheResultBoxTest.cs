@@ -1,9 +1,4 @@
 ﻿using Ao.Cache.Proxy.Annotations;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Ao.Cache.Proxy.Test.Annotations
 {
@@ -24,7 +19,7 @@ namespace Ao.Cache.Proxy.Test.Annotations
             var box = new AutoCacheResultBox<object>();
             box.SetResult(1);
 
-            Assert.AreEqual(1,box.Result);
+            Assert.AreEqual(1, box.Result);
             Assert.IsTrue(box.HasResult);
         }
     }

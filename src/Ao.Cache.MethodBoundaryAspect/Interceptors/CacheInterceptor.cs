@@ -3,7 +3,6 @@ using Ao.Cache.Proxy.Model;
 using MethodBoundaryAspect.Fody.Attributes;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -64,7 +63,7 @@ namespace Ao.Cache.MethodBoundaryAspect.Interceptors
             await tk.FinallyAsync();
             return old;
         }
-        private bool TryGetValue<T>(InterceptToken<T> token,out object res)
+        private bool TryGetValue<T>(InterceptToken<T> token, out object res)
         {
             if (CacheResultNewExpression<T>.IsAutoResult)
             {
@@ -89,7 +88,7 @@ namespace Ao.Cache.MethodBoundaryAspect.Interceptors
             tk.AutoCacheResultBox.SetResult(old);
             await tk.FindInMethodEndAsync().ConfigureAwait(false);
             await tk.FinallyAsync().ConfigureAwait(false);
-            if (TryGetValue(tk,out var res))
+            if (TryGetValue(tk, out var res))
             {
                 return (T)res;
             }

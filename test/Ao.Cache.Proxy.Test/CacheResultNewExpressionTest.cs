@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Ao.Cache.Proxy.Test
+﻿namespace Ao.Cache.Proxy.Test
 {
     [TestClass]
     public class CacheResultNewExpressionTest
@@ -14,8 +8,8 @@ namespace Ao.Cache.Proxy.Test
         {
             Assert.AreEqual(typeof(AutoCacheResult<object>), CacheResultNewExpression<AutoCacheResult<object>>.Type);
             Assert.IsTrue(CacheResultNewExpression<AutoCacheResult<object>>.IsAutoResult);
-            Assert.AreEqual(typeof(object),CacheResultNewExpression<AutoCacheResult<object>>.GenericType);
-            Assert.IsInstanceOfType(CacheResultNewExpression<AutoCacheResult<object>>.Creator(),typeof(AutoCacheResult<object>));
+            Assert.AreEqual(typeof(object), CacheResultNewExpression<AutoCacheResult<object>>.GenericType);
+            Assert.IsInstanceOfType(CacheResultNewExpression<AutoCacheResult<object>>.Creator(), typeof(AutoCacheResult<object>));
         }
         [TestMethod]
         public void IsNotAutoCacheResult()

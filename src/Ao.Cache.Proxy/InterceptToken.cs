@@ -24,7 +24,7 @@ namespace Ao.Cache.Proxy
             DataFinderFactory = this.scope.ServiceProvider.GetRequiredService<IDataFinderFactory>();
             DataFinder = DataFinderFactory.CreateEmpty<UnwindObject, TResult>();
         }
-        private IServiceScope scope;
+        private readonly IServiceScope scope;
         private UnwindObject? unwindObject;
         private AutoCacheDecoratorContext<TResult> autoCacheDecoratorContext;
         private AutoCacheResultBox<TResult> autoCacheResultBox;

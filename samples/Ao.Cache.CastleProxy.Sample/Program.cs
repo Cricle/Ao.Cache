@@ -30,7 +30,7 @@ namespace Ao.Cache.CastleProxy.Sample
 
         public async Task<EventPublishResult> PublishAsync<T>(string channel, T data)
         {
-            var res = await Subscriber.PublishAsync(channel, ObjectTransfer.ToBytes(data,typeof(T)));
+            var res = await Subscriber.PublishAsync(channel, ObjectTransfer.ToBytes(data, typeof(T)));
             return new EventPublishResult(true);
         }
 
@@ -47,7 +47,7 @@ namespace Ao.Cache.CastleProxy.Sample
             return Task.FromResult<IDisposable>(res);
 
         }
-        class SubscribeToken<T>: SubscribeTokenBase
+        class SubscribeToken<T> : SubscribeTokenBase
         {
             public IEventReceiver<T> EventReceiver;
 
@@ -59,7 +59,7 @@ namespace Ao.Cache.CastleProxy.Sample
                 };
             }
         }
-        abstract class SubscribeTokenBase:IDisposable
+        abstract class SubscribeTokenBase : IDisposable
         {
             public Action<RedisChannel, RedisValue> Key;
 
@@ -79,12 +79,12 @@ namespace Ao.Cache.CastleProxy.Sample
 
             protected T Case<T>(in RedisValue value)
             {
-                return (T)ObjectTransfer.ToEntry(value,typeof(T));
+                return (T)ObjectTransfer.ToEntry(value, typeof(T));
             }
 
             public void Dispose()
             {
-                Subscriber.Unsubscribe(Channel,Key);
+                Subscriber.Unsubscribe(Channel, Key);
             }
         }
     }

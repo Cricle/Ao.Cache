@@ -1,14 +1,7 @@
-﻿using Ao.Cache.CastleProxy;
-using Ao.Cache.CastleProxy.Interceptors;
-using Ao.Cache.Events;
+﻿using Ao.Cache.CastleProxy.Interceptors;
 using DryIoc;
 using Microsoft.Extensions.DependencyInjection;
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Ao.Cache.Proxy.MemoryTest
 {
@@ -55,7 +48,7 @@ namespace Ao.Cache.Proxy.MemoryTest
             var nowSer = provider.GetRequiredService<NowService>();
             var cs = provider.GetRequiredService<AutoCacheService>();
 
-            var exists = await cs.ExistsAsync<NowService, DateTime?>(x => x.NowWithArg(1,"1"), cacheExpression);
+            var exists = await cs.ExistsAsync<NowService, DateTime?>(x => x.NowWithArg(1, "1"), cacheExpression);
             Assert.IsFalse(exists);
 
             var r1 = await nowSer.NowWithArg(1, "2");

@@ -26,7 +26,7 @@ namespace Ao.Cache.Proxy
                 case 1:
                     return string.Concat(ToString(header), Spliter, ToString(args[0]));
                 default:
-                    return header+ Spliter + string.Join(Spliter, args);
+                    return header + Spliter + string.Join(Spliter, args);
             }
         }
 

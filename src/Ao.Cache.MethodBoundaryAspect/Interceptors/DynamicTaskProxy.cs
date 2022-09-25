@@ -10,7 +10,7 @@ namespace Ao.Cache.MethodBoundaryAspect.Interceptors
     public static class DynamicTaskProxy
     {
         private static readonly MethodInfo withResultMethodInfo = typeof(DynamicTaskProxy).GetMethod(nameof(WithResult), BindingFlags.Static | BindingFlags.Public);
-        private static readonly Dictionary<Type, Func<IAsyncMethodHandle, MethodExecutionArgs, object,object,object>> g = 
+        private static readonly Dictionary<Type, Func<IAsyncMethodHandle, MethodExecutionArgs, object, object, object>> g =
             new Dictionary<Type, Func<IAsyncMethodHandle, MethodExecutionArgs, object, object, object>>();
         private static readonly object syncRoot = new object();
 

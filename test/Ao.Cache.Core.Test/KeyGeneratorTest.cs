@@ -1,9 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Ao.Cache.Core.Test
 {
@@ -15,7 +11,7 @@ namespace Ao.Cache.Core.Test
         {
             var act = KeyGenerator.Concat("a", new object[] { "b", "c" });
             Assert.AreEqual("a_b_c", act);
-            act = KeyGenerator.Concat("a", new object[] {});
+            act = KeyGenerator.Concat("a", new object[] { });
             Assert.AreEqual("a", act);
         }
         [TestMethod]
@@ -23,7 +19,7 @@ namespace Ao.Cache.Core.Test
         {
             var act = KeyGenerator.Concat("a", "b");
             Assert.AreEqual("a_b", act);
-            act = KeyGenerator.Concat("a",(string)null);
+            act = KeyGenerator.Concat("a", (string)null);
             Assert.AreEqual($"a_{KeyGenerator.NullString}", act);
         }
         [TestMethod]
@@ -31,7 +27,7 @@ namespace Ao.Cache.Core.Test
         {
             var act = KeyGenerator.Concat("a", "b", "c");
             Assert.AreEqual("a_b_c", act);
-            act = KeyGenerator.Concat("a",null,null);
+            act = KeyGenerator.Concat("a", null, null);
             Assert.AreEqual($"a_{KeyGenerator.NullString}_{KeyGenerator.NullString}", act);
         }
         [TestMethod]
@@ -59,7 +55,7 @@ namespace Ao.Cache.Core.Test
         [TestMethod]
         public void GivenNullCall_MustThrowException()
         {
-            Assert.ThrowsException<ArgumentNullException>(() => KeyGenerator.Concat("a", (object[])null));
+            Assert.ThrowsException<ArgumentNullException>(() => KeyGenerator.Concat("a", null));
         }
     }
 }
