@@ -33,6 +33,7 @@ namespace Ao.Cache.Proxy.Test
 
             Assert.IsFalse(a1.Equals(a2));
             Assert.IsFalse(a1.Equals(a3));
+            Assert.IsFalse(a1.Equals(null));
             Assert.IsTrue(a1.Equals(a1));
         }
     }

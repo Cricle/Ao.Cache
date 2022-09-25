@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 
 namespace Ao.Cache.Proxy
 {
-    public struct InterceptLayout
+    public readonly struct InterceptLayout
     {
         public InterceptLayout(IServiceScopeFactory serviceScopeFactory, ICacheNamedHelper namedHelper)
         {
-            ServiceScopeFactory = serviceScopeFactory;
-            NamedHelper = namedHelper;
+            ServiceScopeFactory = serviceScopeFactory ?? throw new ArgumentNullException(nameof(serviceScopeFactory));
+            NamedHelper = namedHelper ?? throw new ArgumentNullException(nameof(namedHelper));
         }
 
         public IServiceScopeFactory ServiceScopeFactory { get; }
@@ -26,35 +26,9 @@ namespace Ao.Cache.Proxy
                  AutoCacheAssertions.HasAutoCache(invocationInfo.Method);
         }
 
-
-        public InterceptToken<TResult> CreateToken<TResult>(IInvocationInfo invocationInfo,IServiceScope scope=null)
+        public InterceptToken<TResult> CreateToken<TResult>(IInvocationInfo invocationInfo, IServiceScope scope = null)
         {
             return new InterceptToken<TResult>(invocationInfo, this, scope);
-        }
-
-        public async Task<AutoCacheResult<TResult>> RunAsync<TResult>(IInvocationInfo invocationInfo, Func<Task<TResult>> proceed)
-        {
-            using (var token = CreateToken<TResult>(invocationInfo))
-            {
-                if (await token.TryFindInCacheAsync() == null)
-                {
-                    await token.FindInMethodBeginAsync();
-                    if (!token.AutoCacheResultBox.HasResult)
-                    {
-                        try
-                        {
-                            var res = await proceed();
-                            token.AutoCacheResultBox.SetResult(res);
-                            await token.FindInMethodEndAsync();
-                        }
-                        finally
-                        {
-                            await token.FindInMethodFinallyAsync();
-                        }
-                    }
-                }
-                return token.Result;
-            }
         }
     }
 }
