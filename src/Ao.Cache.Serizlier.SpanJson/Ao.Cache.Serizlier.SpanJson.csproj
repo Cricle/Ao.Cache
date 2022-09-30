@@ -8,11 +8,11 @@
 		<ProjectReference Include="..\Ao.Cache.Core\Ao.Cache.Core.csproj" />
 	</ItemGroup>
   <ItemGroup>
-    <Compile Include="../Shareds/Encodings/*.cs"/>
+    <Compile Include="../Shareds/Encodings/*.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="SpanJson" Version="3.2.4" />
+    <PackageReference Include="SpanJson" Version="3.3.1" />
   </ItemGroup>
 
 </Project>

@@ -5,10 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MessagePack" Version="2.3.85" />
+    <PackageReference Include="MessagePack" Version="2.4.35" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="../Shareds/Encodings/*.cs"/>
+    <Compile Include="../Shareds/Encodings/*.cs" />
   </ItemGroup>
   
   <ItemGroup>

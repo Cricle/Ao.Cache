@@ -63,7 +63,7 @@ namespace Ao.Cache.MethodBoundaryAspect.Interceptors
             await tk.FinallyAsync();
             return old;
         }
-        private bool TryGetValue<T>(InterceptToken<T> token, out object res)
+        private static bool TryGetValue<T>(InterceptToken<T> token, out object res)
         {
             if (CacheResultNewExpression<T>.IsAutoResult)
             {
@@ -72,9 +72,9 @@ namespace Ao.Cache.MethodBoundaryAspect.Interceptors
                 var d = token.AutoCacheResultBox.Result;
                 if (d != null)
                 {
-                    AutoCacheResultRawFetcher.SetRawResult(dyn,
-                        AutoCacheResultRawFetcher.GetRawResult(d, CacheResultNewExpression<T>.GenericType),
-                         CacheResultNewExpression<T>.GenericType);
+                    AutoCacheResultRawFetcher.SetAndSetRawResult(d,
+                            dyn,
+                            CacheResultNewExpression<T>.GenericType);
                 }
                 res = dyn;
                 return true;

@@ -45,7 +45,9 @@ namespace Ao.Cache.MethodBoundaryAspect.Interceptors
             }
             return del;
         }
-
+        public delegate Task<T> HandleDelegate<T>(IAsyncMethodHandle handle,
+            MethodExecutionArgs arg,
+            Task<T> left);
         public static async Task<T> WithResult<T>(IAsyncMethodHandle handle,
             MethodExecutionArgs arg,
             Task<T> left,

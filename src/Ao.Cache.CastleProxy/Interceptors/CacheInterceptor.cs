@@ -88,8 +88,8 @@ namespace Ao.Cache.CastleProxy.Interceptors
                     var d = token.AutoCacheResultBox.Result;
                     if (d != null)
                     {
-                        AutoCacheResultRawFetcher.SetRawResult(dyn,
-                            AutoCacheResultRawFetcher.GetRawResult(d, CacheResultNewExpression<TResult>.GenericType),
+                        AutoCacheResultRawFetcher.SetAndSetRawResult(d,
+                            dyn,
                              CacheResultNewExpression<TResult>.GenericType);
                     }
                     return dyn;
