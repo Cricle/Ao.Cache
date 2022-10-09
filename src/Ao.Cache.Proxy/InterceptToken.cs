@@ -3,6 +3,7 @@ using Ao.Cache.Proxy.Interceptors;
 using Ao.Cache.Proxy.Model;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace Ao.Cache.Proxy
@@ -13,7 +14,7 @@ namespace Ao.Cache.Proxy
 
         public static readonly ActualTypeInfos ActualTypeInfos = ActionTypeHelper.GetActionType(ResultType);
 
-        public InterceptToken(IInvocationInfo invocationInfo, InterceptLayout layout, IServiceScope scope = null)
+        public InterceptToken(IInvocationInfo invocationInfo, in InterceptLayout layout, IServiceScope scope = null)
         {
             InvocationInfo = invocationInfo ?? throw new ArgumentNullException(nameof(invocationInfo));
             Layout = layout;
@@ -24,23 +25,13 @@ namespace Ao.Cache.Proxy
             this.scope = scope ?? ServiceScopeFactory.CreateScope();
             DataFinderFactory = this.scope.ServiceProvider.GetRequiredService<IDataFinderFactory>();
             DataFinder = DataFinderFactory.CreateEmpty<UnwindObject, TResult>();
+            AutoCacheResultBox = new AutoCacheResultBox<TResult>();
         }
         private readonly IServiceScope scope;
         private UnwindObject? unwindObject;
         private AutoCacheDecoratorContext<TResult> autoCacheDecoratorContext;
-        private AutoCacheResultBox<TResult> autoCacheResultBox;
 
-        public AutoCacheResultBox<TResult> AutoCacheResultBox
-        {
-            get
-            {
-                if (autoCacheResultBox == null)
-                {
-                    autoCacheResultBox = new AutoCacheResultBox<TResult>();
-                }
-                return autoCacheResultBox;
-            }
-        }
+        public AutoCacheResultBox<TResult> AutoCacheResultBox { get; }
 
         public AutoCacheDecoratorContext<TResult> AutoCacheDecoratorContext
         {
@@ -87,6 +78,7 @@ namespace Ao.Cache.Proxy
 
         public AutoCacheResult<TResult> Result { get; }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public async Task InterceptBeginAsync()
         {
             for (int i = 0; i < Attributes.Length; i++)
@@ -95,6 +87,7 @@ namespace Ao.Cache.Proxy
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public async Task InterceptExceptionAsync(Exception exception)
         {
             for (int i = 0; i < Attributes.Length; i++)
@@ -102,6 +95,7 @@ namespace Ao.Cache.Proxy
                 await Attributes[i].InterceptExceptionAsync(Context, exception).ConfigureAwait(false);
             }
         }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public async Task FinallyAsync()
         {
             for (int i = 0; i < Attributes.Length; i++)
@@ -109,6 +103,7 @@ namespace Ao.Cache.Proxy
                 await Attributes[i].InterceptFinallyAsync(Context).ConfigureAwait(false);
             }
         }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public async Task InterceptEndAsync(AutoCacheResult<TResult> result)
         {
             var cacheResult = new AutoCacheInvokeResultContext<TResult>(result.RawData, result, null);
@@ -117,6 +112,7 @@ namespace Ao.Cache.Proxy
                 await Attributes[i].InterceptEndAsync(Context, cacheResult).ConfigureAwait(false);
             }
         }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public async Task DecorateAsync()
         {
             for (int i = 0; i < Attributes.Length; i++)
@@ -124,21 +120,23 @@ namespace Ao.Cache.Proxy
                 await Attributes[i].DecorateAsync(AutoCacheDecoratorContext).ConfigureAwait(false);
             }
         }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public async Task FindInMethodBeginAsync()
         {
             for (int i = 0; i < Attributes.Length; i++)
             {
                 await Attributes[i].FindInMethodBeginAsync(AutoCacheDecoratorContext, AutoCacheResultBox).ConfigureAwait(false);
             }
-            if (AutoCacheResultBox.HasResult)
+            if (AutoCacheResultBox.hasResult)
             {
                 Result.RawData = AutoCacheResultBox.Result;
                 Result.Status = AutoCacheStatus.Intercept;
             }
         }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public async Task FindInMethodEndAsync()
         {
-            if (AutoCacheResultBox.HasResult)
+            if (AutoCacheResultBox.hasResult)
             {
                 await DataFinder.SetInCacheAsync(UnwindObject, AutoCacheResultBox.Result).ConfigureAwait(false);
             }
@@ -146,9 +144,10 @@ namespace Ao.Cache.Proxy
             Result.RawData = AutoCacheResultBox.Result;
             for (int i = 0; i < Attributes.Length; i++)
             {
-                await Attributes[i].FindInMethodEndAsync(AutoCacheDecoratorContext, AutoCacheResultBox.Result, AutoCacheResultBox.HasResult).ConfigureAwait(false);
+                await Attributes[i].FindInMethodEndAsync(AutoCacheDecoratorContext, AutoCacheResultBox.Result, AutoCacheResultBox.hasResult).ConfigureAwait(false);
             }
         }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public async Task FoundInCacheAsync(TResult result)
         {
             Result.Status = AutoCacheStatus.CacheHit;
@@ -159,6 +158,7 @@ namespace Ao.Cache.Proxy
                 await Attributes[i].FoundInCacheAsync(AutoCacheDecoratorContext, result).ConfigureAwait(false);
             }
         }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public async Task FindInMethodFinallyAsync()
         {
             for (int i = 0; i < Attributes.Length; i++)
@@ -167,6 +167,7 @@ namespace Ao.Cache.Proxy
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public async Task<TResult> TryFindInCacheAsync()
         {
             await DecorateAsync().ConfigureAwait(false);

@@ -36,9 +36,13 @@ namespace Ao.Cache.MethodBoundaryProxy.Sample
     {
         [AutoCache]
         [CacheInterceptor]
-        public Task<DateTime?> NowAsync()
+        public async Task<DateTime?> NowAsync()
         {
-            return Task.FromResult<DateTime?>(DateTime.Now);
+            return await Gt();
+        }
+        public async Task<DateTime?> Gt()
+        {
+            return DateTime.Now;
         }
     }
 }

@@ -26,7 +26,7 @@ namespace Ao.Cache.MethodBoundaryAspect.Interceptors
         {
             ii = new InvocationInfo(arg);
             layout = new InterceptLayout(GlobalMethodBoundary.ServiceScopeFactory, cacheNamedHelper);
-            if (!layout.HasAutoCache(ii))
+            if (!InterceptLayout.HasAutoCache(ii))
             {
                 if (((MethodInfo)arg.Method).ReturnType is IAutoCacheResult result)
                 {
@@ -67,14 +67,12 @@ namespace Ao.Cache.MethodBoundaryAspect.Interceptors
         {
             if (CacheResultNewExpression<T>.IsAutoResult)
             {
-                var dyn = CacheResultNewExpression<T>.Creator();
-                ((IAutoCacheResult)dyn).Status = token.Result.Status;
+                var dyn = (IAutoCacheResult)CacheResultNewExpression<T>.Creator();
+                dyn.Status = token.Result.Status;
                 var d = token.AutoCacheResultBox.Result;
                 if (d != null)
                 {
-                    AutoCacheResultRawFetcher.SetAndSetRawResult(d,
-                            dyn,
-                            CacheResultNewExpression<T>.GenericType);
+                    dyn.RawData = ((IAutoCacheResult)d).RawData;
                 }
                 res = dyn;
                 return true;
@@ -92,7 +90,7 @@ namespace Ao.Cache.MethodBoundaryAspect.Interceptors
             {
                 return (T)res;
             }
-            return tk.Result.RawData;
+            return tk.AutoCacheResultBox.Result;
         }
 
         public override void OnEntry(MethodExecutionArgs arg)

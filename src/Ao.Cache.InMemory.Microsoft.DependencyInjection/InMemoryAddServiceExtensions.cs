@@ -9,7 +9,9 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             services.AddMemoryCache();
             services.AddSingleton<ILockerFactory, MemoryLockFactory>();
-            services.AddSingleton(typeof(IDataFinderFactory), typeof(InMemoryCacheFinderFactory));
+            services.AddSingleton<InMemoryCacheFinderFactory>();
+            services.AddSingleton<IDataFinderFactory>(x => x.GetRequiredService<InMemoryCacheFinderFactory>());
+            services.AddSingleton<IBatchDataFinderFactory>(x => x.GetRequiredService<InMemoryCacheFinderFactory>());
             services.AddScoped(typeof(IDataFinder<,>), typeof(DefaultInMemoryCacheFinder<,>));
             services.AddScoped(typeof(IBatchDataFinder<,>), typeof(DefaultInMemoryBatchCacheFinder<,>));
             return services;

@@ -2,6 +2,8 @@
 {
     public interface IAutoCacheResult
     {
+        object RawData { get; set; }
+
         AutoCacheStatus Status { get; set; }
     }
 }

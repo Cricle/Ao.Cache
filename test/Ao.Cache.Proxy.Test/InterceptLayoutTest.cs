@@ -54,16 +54,16 @@ namespace Ao.Cache.Proxy.Test
             var nameHelper = DefaultCacheNamedHelper.Default;
             var intercept = new InterceptLayout(ser, nameHelper);
 
-            Assert.IsTrue(intercept.HasAutoCache(new MyInvocationInfo
+            Assert.IsTrue(InterceptLayout.HasAutoCache(new MyInvocationInfo
             {
                 TargetType = typeof(A)
             }));
-            Assert.IsTrue(intercept.HasAutoCache(new MyInvocationInfo
+            Assert.IsTrue(InterceptLayout.HasAutoCache(new MyInvocationInfo
             {
                 TargetType = typeof(B),
                 Method = typeof(B).GetMethod(nameof(B.Go))!
             }));
-            Assert.IsFalse(intercept.HasAutoCache(new MyInvocationInfo
+            Assert.IsFalse(InterceptLayout.HasAutoCache(new MyInvocationInfo
             {
                 TargetType = typeof(B),
                 Method = typeof(B).GetMethod(nameof(B.Go1))!

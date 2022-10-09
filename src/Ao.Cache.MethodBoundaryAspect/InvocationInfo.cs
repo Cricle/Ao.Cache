@@ -21,7 +21,7 @@ using System.Threading.Tasks;
 
 namespace Ao.Cache.MethodBoundaryAspect
 {
-    internal struct InvocationInfo : IInvocationInfo
+    internal class InvocationInfo : IInvocationInfo
     {
         private readonly MethodExecutionArgs arg;
 

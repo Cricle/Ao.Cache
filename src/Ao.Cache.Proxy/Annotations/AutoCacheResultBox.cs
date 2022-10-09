@@ -2,7 +2,7 @@
 {
     public class AutoCacheResultBox<TResult>
     {
-        private bool hasResult;
+        internal bool hasResult;
         private TResult result;
 
         public TResult Result => result;

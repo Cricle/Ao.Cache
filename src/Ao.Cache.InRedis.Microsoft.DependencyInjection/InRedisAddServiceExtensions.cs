@@ -24,7 +24,9 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddInRedisFinder(this IServiceCollection services)
         {
             services.AddSingleton<ILockerFactory, RedisLockFactory>();
-            services.AddSingleton(typeof(IDataFinderFactory), typeof(RedisDataFinderFactory));
+            services.AddSingleton<RedisDataFinderFactory>();
+            services.AddSingleton<IDataFinderFactory>(x => x.GetRequiredService<RedisDataFinderFactory>());
+            services.AddSingleton<IBatchDataFinderFactory>(x => x.GetRequiredService<RedisDataFinderFactory>());
             services.AddScoped(typeof(IDataFinder<,>), typeof(DefaultBitRedisDataFinder<,>));
             services.AddScoped(typeof(IBatchDataFinder<,>), typeof(DefaultBitRedisBatchFinder<,>));
             return services;

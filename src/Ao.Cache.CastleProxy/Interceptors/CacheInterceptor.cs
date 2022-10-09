@@ -33,7 +33,7 @@ namespace Ao.Cache.CastleProxy.Interceptors
         {
             var ii = new InvocationInfo(invocation);
             var layout = new InterceptLayout(ServiceScopeFactory, NamedHelper);
-            if (!layout.HasAutoCache(ii))
+            if (!InterceptLayout.HasAutoCache(ii))
             {
                 var res = await proceed(invocation, proceedInfo).ConfigureAwait(false);
                 if (res is IAutoCacheResult result)
@@ -83,18 +83,16 @@ namespace Ao.Cache.CastleProxy.Interceptors
                 }
                 if (CacheResultNewExpression<TResult>.IsAutoResult)
                 {
-                    var dyn = CacheResultNewExpression<TResult>.Creator();
-                    ((IAutoCacheResult)dyn).Status = token.Result.Status;
+                    var dyn = (IAutoCacheResult)CacheResultNewExpression<TResult>.Creator();
+                    dyn.Status = token.Result.Status;
                     var d = token.AutoCacheResultBox.Result;
                     if (d != null)
                     {
-                        AutoCacheResultRawFetcher.SetAndSetRawResult(d,
-                            dyn,
-                             CacheResultNewExpression<TResult>.GenericType);
+                        dyn.RawData = ((IAutoCacheResult)d).RawData;
                     }
-                    return dyn;
+                    return (TResult)dyn;
                 }
-                return token.Result.RawData;
+                return token.AutoCacheResultBox.Result;
             }
         }
 

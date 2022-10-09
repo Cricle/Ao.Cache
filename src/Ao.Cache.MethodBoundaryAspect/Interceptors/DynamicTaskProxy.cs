@@ -10,11 +10,11 @@ namespace Ao.Cache.MethodBoundaryAspect.Interceptors
     public static class DynamicTaskProxy
     {
         private static readonly MethodInfo withResultMethodInfo = typeof(DynamicTaskProxy).GetMethod(nameof(WithResult), BindingFlags.Static | BindingFlags.Public);
-        private static readonly Dictionary<Type, Func<IAsyncMethodHandle, MethodExecutionArgs, object, object, object>> g =
-            new Dictionary<Type, Func<IAsyncMethodHandle, MethodExecutionArgs, object, object, object>>();
+        private static readonly Dictionary<Type, Func<IAsyncMethodHandle, MethodExecutionArgs, MethodBoundaryMethods, object>> g =
+            new Dictionary<Type, Func<IAsyncMethodHandle, MethodExecutionArgs, MethodBoundaryMethods, object>>();
         private static readonly object syncRoot = new object();
 
-        public static Func<IAsyncMethodHandle, MethodExecutionArgs, object, object, object> GetDelegate(Type type)
+        public static Func<IAsyncMethodHandle, MethodExecutionArgs, MethodBoundaryMethods, object> GetDelegate(Type type)
         {
             if (!g.TryGetValue(type, out var del))
             {
@@ -24,41 +24,40 @@ namespace Ao.Cache.MethodBoundaryAspect.Interceptors
                     {
                         var par0 = Expression.Parameter(typeof(IAsyncMethodHandle));
                         var par1 = Expression.Parameter(typeof(MethodExecutionArgs));
-                        var par2 = Expression.Parameter(typeof(object));
-                        var par3 = Expression.Parameter(typeof(object));
-                        var funcType = typeof(Func<,,,>).MakeGenericType(
-                                typeof(IAsyncMethodHandle),
-                                typeof(MethodExecutionArgs),
-                                type,
-                                typeof(Task<>).MakeGenericType(type));
-                        del = Expression.Lambda<Func<IAsyncMethodHandle, MethodExecutionArgs, object, object, object>>(
+                        var par2 = Expression.Parameter(typeof(MethodBoundaryMethods));
+                        del = Expression.Lambda<Func<IAsyncMethodHandle, MethodExecutionArgs, MethodBoundaryMethods, object>>(
                             Expression.Call(null,
                                 withResultMethodInfo.MakeGenericMethod(type),
                                 par0,
                                 par1,
-                                Expression.Convert(par2, typeof(Task<>).MakeGenericType(type)),
-                                Expression.Convert(par3, funcType)),
-                            par0, par1, par2, par3).Compile();
+                                par2),
+                            par0, par1, par2).Compile();
                         g.Add(type, del);
                     }
                 }
             }
             return del;
         }
-        public delegate Task<T> HandleDelegate<T>(IAsyncMethodHandle handle,
-            MethodExecutionArgs arg,
-            Task<T> left);
         public static async Task<T> WithResult<T>(IAsyncMethodHandle handle,
             MethodExecutionArgs arg,
-            Task<T> left,
-            Func<IAsyncMethodHandle, MethodExecutionArgs, T, Task<T>> right)
+            MethodBoundaryMethods method)
         {
             var old = default(T);
-            if (left != null)
+            if (arg.ReturnValue is Task<T> taskT)
             {
-                old = await left;
+                old = await taskT;
             }
-            return await right(handle, arg, old);
+            switch (method)
+            {
+                case MethodBoundaryMethods.Entry:
+                    return await handle.HandleEntryAsync(arg, old);
+                case MethodBoundaryMethods.Exit:
+                    return await handle.HandleExitAsync(arg, old);
+                case MethodBoundaryMethods.Exception:
+                    return await handle.HandleExceptionAsync(arg, old);
+                default:
+                    throw new NotSupportedException(method.ToString());
+            }
         }
     }
 

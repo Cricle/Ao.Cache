@@ -16,10 +16,10 @@ namespace Ao.Cache.Proxy
 
         public ICacheNamedHelper NamedHelper { get; }
 
-        public bool HasAutoCache(IInvocationInfo invocationInfo)
+        public static bool HasAutoCache(IInvocationInfo invocationInfo)
         {
-            return AutoCacheAssertions.HasAutoCache(invocationInfo.TargetType) ||
-                 AutoCacheAssertions.HasAutoCache(invocationInfo.Method);
+            return AutoCacheAssertions.HasAutoCache(invocationInfo.Method) ||
+                AutoCacheAssertions.HasAutoCache(invocationInfo.TargetType);
         }
 
         public InterceptToken<TResult> CreateToken<TResult>(IInvocationInfo invocationInfo, IServiceScope scope = null)
