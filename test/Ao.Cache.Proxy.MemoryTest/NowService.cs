@@ -2,7 +2,15 @@
 
 namespace Ao.Cache.Proxy.MemoryTest
 {
-    public class NowService
+    public interface INowService
+    {
+        [AutoCache]
+        Task<DateTime?> Now();
+
+        [AutoCache]
+        Task<DateTime?> NowWithArg(int a, [AutoCacheSkipPart] string b);
+    }
+    public class NowService: INowService
     {
         [AutoCache]
         [AutoCacheOptions("00:10:00")]

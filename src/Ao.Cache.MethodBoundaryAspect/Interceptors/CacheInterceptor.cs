@@ -10,22 +10,16 @@ namespace Ao.Cache.MethodBoundaryAspect.Interceptors
 {
     public class CacheInterceptor : OnMethodBoundaryAspect, IAsyncMethodHandle
     {
-        private readonly IServiceScope scope;
-        private readonly ICacheNamedHelper cacheNamedHelper;
+        private IServiceScope scope;
         private InterceptLayout layout;
         private InvocationInfo ii;
         private object token;
 
-        public CacheInterceptor()
-        {
-            scope = GlobalMethodBoundary.CreateScope();
-            cacheNamedHelper = scope.ServiceProvider.GetRequiredService<ICacheNamedHelper>();
-        }
-
         public async Task<T> HandleEntryAsync<T>(MethodExecutionArgs arg, T old)
         {
+            scope = GlobalMethodBoundary.CreateScope();
+            var cacheNamedHelper = scope.ServiceProvider.GetRequiredService<ICacheNamedHelper>();
             ii = new InvocationInfo(arg);
-            layout = new InterceptLayout(GlobalMethodBoundary.ServiceScopeFactory, cacheNamedHelper);
             if (!InterceptLayout.HasAutoCache(ii))
             {
                 if (((MethodInfo)arg.Method).ReturnType is IAutoCacheResult result)
@@ -34,6 +28,7 @@ namespace Ao.Cache.MethodBoundaryAspect.Interceptors
                 }
                 return old;
             }
+            layout = new InterceptLayout(GlobalMethodBoundary.ServiceScopeFactory, cacheNamedHelper);
 
             var token = layout.CreateToken<T>(ii, scope);
             this.token = token;
@@ -104,7 +99,7 @@ namespace Ao.Cache.MethodBoundaryAspect.Interceptors
             {
                 MethodBoundaryAspectHelper.AsyncIntercept(arg, this, MethodBoundaryMethods.Exit);
             }
-            scope.Dispose();
+            scope?.Dispose();
             (token as IDisposable)?.Dispose();
         }
         public override void OnException(MethodExecutionArgs arg)

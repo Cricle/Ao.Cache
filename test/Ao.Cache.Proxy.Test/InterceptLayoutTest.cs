@@ -56,7 +56,8 @@ namespace Ao.Cache.Proxy.Test
 
             Assert.IsTrue(InterceptLayout.HasAutoCache(new MyInvocationInfo
             {
-                TargetType = typeof(A)
+                TargetType = typeof(A),
+                Method = typeof(A).GetMethods()[0]
             }));
             Assert.IsTrue(InterceptLayout.HasAutoCache(new MyInvocationInfo
             {
