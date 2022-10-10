@@ -12,7 +12,7 @@ namespace Ao.Cache.Proxy
 
         public static readonly Type GenericType;
 
-        public static bool IsAutoResult;
+        public static readonly bool IsAutoResult;
 
         static CacheResultNewExpression()
         {

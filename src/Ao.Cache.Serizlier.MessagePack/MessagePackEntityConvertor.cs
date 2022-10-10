@@ -7,15 +7,16 @@ namespace Ao.Cache.Serizlier.MessagePack
     public class MessagePackEntityConvertor<TEntity> : MessagePackEntityConvertor, IEntityConvertor<TEntity>
     {
         public static new readonly MessagePackEntityConvertor<TEntity> Default = new MessagePackEntityConvertor<TEntity>();
+        public static readonly Type EntityType = typeof(TEntity);
 
         public byte[] ToBytes(TEntity entry)
         {
-            return ToBytes(entry, typeof(TEntity));
+            return ToBytes(entry, EntityType);
         }
 
         public TEntity ToEntry(byte[] bytes)
         {
-            return (TEntity)ToEntry(bytes, typeof(TEntity));
+            return (TEntity)ToEntry(bytes, EntityType);
         }
     }
     public class MessagePackEntityConvertor : IEntityConvertor

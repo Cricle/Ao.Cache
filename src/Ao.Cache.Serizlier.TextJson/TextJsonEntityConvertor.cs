@@ -48,21 +48,23 @@ namespace Ao.Cache.Serizlier.TextJson
     {
         public static new readonly TextJsonEntityConvertor<TEntity> Default = new TextJsonEntityConvertor<TEntity>();
 
+        public static readonly Type EntityType = typeof(TEntity);
+
         public byte[] ToBytes(TEntity entry)
         {
-            return ToBytes(entry, typeof(TEntity));
+            return ToBytes(entry, EntityType);
         }
         public string ToString(TEntity entry)
         {
-            return ToString(entry, typeof(TEntity));
+            return ToString(entry, EntityType);
         }
         public TEntity ToEntry(byte[] bytes)
         {
-            return (TEntity)ToEntry(bytes, typeof(TEntity));
+            return (TEntity)ToEntry(bytes, EntityType);
         }
         public TEntity ToEntry(string str)
         {
-            return (TEntity)ToEntry(str, typeof(TEntity));
+            return (TEntity)ToEntry(str, EntityType);
         }
     }
 
