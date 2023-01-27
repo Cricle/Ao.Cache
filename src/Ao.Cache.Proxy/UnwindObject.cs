@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace Ao.Cache.Proxy
 {
@@ -23,12 +24,14 @@ namespace Ao.Cache.Proxy
         }
         public override int GetHashCode()
         {
-            unchecked
+            var hs = new HashCode();
+            hs.Add(Header);
+            for (int i = 0; i < Objects.Length; i++)
             {
-                var h = 31 * 17 + Objects.GetHashCode();
-                h = 31 * h + Header.GetHashCode();
-                return h * 31 + ObjectTransfer.GetHashCode();
+                hs.Add(Objects[i]);
             }
+            hs.Add(ObjectTransfer);
+            return hs.ToHashCode();
         }
         public override bool Equals(object obj)
         {
@@ -41,9 +44,19 @@ namespace Ao.Cache.Proxy
 
         public bool Equals(UnwindObject other)
         {
-            return other.Objects == Objects &&
+            return other.Objects.SequenceEqual(Objects)&&
                 other.ObjectTransfer == ObjectTransfer &&
                 other.Header == Header;
+        }
+
+        public static bool operator ==(UnwindObject left, UnwindObject right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(UnwindObject left, UnwindObject right)
+        {
+            return !(left == right);
         }
     }
 }

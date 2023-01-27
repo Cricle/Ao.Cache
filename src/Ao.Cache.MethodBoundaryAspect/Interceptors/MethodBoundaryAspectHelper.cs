@@ -59,7 +59,7 @@ namespace Ao.Cache.MethodBoundaryAspect.Interceptors
             return ifo;
         }
 
-
+        
         public static bool AsyncIntercept(MethodExecutionArgs arg, IAsyncMethodHandle handle, MethodBoundaryMethods method, MethodReturnCase @case= MethodReturnCase.TaskResult)
         {
             var rt = GetTaskResultType(((MethodInfo)arg.Method).ReturnType);

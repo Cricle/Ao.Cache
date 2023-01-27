@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<Import Project="..\..\eng\pkg.props" />
   <PropertyGroup>
-	  <TargetFrameworks>netstandard2.0;net5.0;</TargetFrameworks>
+	  <TargetFrameworks>netstandard2.0;net6.0;</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MessagePack" Version="2.4.35" />
+    <PackageReference Include="MessagePack" Version="2.4.59" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="../Shareds/Encodings/*.cs" />

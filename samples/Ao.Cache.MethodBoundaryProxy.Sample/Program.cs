@@ -16,7 +16,7 @@ namespace Ao.Cache.MethodBoundaryProxy.Sample
             ser.AddCacheProxy();
             ser.AddInMemoryFinder();
             var provider = ser.BuildServiceProvider();
-            GlobalMethodBoundary.ServiceScopeFactory = provider.GetRequiredService<IServiceScopeFactory>();
+            provider.SetGlobalMethodBoundaryFactory();
             var finderFc = provider.GetRequiredService<AutoCacheService>();
 
             var gt = provider.GetRequiredService<GetTime>();

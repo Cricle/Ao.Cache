@@ -3,9 +3,9 @@ using System;
 
 namespace Ao.Cache.MethodBoundaryAspect.Interceptors
 {
-    public class GlobalMethodBoundary
+    public static class GlobalMethodBoundary
     {
-        public static IServiceScopeFactory ServiceScopeFactory;
+        internal static IServiceScopeFactory ServiceScopeFactory;
 
         public static IServiceScope CreateScope()
         {
@@ -17,7 +17,7 @@ namespace Ao.Cache.MethodBoundaryAspect.Interceptors
         {
             if (ServiceScopeFactory == null)
             {
-                throw new InvalidOperationException($"GlobalMethodBoundary.ServiceScopeFactory is null");
+                throw new InvalidOperationException($"Must call IServiceProvider.SetGlobalMethodBoundaryFactory or IServiceScopeFactory.SetGlobalMethodBoundaryFactory first");
             }
         }
     }

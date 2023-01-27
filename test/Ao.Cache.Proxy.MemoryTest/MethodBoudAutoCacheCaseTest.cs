@@ -21,7 +21,7 @@ namespace Ao.Cache.Proxy.MemoryTest
         protected override IServiceProvider CreateProvider(Action<IContainer> action)
         {
             var provider= base.CreateProvider(action);
-            GlobalMethodBoundary.ServiceScopeFactory = provider.GetRequiredService<IServiceScopeFactory>();
+            provider.SetGlobalMethodBoundaryFactory();
             return provider;
         }
         [TestMethod]
