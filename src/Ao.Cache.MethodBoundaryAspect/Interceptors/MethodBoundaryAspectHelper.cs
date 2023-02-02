@@ -59,6 +59,24 @@ namespace Ao.Cache.MethodBoundaryAspect.Interceptors
             return ifo;
         }
 
+        private static async Task CallWithHandleAsync(Task method, IAsyncMethodHandle handle, MethodExecutionArgs arg, MethodBoundaryMethods methods)
+        {
+            await method;
+            switch (methods)
+            {
+                case MethodBoundaryMethods.Entry:
+                    await handle.HandleEntryAsync<int>(arg, default);
+                    break;
+                case MethodBoundaryMethods.Exit:
+                    await handle.HandleExitAsync<int>(arg, default);
+                    break;
+                case MethodBoundaryMethods.Exception:
+                    await handle.HandleExceptionAsync<int>(arg, default);
+                    break;
+                default:
+                    throw new NotSupportedException(method.ToString());
+            }
+        }
 
         public static bool AsyncIntercept(MethodExecutionArgs arg, IAsyncMethodHandle handle, MethodBoundaryMethods method, MethodReturnCase @case= MethodReturnCase.TaskResult)
         {
@@ -69,20 +87,7 @@ namespace Ao.Cache.MethodBoundaryAspect.Interceptors
                 {
                     if (arg.ReturnValue is Task tsk)
                     {
-                        switch (method)
-                        {
-                            case MethodBoundaryMethods.Entry:
-                                arg.ReturnValue = tsk.ContinueWith(_ => handle.HandleEntryAsync<int>(arg, default));
-                                break;
-                            case MethodBoundaryMethods.Exit:
-                                arg.ReturnValue = tsk.ContinueWith(_ => handle.HandleExitAsync<int>(arg, default));
-                                break;
-                            case MethodBoundaryMethods.Exception:
-                                arg.ReturnValue = tsk.ContinueWith(_ => handle.HandleExceptionAsync<int>(arg, default));
-                                break;
-                            default:
-                                throw new NotSupportedException(method.ToString());
-                        }
+                        arg.ReturnValue = CallWithHandleAsync(tsk, handle, arg, method);
                     }
                     else
                     {

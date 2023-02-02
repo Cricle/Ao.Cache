@@ -20,15 +20,16 @@ namespace Ao.Cache.MethodBoundaryProxy.Sample
             var finderFc = provider.GetRequiredService<AutoCacheService>();
 
             var gt = provider.GetRequiredService<GetTime>();
-            for (int i = 0; i < 5; i++)
+            _= gt.NowAsync().GetAwaiter().GetResult();
+            for (int i = 0; i < 1_000_000; i++)
             {
-                if (i % 2 == 0)
-                {
-                    var re = finderFc.DeleteAsync<GetTime, DateTime?>(x => x.NowAsync()).GetAwaiter().GetResult();
-                    Console.WriteLine($"DeleteResult: {re}");
-                }
+                //if (i % 2 == 0)
+                //{
+                //    var re = finderFc.DeleteAsync<GetTime, DateTime?>(x => x.NowAsync()).GetAwaiter().GetResult();
+                //    Console.WriteLine($"DeleteResult: {re}");
+                //}
                 var n = gt.NowAsync().GetAwaiter().GetResult();
-                Console.WriteLine($"{n:HH:mm:ss.fffff}");
+                //Console.WriteLine($"{n:HH:mm:ss.fffff}");
             }
         }
     }
@@ -36,6 +37,7 @@ namespace Ao.Cache.MethodBoundaryProxy.Sample
     {
         [AutoCache]
         [CacheInterceptor]
+        [AutoCacheOptions(CanRenewal =false)]
         public async Task<DateTime?> NowAsync()
         {
             return await Gt();

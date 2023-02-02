@@ -19,7 +19,7 @@ namespace Ao.Cache.Proxy
             InvocationInfo = invocationInfo ?? throw new ArgumentNullException(nameof(invocationInfo));
             Layout = layout;
             Key = new NamedInterceptorKey(invocationInfo.TargetType, invocationInfo.Method);
-            Attributes = DecoratorHelper.Get(Key);
+            attributes = DecoratorHelper.Get(Key);
             Context = new AutoCacheInvokeDecoratorContext<TResult>(invocationInfo, layout.ServiceScopeFactory);
             Result = new AutoCacheResult<TResult>();
             this.scope = scope ?? ServiceScopeFactory.CreateScope();
@@ -30,6 +30,7 @@ namespace Ao.Cache.Proxy
         private readonly IServiceScope scope;
         private UnwindObject? unwindObject;
         private AutoCacheDecoratorContext<TResult> autoCacheDecoratorContext;
+        private AutoCacheDecoratorBaseAttribute[] attributes;
 
         public AutoCacheResultBox<TResult> AutoCacheResultBox { get; }
 
@@ -68,7 +69,7 @@ namespace Ao.Cache.Proxy
 
         public InterceptLayout Layout { get; }
 
-        public AutoCacheDecoratorBaseAttribute[] Attributes { get; }
+        public AutoCacheDecoratorBaseAttribute[] Attributes => attributes;
 
         public IServiceScopeFactory ServiceScopeFactory => Layout.ServiceScopeFactory;
 
@@ -81,51 +82,51 @@ namespace Ao.Cache.Proxy
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public async Task InterceptBeginAsync()
         {
-            for (int i = 0; i < Attributes.Length; i++)
+            for (int i = 0; i < attributes.Length; i++)
             {
-                await Attributes[i].InterceptBeginAsync(Context).ConfigureAwait(false);
+                await attributes[i].InterceptBeginAsync(Context).ConfigureAwait(false);
             }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public async Task InterceptExceptionAsync(Exception exception)
         {
-            for (int i = 0; i < Attributes.Length; i++)
+            for (int i = 0; i < attributes.Length; i++)
             {
-                await Attributes[i].InterceptExceptionAsync(Context, exception).ConfigureAwait(false);
+                await attributes[i].InterceptExceptionAsync(Context, exception).ConfigureAwait(false);
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public async Task FinallyAsync()
         {
-            for (int i = 0; i < Attributes.Length; i++)
+            for (int i = 0; i < attributes.Length; i++)
             {
-                await Attributes[i].InterceptFinallyAsync(Context).ConfigureAwait(false);
+                await attributes[i].InterceptFinallyAsync(Context).ConfigureAwait(false);
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public async Task InterceptEndAsync(AutoCacheResult<TResult> result)
         {
             var cacheResult = new AutoCacheInvokeResultContext<TResult>(result.RawData, result, null);
-            for (int i = 0; i < Attributes.Length; i++)
+            for (int i = 0; i < attributes.Length; i++)
             {
-                await Attributes[i].InterceptEndAsync(Context, cacheResult).ConfigureAwait(false);
+                await attributes[i].InterceptEndAsync(Context, cacheResult).ConfigureAwait(false);
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public async Task DecorateAsync()
         {
-            for (int i = 0; i < Attributes.Length; i++)
+            for (int i = 0; i < attributes.Length; i++)
             {
-                await Attributes[i].DecorateAsync(AutoCacheDecoratorContext).ConfigureAwait(false);
+                await attributes[i].DecorateAsync(AutoCacheDecoratorContext).ConfigureAwait(false);
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public async Task FindInMethodBeginAsync()
         {
-            for (int i = 0; i < Attributes.Length; i++)
+            for (int i = 0; i < attributes.Length; i++)
             {
-                await Attributes[i].FindInMethodBeginAsync(AutoCacheDecoratorContext, AutoCacheResultBox).ConfigureAwait(false);
+                await attributes[i].FindInMethodBeginAsync(AutoCacheDecoratorContext, AutoCacheResultBox).ConfigureAwait(false);
             }
             if (AutoCacheResultBox.hasResult)
             {
@@ -142,9 +143,9 @@ namespace Ao.Cache.Proxy
             }
             Result.Status = AutoCacheStatus.MethodHit;
             Result.RawData = AutoCacheResultBox.Result;
-            for (int i = 0; i < Attributes.Length; i++)
+            for (int i = 0; i < attributes.Length; i++)
             {
-                await Attributes[i].FindInMethodEndAsync(AutoCacheDecoratorContext, AutoCacheResultBox.Result, AutoCacheResultBox.hasResult).ConfigureAwait(false);
+                await attributes[i].FindInMethodEndAsync(AutoCacheDecoratorContext, AutoCacheResultBox.Result, AutoCacheResultBox.hasResult).ConfigureAwait(false);
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -153,17 +154,17 @@ namespace Ao.Cache.Proxy
             Result.Status = AutoCacheStatus.CacheHit;
             Result.RawData = result;
             InvocationInfo.ReturnValue = result;
-            for (int i = 0; i < Attributes.Length; i++)
+            for (int i = 0; i < attributes.Length; i++)
             {
-                await Attributes[i].FoundInCacheAsync(AutoCacheDecoratorContext, result).ConfigureAwait(false);
+                await attributes[i].FoundInCacheAsync(AutoCacheDecoratorContext, result).ConfigureAwait(false);
             }
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public async Task FindInMethodFinallyAsync()
         {
-            for (int i = 0; i < Attributes.Length; i++)
+            for (int i = 0; i < attributes.Length; i++)
             {
-                await Attributes[i].FindInMethodFinallyAsync(AutoCacheDecoratorContext).ConfigureAwait(false);
+                await attributes[i].FindInMethodFinallyAsync(AutoCacheDecoratorContext).ConfigureAwait(false);
             }
         }
 

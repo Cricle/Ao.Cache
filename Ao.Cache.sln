@@ -48,9 +48,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ao.Cache.MethodBoundaryAspe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ao.Cache.MethodBoundaryProxy.Sample", "samples\Ao.Cache.MethodBoundaryProxy.Sample\Ao.Cache.MethodBoundaryProxy.Sample.csproj", "{0DA6648A-F0A9-447E-9050-D10F935FB58E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ao.Cache.Proxy.Test", "test\Ao.Cache.Proxy.Test\Ao.Cache.Proxy.Test.csproj", "{AF54B41B-80C1-4B07-A513-C34D609E42AC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ao.Cache.Proxy.Test", "test\Ao.Cache.Proxy.Test\Ao.Cache.Proxy.Test.csproj", "{AF54B41B-80C1-4B07-A513-C34D609E42AC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ao.Cache.Proxy.MemoryTest", "test\Ao.Cache.Proxy.MemoryTest\Ao.Cache.Proxy.MemoryTest.csproj", "{2F0DA9B6-0C1B-4C32-9397-74530E0A7156}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ao.Cache.Proxy.MemoryTest", "test\Ao.Cache.Proxy.MemoryTest\Ao.Cache.Proxy.MemoryTest.csproj", "{2F0DA9B6-0C1B-4C32-9397-74530E0A7156}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -8,8 +8,8 @@ namespace Ao.Cache
     {
         public MixedDataFinder(IDataFinder<TIdentity, TEntity> dataFinder, IBatchDataFinder<TIdentity, TEntity> batchDataFinder)
         {
-            DataFinder = dataFinder ?? throw new System.ArgumentNullException(nameof(dataFinder));
-            BatchDataFinder = batchDataFinder ?? throw new System.ArgumentNullException(nameof(batchDataFinder));
+            DataFinder = dataFinder ?? throw new ArgumentNullException(nameof(dataFinder));
+            BatchDataFinder = batchDataFinder ?? throw new ArgumentNullException(nameof(batchDataFinder));
         }
 
         public IDataFinder<TIdentity, TEntity> DataFinder { get; }

@@ -2,6 +2,8 @@
 {
     public class IdentityGenerater<TIdentity, TEntity> : IIdentityGenerater<TIdentity>
     {
+        public string Head { get; set; } = FriendlyNameHelper<TEntity>.FriendlyName;
+
         public virtual string GetPart(TIdentity identity)
         {
             return identity?.ToString();
@@ -9,7 +11,7 @@
 
         public virtual string GetHead()
         {
-            return FriendlyNameHelper<TEntity>.FriendlyName;
+            return Head;
         }
 
         public virtual string GetEntryKey(TIdentity identity)

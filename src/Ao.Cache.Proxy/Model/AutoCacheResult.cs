@@ -1,6 +1,6 @@
 ﻿namespace Ao.Cache.Proxy.Model
 {
-    public sealed class AutoCacheResult<T> : IAutoCacheResult
+    public class AutoCacheResult<T> : IAutoCacheResult
     {
         public T RawData { get; set; }
 

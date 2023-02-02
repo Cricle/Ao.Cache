@@ -9,7 +9,7 @@ namespace Ao.Cache.Proxy.Annotations
         private static readonly Dictionary<NamedInterceptorKey, AutoCacheDecoratorBaseAttribute[]> m = new Dictionary<NamedInterceptorKey, AutoCacheDecoratorBaseAttribute[]>();
         private static readonly object locker = new object();
 
-        public static AutoCacheDecoratorBaseAttribute[] Get(in NamedInterceptorKey info)
+        public static AutoCacheDecoratorBaseAttribute[] Get(NamedInterceptorKey info)
         {
             if (!m.TryGetValue(info, out var attr))
             {

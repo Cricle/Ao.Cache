@@ -2,11 +2,12 @@
 
 namespace Ao.Cache.Events
 {
-    public class EventPublishResult
+    public readonly struct EventPublishResult
     {
         public EventPublishResult(bool succeed)
-            : this(null, succeed)
         {
+            Succeed= succeed;
+            Features = null;
         }
 
         public EventPublishResult(IDictionary features, bool succeed)
