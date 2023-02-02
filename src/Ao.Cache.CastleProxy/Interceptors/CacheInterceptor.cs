@@ -79,7 +79,6 @@ namespace Ao.Cache.CastleProxy.Interceptors
                 finally
                 {
                     await token.FinallyAsync();
-
                 }
                 if (CacheResultNewExpression<TResult>.IsAutoResult)
                 {
@@ -90,8 +89,9 @@ namespace Ao.Cache.CastleProxy.Interceptors
                     {
                         dyn.RawData = ((IAutoCacheResult)d).RawData;
                     }
-                    return (TResult)dyn;
+                    return (TResult)(invocation.ReturnValue = dyn);
                 }
+                invocation.ReturnValue = token.AutoCacheResultBox.Result;
                 return token.AutoCacheResultBox.Result;
             }
         }
