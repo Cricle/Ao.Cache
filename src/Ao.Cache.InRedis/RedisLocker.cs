@@ -3,9 +3,9 @@ using System;
 
 namespace Ao.Cache.InRedis
 {
-    internal readonly struct RedisLocker : ILocker
+    internal class RedisLocker : ILocker
     {
-        public RedisLocker(IRedLock locker, in DateTime createTime, in TimeSpan expireTime)
+        public RedisLocker(IRedLock locker, DateTime createTime, TimeSpan expireTime)
         {
             Locker = locker;
             CreateTime = createTime;
@@ -24,9 +24,15 @@ namespace Ao.Cache.InRedis
 
         public TimeSpan ExpireTime { get; }
 
+        ~RedisLocker() 
+        {
+            Locker?.Dispose();
+        }
+
         public void Dispose()
         {
             Locker.Dispose();
+            GC.SuppressFinalize(this);
         }
     }
 }

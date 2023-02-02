@@ -75,7 +75,7 @@ namespace Ao.Cache.Benchmarks.Actions
                 .WithDependencyInjectionAdapter(ser, null, RegistrySharing.CloneAndDropCache);
             icon.AsyncIntercept(typeof(GetTime), typeof(CacheInterceptor));
             provider = icon.BuildServiceProvider();
-            MethodBoundaryAspect.Interceptors.GlobalMethodBoundary.ServiceScopeFactory = provider.GetRequiredService<IServiceScopeFactory>();
+            provider.SetGlobalMethodBoundaryFactory();
             //using (var scope = provider.CreateScope())
             //{
             //    var db = scope.ServiceProvider.GetRequiredService<StudentDbContext>();

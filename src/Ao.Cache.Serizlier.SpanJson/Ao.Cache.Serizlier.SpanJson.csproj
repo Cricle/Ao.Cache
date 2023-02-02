@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="SpanJson" Version="3.3.1" />
+    <PackageReference Include="SpanJson" Version="4.0.0" />
   </ItemGroup>
 
 </Project>

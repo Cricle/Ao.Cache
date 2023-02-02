@@ -8,6 +8,6 @@
 		<ProjectReference Include="..\Ao.Cache.Core\Ao.Cache.Core.csproj" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="System.Text.Json" Version="6.0.2" Condition="'$(TargetFramework)'!='net6.0'" />
+		<PackageReference Include="System.Text.Json" Version="7.0.1" Condition="'$(TargetFramework)'!='net6.0'" />
 	</ItemGroup>
 </Project>
