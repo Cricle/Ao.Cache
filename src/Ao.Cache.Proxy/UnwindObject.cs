@@ -44,7 +44,20 @@ namespace Ao.Cache.Proxy
 
         public bool Equals(UnwindObject other)
         {
-            return other.Objects.SequenceEqual(Objects)&&
+            var ok = false;
+            if (Objects==null&&other.Objects==null)
+            {
+                ok= true;
+            }
+            else if (Objects==null||other.Objects==null)
+            {
+                return false;
+            }
+            else
+            {
+                ok = other.Objects.SequenceEqual(Objects);
+            }
+            return ok &&
                 other.ObjectTransfer == ObjectTransfer &&
                 other.Header == Header;
         }
