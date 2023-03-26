@@ -21,15 +21,15 @@ namespace Ao.Cache.MethodBoundaryProxy.Sample
 
             var gt = provider.GetRequiredService<GetTime>();
             _= gt.NowAsync().GetAwaiter().GetResult();
-            for (int i = 0; i < 1_000_000; i++)
+            for (int i = 0; i < 10; i++)
             {
-                //if (i % 2 == 0)
-                //{
-                //    var re = finderFc.DeleteAsync<GetTime, DateTime?>(x => x.NowAsync()).GetAwaiter().GetResult();
-                //    Console.WriteLine($"DeleteResult: {re}");
-                //}
+                if (i % 2 == 0)
+                {
+                    var re = finderFc.DeleteAsync<GetTime, DateTime?>(x => x.NowAsync()).GetAwaiter().GetResult();
+                    Console.WriteLine($"DeleteResult: {re}");
+                }
                 var n = gt.NowAsync().GetAwaiter().GetResult();
-                //Console.WriteLine($"{n:HH:mm:ss.fffff}");
+                Console.WriteLine($"{n:HH:mm:ss.fffff}");
             }
         }
     }
