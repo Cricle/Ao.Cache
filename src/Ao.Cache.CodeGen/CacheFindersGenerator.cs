@@ -21,7 +21,11 @@ namespace Ao.Cache.CodeGen
                     var isDataAccesstor = cq.GetDeclaredSymbol(ctx.Node).GetAttributes().Any(x => "Ao.Cache.Core.Annotations.DataAccesstorAttribute".Equals(x.AttributeClass?.ToString()));
                     if (isDataAccesstor)
                     {
-                        return (ClassDeclarationSyntax)ctx.Node;
+                        return new Ax
+                        {
+                            Class = (ClassDeclarationSyntax)ctx.Node,
+                            SemanticModel = cq,
+                        };
                     }
                     return null;
                 }).Where(x=>x !=null);
@@ -29,8 +33,9 @@ namespace Ao.Cache.CodeGen
         }
 
 
-        private void Execute(SourceProductionContext context, ClassDeclarationSyntax @class)
+        private void Execute(SourceProductionContext context, Ax ax)
         {
+            var @class = ax.Class;
             var genType1 = @class.BaseList?.Types
                 .Where(t => t.Type is GenericNameSyntax genName && genName.Identifier.Text.StartsWith("IDataAccesstor") && genName.TypeArgumentList.Arguments.Count == 2)
                 .FirstOrDefault();
@@ -41,14 +46,13 @@ namespace Ao.Cache.CodeGen
                 return;
             }
             var interfaceType = (GenericNameSyntax)genType1.Type;
-            var gen1 = interfaceType.TypeArgumentList.Arguments[0];
-            var gen2 = interfaceType.TypeArgumentList.Arguments[1];
+            var gen1 = ax.SemanticModel.GetSymbolInfo(interfaceType.TypeArgumentList.Arguments[0]).Symbol;
+            var gen2 = ax.SemanticModel.GetSymbolInfo(interfaceType.TypeArgumentList.Arguments[1]).Symbol;
             var className = @class.Identifier.ToString().Replace("DataAccesstor", string.Empty);
             var sourceText = $@"
 using Ao.Cache;
 using System.Runtime.CompilerServices;
 using Microsoft.Extensions.DependencyInjection;
-using Ao.Cache;
 
 namespace Ao.Cache
 {{

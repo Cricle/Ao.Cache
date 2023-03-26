@@ -13,19 +13,22 @@ namespace Ao.Cache.Sample.CodeGen
             services.AddInMemoryFinder();
             var provider = services.BuildServiceProvider();
             var finder = provider.GetRequiredService<DataFinders>().GetTest();
-                //.GetTest();
             for (int i = 0; i < 10; i++)
             {
-                Console.WriteLine(finder.FindAsync(1).Result);
+                Console.WriteLine(finder.FindAsync(new A()).Result);
             }
         }
     }
-    [DataAccesstor]
-    public class TestDataAccesstor : IDataAccesstor<int, int?>
+    public struct A
     {
-        public Task<int?> FindAsync(int identity)
+
+    }
+    [DataAccesstor]
+    public class TestDataAccesstor : IDataAccesstor<A, int?>
+    {
+        public Task<int?> FindAsync(A identity)
         {
-            return Task.FromResult<int?>(identity + Random.Shared.Next(0,9999));
+            return Task.FromResult<int?>(identity.GetHashCode() + Random.Shared.Next(0,9999));
         }
     }
 }

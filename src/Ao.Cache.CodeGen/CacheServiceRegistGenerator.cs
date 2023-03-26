@@ -6,6 +6,12 @@ using System.Xml.Linq;
 
 namespace Ao.Cache.CodeGen
 {
+    public class Ax
+    {
+        public ClassDeclarationSyntax Class { get; set; }
+
+        public SemanticModel SemanticModel { get; set; }
+    }
     [Generator]
     public class CacheServiceRegistGenerator : IIncrementalGenerator
     {
@@ -19,7 +25,11 @@ namespace Ao.Cache.CodeGen
                     var isDataAccesstor = cq.GetDeclaredSymbol(ctx.Node).GetAttributes().Any(x => "Ao.Cache.Core.Annotations.DataAccesstorAttribute".Equals(x.AttributeClass?.ToString()));
                     if (isDataAccesstor)
                     {
-                        return (ClassDeclarationSyntax)ctx.Node;
+                        return new Ax
+                        {
+                              Class=(ClassDeclarationSyntax)ctx.Node,
+                               SemanticModel=cq,
+                        };
                     }
                     return null;
                 }).Where(x => x != null);
@@ -47,9 +57,9 @@ namespace Ao.Cache.Gen
             });
         }
 
-
-        private void Execute(SourceProductionContext context, ClassDeclarationSyntax @class)
+        private void Execute(SourceProductionContext context, Ax ax)
         {
+            var @class = ax.Class;
             var genType1 = @class.BaseList?.Types
                 .Where(t => t.Type is GenericNameSyntax genName && genName.Identifier.Text.StartsWith("IDataAccesstor") && genName.TypeArgumentList.Arguments.Count == 2)
                 .FirstOrDefault();
@@ -60,11 +70,11 @@ namespace Ao.Cache.Gen
                 return;
             }
             var interfaceType = (GenericNameSyntax)genType1.Type;
-            var gen1 = interfaceType.TypeArgumentList.Arguments[0];
-            var gen2 = interfaceType.TypeArgumentList.Arguments[1];
+            var gen1 = ax.SemanticModel.GetSymbolInfo(interfaceType.TypeArgumentList.Arguments[0]).Symbol;
+            var gen2 = ax.SemanticModel.GetSymbolInfo(interfaceType.TypeArgumentList.Arguments[1]).Symbol;
             var name = @class.Identifier.ToString().Replace("DataAccesstor", string.Empty);
             var ns = (@class.Parent as NamespaceDeclarationSyntax)?.Name?.ToString();
-            var target = ns==null?string.Empty:(ns + ".")+@class.Identifier.ToString();
+            var target = ax.SemanticModel.GetDeclaredSymbol(@class);
             var sourceText = $@"
 using Ao.Cache;
 using System.Runtime.CompilerServices;
