@@ -9,12 +9,11 @@ namespace Ao.Cache.Sample.CodeGen
         static void Main(string[] args)
         {
             var services = new ServiceCollection();
-            services.AddDataFinders()
-                .AddTestDataAccesstor();
+            services.AddScoped<DataFinders>().AddTestDataAccesstor();
             services.AddInMemoryFinder();
             var provider = services.BuildServiceProvider();
-            var finder = provider.GetRequiredService<DataFinders>()
-                .GetTest();
+            var finder = provider.GetRequiredService<DataFinders>().GetTest();
+                //.GetTest();
             for (int i = 0; i < 10; i++)
             {
                 Console.WriteLine(finder.FindAsync(1).Result);

@@ -26,40 +26,6 @@ namespace Ao.Cache.CodeGen
                     return null;
                 }).Where(x=>x !=null);
             context.RegisterSourceOutput(c, Execute);
-            context.RegisterPostInitializationOutput(ctx =>
-            {
-                var sourceText = $@"
-using Ao.Cache;
-using System.Runtime.CompilerServices;
-using Microsoft.Extensions.DependencyInjection;
-
-namespace Ao.Cache.Gen
-{{
-    internal partial class DataFinders
-    {{
-        protected readonly IServiceProvider provider;
-
-        public DataFinders(IServiceProvider provider)
-        {{
-            this.provider = provider;
-        }}        
-     
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected IDataFinder<TIdentity, TEntity> Get<TIdentity, TEntity>(TimeSpan? cacheTime = null, bool renewal = false)
-        {{
-            var finder = provider.GetRequiredService<IDataFinder<TIdentity, TEntity>>();
-            if (cacheTime != null)
-            {{
-                finder.Options.WithCacheTime(cacheTime);
-                finder.Options.WithRenew(renewal);
-            }}
-            return finder;
-        }}
-    }}
-}}
-";
-                ctx.AddSource("DataFinders.g.cs", sourceText);
-            });
         }
 
 
@@ -82,15 +48,15 @@ namespace Ao.Cache.Gen
 using Ao.Cache;
 using System.Runtime.CompilerServices;
 using Microsoft.Extensions.DependencyInjection;
+using Ao.Cache;
 
-namespace Ao.Cache.Gen
+namespace Ao.Cache
 {{
-
-    internal partial class DataFinders
+    public static class {className}DataFindersExtensions
     {{
-        public IDataFinder<{gen1}, {gen2}> Get{className}(TimeSpan? cacheTime = null, bool renewal = false)
+        public static IDataFinder<{gen1}, {gen2}> Get{className}(this DataFinders finders, TimeSpan? cacheTime = null, bool renewal = false)
         {{
-            return Get<{gen1}, {gen2}>(cacheTime, renewal);
+            return finders.Get<{gen1}, {gen2}>(cacheTime, renewal);
         }}
     }}
 }}
