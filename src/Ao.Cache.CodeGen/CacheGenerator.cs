@@ -55,7 +55,6 @@ namespace Ao.Cache.CodeGen
                 .FirstOrDefault();
             if (genType1 == null)
             {
-                Debugger.Launch();
                 return new DataAccesstorLookup 
                 { 
                     ErrorDiagnostic = Diagnostic.Create(DiagnosticDescriptors.NotImplement, Location.Create(@class.SyntaxTree, @class.Span))

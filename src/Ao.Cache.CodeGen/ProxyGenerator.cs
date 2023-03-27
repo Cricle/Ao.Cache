@@ -96,16 +96,17 @@ namespace Ao.Cache.CodeGen
             }
             var proxyType = GetProxyType(attributeData);
             var proxyEndName = GetEndName(attributeData) ?? TypeConsts.ProxyDefaultEndName;
+            var name = proxyType.Split('.').Last();
             var source = $@"
 using System;
 using Ao.Cache;
 
-public class {ax.Identifier}{proxyEndName} : {declare}
+public class {name}{proxyEndName} : {declare}
 {{
     protected readonly {proxyType} _raw;
     protected readonly IDataFinderFactory _factory;
 
-    public {ax.Identifier}{proxyEndName}({proxyType} raw, IDataFinderFactory factory)
+    public {name}{proxyEndName}({proxyType} raw, IDataFinderFactory factory)
     {{
         _raw=raw;
         _factory=factory;
@@ -115,7 +116,7 @@ public class {ax.Identifier}{proxyEndName} : {declare}
     {string.Join("\n", canProxys.Select(x => MakeGenerate(x, syntaxContext.SemanticModel, proxyType, "_raw")))}
 }}
 ";
-            context.AddSource($"{ax.Identifier}Proxy.g.cs",source);
+            context.AddSource($"{name}{proxyEndName}.g.cs",source);
         }
         private string MakeGenerate(MethodDeclarationSyntax x,SemanticModel model,string proxyType,string rawName)
         {
@@ -155,20 +156,20 @@ public class {ax.Identifier}{proxyEndName} : {declare}
             var arg1 = model.GetSymbolInfo(x.ParameterList.Parameters[0].Type).Symbol;
             var name = x.Identifier.ValueText + "DataAccesstor";
             return $@"
-private readonly struct {name}{genericeTypeStr} : IDataAccesstor<{arg1},{actualRetType}>
-{{
-    private readonly {proxyType} {rawName};
+    private readonly struct {name}{genericeTypeStr} : IDataAccesstor<{arg1},{actualRetType}>
+    {{
+        private readonly {proxyType} {rawName};
     
-    public {name}({proxyType} {rawName})
-    {{
-        this.{rawName} = {rawName};
-    }}
+        public {name}({proxyType} {rawName})
+        {{
+            this.{rawName} = {rawName};
+        }}
 
-    public {((isValueTaskAsync) ? "async": string.Empty)} {methodRetType} FindAsync({arg1} identity)
-    {{
-        {body}
+        public {((isValueTaskAsync) ? "async": string.Empty)} {methodRetType} FindAsync({arg1} identity)
+        {{
+            {body}
+        }}
     }}
-}}
 ";
         }
         private string WriteMethod(MethodDeclarationSyntax method,SemanticModel model,string rawName,string factoryName, bool proxy)
@@ -186,8 +187,8 @@ private readonly struct {name}{genericeTypeStr} : IDataAccesstor<{arg1},{actualR
                 .Select(p => p.Identifier.ValueText) ?? Enumerable.Empty<string>());
                 var accesstorName = methodName + "DataAccesstor";
             var head = $@"
-public {(isValueTaskAsync?"async":string.Empty)} {returnType} {methodName}{(string.IsNullOrEmpty(typeParameters) ? string.Empty : $"<{typeParameters}>")}({parameters})
-{{
+    public {(isValueTaskAsync?"async":string.Empty)} {returnType} {methodName}{(string.IsNullOrEmpty(typeParameters) ? string.Empty : $"<{typeParameters}>")}({parameters})
+    {{
 ";
             if (proxy)
             {
@@ -203,7 +204,7 @@ public {(isValueTaskAsync?"async":string.Empty)} {returnType} {methodName}{(stri
         {(returnType=="void"?string.Empty:"return")} {rawName}.{methodName}({string.Join(", ", method.ParameterList.Parameters.Select(x => x.Identifier.ValueText))});
 ";
             }
-            head += "}\n";
+            head += "   }\n";
             return head;
         }
         protected void ExecuteClass(SourceProductionContext context, ClassDeclarationSyntax ax, GeneratorSyntaxContext syntaxContext, AttributeData attributeData)

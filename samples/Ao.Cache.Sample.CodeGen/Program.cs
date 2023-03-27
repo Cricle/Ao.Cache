@@ -20,7 +20,7 @@ namespace Ao.Cache.Sample.CodeGen
             //}
         }
     }
-    [CacheProxy(ProxyType =typeof(Student))]
+    [CacheProxy(ProxyType = typeof(Student))]
     public interface IStudent
     {
         void Run();
