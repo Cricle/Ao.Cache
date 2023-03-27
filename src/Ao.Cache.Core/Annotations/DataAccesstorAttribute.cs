@@ -4,8 +4,9 @@ using System.Text;
 
 namespace Ao.Cache.Core.Annotations
 {
-    [AttributeUsage(AttributeTargets.Class,AllowMultiple =false,Inherited =false)]
-    public sealed class DataAccesstorAttribute:Attribute
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
+    public sealed class DataAccesstorAttribute : Attribute
     {
+        public string NameSpace { get; set; }
     }
 }

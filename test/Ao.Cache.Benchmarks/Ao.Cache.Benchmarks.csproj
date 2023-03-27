@@ -18,11 +18,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Ao.Cache.CastleProxy\Ao.Cache.CastleProxy.csproj" />
     <ProjectReference Include="..\..\src\Ao.Cache.Core\Ao.Cache.Core.csproj" />
     <ProjectReference Include="..\..\src\Ao.Cache.InMemory.Microsoft.DependencyInjection\Ao.Cache.InMemory.Microsoft.DependencyInjection.csproj" />
     <ProjectReference Include="..\..\src\Ao.Cache.InRedis.Microsoft.DependencyInjection\Ao.Cache.InRedis.Microsoft.DependencyInjection.csproj" />
-    <ProjectReference Include="..\..\src\Ao.Cache.MethodBoundaryAspect\Ao.Cache.MethodBoundaryAspect.csproj" />
     <ProjectReference Include="..\..\src\Ao.Cache.Serizlier.MessagePack\Ao.Cache.Serizlier.MessagePack.csproj" />
   </ItemGroup>
 

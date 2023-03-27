@@ -1,6 +1,7 @@
 ﻿using Ao.Cache.Core.Annotations;
 using Microsoft.Extensions.DependencyInjection;
-using Ao.Cache.Gen;
+using dsadsa;
+using Ao.Cache.Sample.CodeGen;
 
 namespace Ao.Cache.Sample.CodeGen
 {
@@ -8,22 +9,67 @@ namespace Ao.Cache.Sample.CodeGen
     {
         static void Main(string[] args)
         {
-            var services = new ServiceCollection();
-            services.AddScoped<DataFinders>().AddTestDataAccesstor();
-            services.AddInMemoryFinder();
-            var provider = services.BuildServiceProvider();
-            var finder = provider.GetRequiredService<DataFinders>().GetTest();
-            for (int i = 0; i < 10; i++)
-            {
-                Console.WriteLine(finder.FindAsync(new A()).Result);
-            }
+            //var services = new ServiceCollection();
+            //services.AddScoped<DataFinders>().AddTestDataAccesstor();
+            //services.AddInMemoryFinder();
+            //var provider = services.BuildServiceProvider();
+            //var finder = provider.GetRequiredService<DataFinders>().GetTest();
+            //for (int i = 0; i < 10; i++)
+            //{
+            //    Console.WriteLine(finder.FindAsync(new A()).Result);
+            //}
         }
     }
+    [CacheProxy(ProxyType =typeof(Student))]
+    public interface IStudent
+    {
+        void Run();
+
+        [CacheProxyMethod]
+        int Get<T>(int? a);
+
+        [CacheProxyMethod]
+        int Get1(A a);
+
+        [CacheProxyMethod]
+        Task<int> Get2(A a);
+
+        [CacheProxyMethod]
+        ValueTask<int> Get3(A a);
+    }
+    public class Student : IStudent
+    {
+        public int Get<T>(int? a)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int Get1(A a)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<int> Get2(A a)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ValueTask<int> Get3(A a)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Run()
+        {
+            throw new NotImplementedException();
+        }
+    }
+
     public struct A
     {
 
     }
-    [DataAccesstor]
+    [DataAccesstor(NameSpace ="dsadsa")]
     public class TestDataAccesstor : IDataAccesstor<A, int?>
     {
         public Task<int?> FindAsync(A identity)
