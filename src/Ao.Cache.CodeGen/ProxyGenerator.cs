@@ -125,7 +125,6 @@ namespace Ao.Cache.CodeGen
 
 using System;
 using Ao.Cache;
-using Microsoft.Extensions.DependencyInjection;
 using System.Runtime.CompilerServices;
 
 namespace {@namespace}
