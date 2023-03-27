@@ -7,17 +7,15 @@
 
   <ItemGroup>
     <PackageReference Include="BenchmarkDotNet" Version="0.13.4" />
-    <PackageReference Include="DryIoc.Microsoft.DependencyInjection" Version="6.1.0" />
     <PackageReference Include="EasyCaching.InMemory" Version="1.8.0" />
     <PackageReference Include="EasyCaching.Redis" Version="1.8.0" />
     <PackageReference Include="EasyCaching.Serialization.MessagePack" Version="1.8.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.2" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
     <PackageReference Include="Structing.DryInterceptor" Version="1.3.3-preview.3" />
-    <PackageReference Include="MethodBoundaryAspect.Fody" Version="2.0.148" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Ao.Cache.CodeGen\Ao.Cache.CodeGen.csproj"  OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
     <ProjectReference Include="..\..\src\Ao.Cache.Core\Ao.Cache.Core.csproj" />
     <ProjectReference Include="..\..\src\Ao.Cache.InMemory.Microsoft.DependencyInjection\Ao.Cache.InMemory.Microsoft.DependencyInjection.csproj" />
     <ProjectReference Include="..\..\src\Ao.Cache.InRedis.Microsoft.DependencyInjection\Ao.Cache.InRedis.Microsoft.DependencyInjection.csproj" />

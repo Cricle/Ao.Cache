@@ -1,7 +1,9 @@
 ﻿using Ao.Cache.Core.Annotations;
 using Microsoft.Extensions.DependencyInjection;
-using dsadsa;
 using Ao.Cache.Sample.CodeGen;
+using Ao.Cache.Gen;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using System.Diagnostics;
 
 namespace Ao.Cache.Sample.CodeGen
 {
@@ -15,13 +17,18 @@ namespace Ao.Cache.Sample.CodeGen
             services.AddScoped<StudentProxy>();
             var provider = services.BuildServiceProvider();
             var finder = provider.GetRequiredService<StudentProxy>();
-            for (int i = 0; i < 10; i++)
+            var c = provider.GetRequiredService<Student>();
+            var gc = GC.GetTotalMemory(true);
+            var sw = Stopwatch.GetTimestamp();
+            for (int i = 0; i < 1_000_000; i++)
             {
-                Console.WriteLine(finder.Get<int>(1));
+                _ = finder.Get2(new A()).Result;
             }
-
+            Console.WriteLine(new TimeSpan(Stopwatch.GetTimestamp() - sw));
+            Console.WriteLine($"{(GC.GetTotalMemory(false) - gc) / 1024 / 1024.0}");
         }
     }
+    [CacheProxy(ProxyType =typeof(Student))]
     public interface IStudent
     {
         void Run();
@@ -38,7 +45,7 @@ namespace Ao.Cache.Sample.CodeGen
         [CacheProxyMethod]
         ValueTask<int> Get3(A a);
     }
-    [CacheProxy(ProxyType = typeof(Student))]
+    //[CacheProxy]
     public class Student : IStudent
     {
         [CacheProxyMethod]
@@ -50,19 +57,20 @@ namespace Ao.Cache.Sample.CodeGen
         [CacheProxyMethod]
         public virtual int Get1(A a)
         {
-            throw new NotImplementedException();
+            return Random.Shared.Next(0, 9999) + a.GetHashCode();
         }
 
         [CacheProxyMethod]
-        public virtual Task<int> Get2(A a)
+        public virtual async Task<int> Get2(A a)
         {
-            throw new NotImplementedException();
+            await Task.Yield();
+            return Random.Shared.Next(0, 9999) + a.GetHashCode();
         }
 
         [CacheProxyMethod]
         public virtual ValueTask<int> Get3(A a)
         {
-            throw new NotImplementedException();
+            return new ValueTask<int>(Random.Shared.Next(0, 9999) + a.GetHashCode());
         }
 
         public void Run()

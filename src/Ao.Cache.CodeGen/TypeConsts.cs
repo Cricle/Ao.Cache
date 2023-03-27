@@ -11,7 +11,13 @@ namespace Ao.Cache.CodeGen
 
         public const string CacheProxyAttributeEndNameName = "EndName";
 
+        public const string CacheProxyAttributeNameSpaceName = "NameSpace";
+
         public const string CacheProxyMethodAttribute = "Ao.Cache.Core.Annotations.CacheProxyMethodAttribute";
+
+        public const string CacheProxyMethodCacheTimeAttribute = "CacheTime";
+
+        public const string CacheProxyMethodRenewalAttribute = "Renewal";
 
         public const string IDataAccesstorName = "Ao.Cache.IDataAccesstor<";
 

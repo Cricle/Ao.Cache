@@ -6,6 +6,9 @@ using System.Reflection;
 using System.Diagnostics;
 using System.Collections.Generic;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Text;
+using System.Text;
+using System.Runtime.InteropServices;
 
 namespace Ao.Cache.CodeGen
 {
@@ -20,7 +23,7 @@ namespace Ao.Cache.CodeGen
             }
             return f.Key == null ? default : (T)f.Value.Value;
         }
-        public static AttributeData GetCacheProxyAttribute(SyntaxNode node, SemanticModel model,string attributeName)
+        public static AttributeData GetAttribute(SyntaxNode node, SemanticModel model,string attributeName)
         {
             var decalre = model.GetDeclaredSymbol(node);
             var attr = decalre.GetAttributes().First(x => x.AttributeClass?.ToString().Equals(attributeName) ?? false);
@@ -53,7 +56,7 @@ namespace Ao.Cache.CodeGen
         }
         protected void Execute(SourceProductionContext context, SyntaxNode ax, GeneratorSyntaxContext syntaxContext)
         {
-            var cacheProxyAttr = GetAttributeHelper.GetCacheProxyAttribute(ax, syntaxContext.SemanticModel,TypeConsts.CacheProxyAttribute);
+            var cacheProxyAttr = GetAttributeHelper.GetAttribute(ax, syntaxContext.SemanticModel,TypeConsts.CacheProxyAttribute);
             ExecuteProxy(context, ax, syntaxContext, cacheProxyAttr);
         }
         protected string GetProxyType(AttributeData attributeData)
@@ -63,6 +66,18 @@ namespace Ao.Cache.CodeGen
         protected string GetEndName(AttributeData attributeData)
         {
             return GetAttributeHelper.GetValue<string>(attributeData, TypeConsts.CacheProxyAttributeEndNameName);
+        }
+        protected string GetNameSpace(AttributeData attributeData)
+        {
+            return GetAttributeHelper.GetValue<string>(attributeData, TypeConsts.CacheProxyAttributeNameSpaceName);
+        }
+        protected string GetRenewal(AttributeData attributeData)
+        {
+            return GetAttributeHelper.GetValue<string>(attributeData, TypeConsts.CacheProxyMethodRenewalAttribute);
+        }
+        protected string GetCacheTime(AttributeData attributeData)
+        {
+            return GetAttributeHelper.GetValue<string>(attributeData, TypeConsts.CacheProxyMethodCacheTimeAttribute);
         }
         protected void ExecuteProxy(SourceProductionContext context, SyntaxNode ax, GeneratorSyntaxContext syntaxContext, AttributeData attributeData)
         {
@@ -101,88 +116,35 @@ namespace Ao.Cache.CodeGen
                 proxyType = declare.ToString();
             }
             var proxyEndName = GetEndName(attributeData) ?? TypeConsts.ProxyDefaultEndName;
+            var @namespace = GetNameSpace(attributeData) ?? TypeConsts.DefaultNameSpace;
             var name = proxyType.Split('.').Last();
             var source = $@"
 using System;
 using Ao.Cache;
+using Microsoft.Extensions.DependencyInjection;
 
-public class {name}{proxyEndName} : {declare}
+namespace {@namespace}
 {{
-    protected readonly {proxyType} _raw;
-    protected readonly IDataFinderFactory _factory;
-
-    public {name}{proxyEndName}({proxyType} raw, IDataFinderFactory factory)
+    public class {name}{proxyEndName} : {declare}
     {{
-        _raw=raw;
-        _factory=factory;
-    }}
-    {string.Join("\n", methods.Select(x => WriteMethod(x, syntaxContext.SemanticModel, "_raw", "_factory",canProxys.Contains(x),isClass)))}
+        {(isClass?string.Empty: $"protected readonly {proxyType} _raw;")}
+        protected readonly IDataFinderFactory _factory;
 
-    {string.Join("\n", canProxys.Select(x => MakeGenerate(x, syntaxContext.SemanticModel, proxyType, "_raw")))}
+        public {name}{proxyEndName}({(isClass?string.Empty:$"{proxyType} raw,")} IDataFinderFactory factory)
+        {{
+            {(isClass?string.Empty:$"_raw=raw;")}
+            _factory=factory;
+        }}
+        {string.Join("\n", methods.Select(x => WriteMethod(x, syntaxContext.SemanticModel, "_raw", "_factory",canProxys.Contains(x),isClass)))}
+    }}
 }}
 ";
-            var csharp = CSharpSyntaxTree.ParseText(source);
-            var text=csharp.GetText();
-            context.AddSource($"{name}{proxyEndName}.g.cs", text);
+            context.AddSource($"{name}{proxyEndName}.g.cs", SourceText.From(source,Encoding.UTF8));
         }
-        private string MakeGenerate(MethodDeclarationSyntax x,SemanticModel model,string proxyType,string rawName)
-        {
-            var genericeTypeStr=string.Empty;
-            if (x.TypeParameterList?.Parameters != null)
-            {
-                var genericeTypes = string.Join(", ", x.TypeParameterList.Parameters.Select(w => w.Identifier.ValueText));
-                if (!string.IsNullOrEmpty(genericeTypes))
-                {
-                    genericeTypeStr = "<" + genericeTypes + ">";
-                }
-            }
-            var ret = model.GetSymbolInfo(x.ReturnType).Symbol.ToString();
-            var isTaskAsync = ret.StartsWith(TypeConsts.TaskTypeName);
-            var isValueTaskAsync = ret.StartsWith(TypeConsts.ValueTaskTypeName);
-            string body;
-            var actualRetType = ret;
-            var methodRetType = ret;
-            if (isTaskAsync||isValueTaskAsync)
-            {
-                actualRetType = ret.Substring(ret.IndexOf('<') + 1, ret.Length - ret.IndexOf('<') - 2);
-            }
-            if (isTaskAsync)
-            {
-                body = $"return {rawName}.{x.Identifier.ValueText}{genericeTypeStr}(identity);";
-            }
-            else if (isValueTaskAsync)
-            {
-                body = $"return await {rawName}.{x.Identifier.ValueText}{genericeTypeStr}(identity);";
-                methodRetType = TypeConsts.TaskTypeName + "<" + actualRetType + ">";
-            }
-            else
-            {
-                body = $"return Task.FromResult<{ret}>({rawName}.{x.Identifier.ValueText}{genericeTypeStr}(identity));";
-                methodRetType = TypeConsts.TaskTypeName + "<" + actualRetType + ">";
-            }
-            var arg1 = model.GetSymbolInfo(x.ParameterList.Parameters[0].Type).Symbol;
-            var name = x.Identifier.ValueText + "DataAccesstor";
-            return $@"
-    private readonly struct {name}{genericeTypeStr} : IDataAccesstor<{arg1},{actualRetType}>
-    {{
-        private readonly {proxyType} {rawName};
-    
-        public {name}({proxyType} {rawName})
-        {{
-            this.{rawName} = {rawName};
-        }}
-
-        public {((isValueTaskAsync) ? "async": string.Empty)} {methodRetType} FindAsync({arg1} identity)
-        {{
-            {body}
-        }}
-    }}
-";
-        }
-        private string WriteMethod(MethodDeclarationSyntax method,SemanticModel model,string rawName,string factoryName, bool proxy,bool isOverride)
+        private string WriteMethod(MethodDeclarationSyntax method,SemanticModel model,string rawName,string factoryName, bool proxy,bool isClass)
         {
             var methodtree = model.GetDeclaredSymbol(method);
-            if (isOverride&&!methodtree.IsVirtual)
+            if (isClass&&!methodtree.IsVirtual)
             {
                 return string.Empty;
             }
@@ -199,21 +161,45 @@ public class {name}{proxyEndName} : {declare}
                 .Select(p => p.Identifier.ValueText) ?? Enumerable.Empty<string>());
                 var accesstorName = methodName + "DataAccesstor";
             var head = $@"
-    public {(isOverride?"override":string.Empty)} {(isValueTaskAsync?"async":string.Empty)} {returnType} {methodName}{(string.IsNullOrEmpty(typeParameters) ? string.Empty : $"<{typeParameters}>")}({parameters})
+    public {(isClass?"override ":string.Empty)}{(isValueTaskAsync?"async":string.Empty)} {returnType} {methodName}{(string.IsNullOrEmpty(typeParameters) ? string.Empty : $"<{typeParameters}>")}({parameters})
     {{
 ";
             if (proxy)
             {
-
-                head+=$@"
-        var finder = {factoryName}.Create(new {accesstorName}{(string.IsNullOrEmpty(typeParameters)?string.Empty:$"<{typeParameters}>")}({rawName}));
-        return {((isValueTaskAsync ? "await" : string.Empty))} finder.FindAsync({string.Join(", ", method.ParameterList.Parameters.Select(x => x.Identifier.ValueText))}){(isTaskAsync?string.Empty: ".GetAwaiter().GetResult()")};
+                var attr = GetAttributeHelper.GetAttribute(method, model, TypeConsts.CacheProxyMethodAttribute);
+                var cacheTime = GetCacheTime(attr);
+                var renewal = GetRenewal(attr);
+                var actualRetType = returnType;
+                if (isTaskAsync || isValueTaskAsync)
+                {
+                    actualRetType = returnType.Substring(returnType.IndexOf('<') + 1, returnType.Length - returnType.IndexOf('<') - 2);
+                }
+                var arg1 = model.GetSymbolInfo(method.ParameterList.Parameters[0].Type).Symbol;
+                var body = $@"identity=>{(isClass ? "base" : rawName)}.{methodName}{(string.IsNullOrEmpty(typeParameters) ? string.Empty : $"<{typeParameters}>")}(identity)";
+                if (isTaskAsync)
+                {
+                    body = $@"{(isClass? "base":rawName)}.{methodName}{(string.IsNullOrEmpty(typeParameters) ? string.Empty : $"<{typeParameters}>")}";
+                }
+                head += $@"
+        var finder = {factoryName}.Create(new DelegateDataAccesstor<{arg1},{actualRetType}>({body}));
 ";
+                if (!string.IsNullOrEmpty(cacheTime))
+                {
+                    var tp = TimeSpan.Parse(cacheTime);//TODO: ERROR
+                    head += $@"
+        finder.Options.WithCacheTime({new TimeSpan(tp.Ticks)});
+";
+                }
+                var renewalWrite = !string.IsNullOrEmpty(renewal) && renewal.Equals(bool.TrueString, StringComparison.OrdinalIgnoreCase);
+                head += $@"
+        finder.Options.WithRenew({renewalWrite.ToString().ToLower()});
+";
+                head += "\n"+$@"    return {((isValueTaskAsync ? "await" : string.Empty))} finder.FindAsync({string.Join(", ", method.ParameterList.Parameters.Select(x => x.Identifier.ValueText))}){(isTaskAsync?string.Empty: ".GetAwaiter().GetResult()")};" + "\n";
             }
             else
             {
                 head += $@"
-        {(returnType=="void"?string.Empty:"return")} {rawName}.{methodName}({string.Join(", ", method.ParameterList.Parameters.Select(x => x.Identifier.ValueText))});
+        {(returnType=="void"?string.Empty:"return")} {(isClass?"base":rawName)}.{methodName}({string.Join(", ", method.ParameterList.Parameters.Select(x => x.Identifier.ValueText))});
 ";
             }
             head += "   }\n";

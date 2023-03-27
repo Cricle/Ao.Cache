@@ -1,6 +1,5 @@
 ﻿using Ao.Cache.Benchmarks.Actions;
 using BenchmarkDotNet.Running;
-using System.Threading.Tasks;
 
 namespace Ao.Cache.Benchmarks
 {
@@ -8,13 +7,13 @@ namespace Ao.Cache.Benchmarks
     {
         static void Main(string[] args)
         {
-            //var r = new AutoCacheRun();
-            //r.Times = 200_000;
-            //r.Concurrent = 2000;
+            //var r = new AutoCacheVsEasyCaching();
+            //r.Times = 1;
+            //r.Concurrent = 1;
             //r.Setup().GetAwaiter().GetResult();
-            //r.MethodBoundNoResult().GetAwaiter().GetResult();
-            //Task.Delay(1000).GetAwaiter().GetResult();
-            //r.MethodBoundNoResult().GetAwaiter().GetResult();
+            //r.UseProxy().GetAwaiter().GetResult();
+            //r.UseProvider().GetAwaiter().GetResult();
+            //r.EasyCaching().GetAwaiter().GetResult();
 
             BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run();
         }

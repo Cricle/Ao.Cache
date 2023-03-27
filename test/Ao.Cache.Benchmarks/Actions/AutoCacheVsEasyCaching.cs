@@ -1,4 +1,5 @@
-﻿using BenchmarkDotNet.Attributes;
+﻿using Ao.Cache.Gen;
+using BenchmarkDotNet.Attributes;
 using EasyCaching.Core;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -60,7 +61,7 @@ namespace Ao.Cache.Benchmarks.Actions
                     var stu = await mCache.GetAsync<Student>(str);
                     if (!stu.HasValue)
                     {
-                        var s = await scope.ServiceProvider.GetRequiredService<GetTime>().Raw(i);
+                        var s = await scope.ServiceProvider.GetRequiredService<GetTimeCt>().Raw(i);
                         mCache.Set(str, s, TimeSpan.FromSeconds(3));
                     }
                 }
@@ -79,6 +80,19 @@ namespace Ao.Cache.Benchmarks.Actions
                         op.IsCanRenewal = false;
                     }
                     await finder.FindAsync(i % 5);
+                }
+            });
+
+        }
+        [Benchmark]
+        public async Task UseProxy()
+        {
+            await Run(Times, Concurrent, async i =>
+            {
+                using (var scope = provider.CreateScope())
+                {
+                    var finder = scope.ServiceProvider.GetRequiredService<GetTimeCtProxy>();
+                    await finder.NowTime(i%5);
                 }
             });
 
