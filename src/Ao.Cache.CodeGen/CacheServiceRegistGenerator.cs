@@ -21,12 +21,11 @@ namespace Ao.Cache.CodeGen
 using Ao.Cache;
 using System.Runtime.CompilerServices;
 using Microsoft.Extensions.DependencyInjection;
-using System.Diagnostics;
 
 namespace {(rep.NameSpace??TypeConsts.DefaultNameSpace)}
 {{
     {InternalData.GeneratedCode}
-    [DebuggerStepThrough]
+    [System.Diagnostics.DebuggerStepThrough]
     public static partial class DataFinderRegistServiceCollectionExtensions
     {{
         public static IServiceCollection Add{rep.ClassName}(this IServiceCollection services)

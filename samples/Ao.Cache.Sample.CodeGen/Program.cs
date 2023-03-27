@@ -1,10 +1,7 @@
 ﻿using Ao.Cache.Core.Annotations;
 using Microsoft.Extensions.DependencyInjection;
-using Ao.Cache.Sample.CodeGen;
 using Ao.Cache.Gen;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
 
 namespace Ao.Cache.Sample.CodeGen
 {

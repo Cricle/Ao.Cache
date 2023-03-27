@@ -20,12 +20,11 @@ namespace Ao.Cache.CodeGen
 using Ao.Cache;
 using System.Runtime.CompilerServices;
 using Microsoft.Extensions.DependencyInjection;
-using System.Diagnostics;
 
 namespace {(rep.NameSpace ?? TypeConsts.DefaultNameSpace)}
 {{
     {InternalData.GeneratedCode}
-    [DebuggerStepThrough]
+    [System.Diagnostics.DebuggerStepThrough]
     public static class {rep.ClassNameTrim}DataFindersExtensions
     {{
         public static IDataFinder<{rep.TypeArg1}, {rep.TypeArg2}> Get{rep.ClassNameTrim}(this DataFinders finders, TimeSpan? cacheTime = null, bool renewal = false)

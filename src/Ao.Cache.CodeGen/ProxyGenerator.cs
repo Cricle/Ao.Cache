@@ -106,7 +106,7 @@ namespace Ao.Cache.CodeGen
                 return;
             }
             var proxyType = GetProxyType(attributeData);
-            if (proxyType == null)
+            if (string.IsNullOrEmpty(proxyType))
             {
                 if (isInterface)
                 {
@@ -127,12 +127,11 @@ using System;
 using Ao.Cache;
 using Microsoft.Extensions.DependencyInjection;
 using System.Runtime.CompilerServices;
-using System.Diagnostics;
 
 namespace {@namespace}
 {{
     {InternalData.GeneratedCode}
-    [DebuggerStepThrough]
+    [ System.Diagnostics.DebuggerStepThrough]
     public class {name}{proxyEndName} : {declare}
     {{
         {(isClass ? string.Empty : $"protected readonly {proxyType} _raw;")}
@@ -140,8 +139,8 @@ namespace {@namespace}
 
         public {name}{proxyEndName}({(isClass ? string.Empty : $"{proxyType} raw,")} IDataFinderFactory factory)
         {{
-            {(isClass ? string.Empty : $"_raw=raw;")}
-            _factory=factory;
+            {(isClass ? string.Empty : $"_raw=raw ?? throw new System.ArgumentNullException(nameof(raw));")}
+            _factory=factory ?? throw new System.ArgumentNullException(nameof(factory));
         }}
         {string.Join("\n", methods.Select(x => WriteMethod(x, syntaxContext.SemanticModel, "_raw", "_factory", canProxys.Contains(x), isClass)))}
     }}
