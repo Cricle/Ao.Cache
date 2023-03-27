@@ -4,6 +4,7 @@ using Ao.Cache.Sample.CodeGen;
 using Ao.Cache.Gen;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace Ao.Cache.Sample.CodeGen
 {
@@ -39,7 +40,7 @@ namespace Ao.Cache.Sample.CodeGen
         [CacheProxyMethod]
         int Get1(A a);
 
-        [CacheProxyMethod]
+        [CacheProxyMethod(CacheTime = "00:00:11")]
         Task<int> Get2(A a);
 
         [CacheProxyMethod]
