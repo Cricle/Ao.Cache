@@ -5,6 +5,7 @@ using System;
 using System.Reflection;
 using System.Diagnostics;
 using System.Collections.Generic;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace Ao.Cache.CodeGen
 {
@@ -53,14 +54,7 @@ namespace Ao.Cache.CodeGen
         protected void Execute(SourceProductionContext context, SyntaxNode ax, GeneratorSyntaxContext syntaxContext)
         {
             var cacheProxyAttr = GetAttributeHelper.GetCacheProxyAttribute(ax, syntaxContext.SemanticModel,TypeConsts.CacheProxyAttribute);
-            if (ax is InterfaceDeclarationSyntax ids)
-            {
-                ExecuteInterface(context, ids, syntaxContext, cacheProxyAttr);
-            }
-            else if (ax is ClassDeclarationSyntax cds)
-            {
-                ExecuteClass(context, cds, syntaxContext, cacheProxyAttr);
-            }
+            ExecuteProxy(context, ax, syntaxContext, cacheProxyAttr);
         }
         protected string GetProxyType(AttributeData attributeData)
         {
@@ -70,11 +64,13 @@ namespace Ao.Cache.CodeGen
         {
             return GetAttributeHelper.GetValue<string>(attributeData, TypeConsts.CacheProxyAttributeEndNameName);
         }
-        protected void ExecuteInterface(SourceProductionContext context, InterfaceDeclarationSyntax ax, GeneratorSyntaxContext syntaxContext, AttributeData attributeData)
+        protected void ExecuteProxy(SourceProductionContext context, SyntaxNode ax, GeneratorSyntaxContext syntaxContext, AttributeData attributeData)
         {
             var canProxys = new HashSet<MethodDeclarationSyntax>();
             var declare = syntaxContext.SemanticModel.GetDeclaredSymbol(ax);
-            var methods = ax.Members.OfType<MethodDeclarationSyntax>();
+            var isInterface = ax is InterfaceDeclarationSyntax;
+            var isClass = ax is ClassDeclarationSyntax;
+            var methods = (isInterface?((InterfaceDeclarationSyntax)ax).Members: ((ClassDeclarationSyntax)ax).Members).OfType<MethodDeclarationSyntax>();
             foreach (var item in methods)
             {
                 var methodDecalre = syntaxContext.SemanticModel.GetDeclaredSymbol(item);
@@ -95,6 +91,15 @@ namespace Ao.Cache.CodeGen
                 return;
             }
             var proxyType = GetProxyType(attributeData);
+            if (proxyType==null)
+            {
+                if (isInterface)
+                {
+                    context.ReportDiagnostic(Diagnostic.Create(DiagnosticDescriptors.InterfaceProxyMustGivenProxyType, Location.Create(no1ArgMethod.SyntaxTree, no1ArgMethod.Span)));
+                    return;
+                }
+                proxyType = declare.ToString();
+            }
             var proxyEndName = GetEndName(attributeData) ?? TypeConsts.ProxyDefaultEndName;
             var name = proxyType.Split('.').Last();
             var source = $@"
@@ -111,12 +116,14 @@ public class {name}{proxyEndName} : {declare}
         _raw=raw;
         _factory=factory;
     }}
-    {string.Join("\n", methods.Select(x => WriteMethod(x, syntaxContext.SemanticModel, "_raw", "_factory",canProxys.Contains(x))))}
+    {string.Join("\n", methods.Select(x => WriteMethod(x, syntaxContext.SemanticModel, "_raw", "_factory",canProxys.Contains(x),isClass)))}
 
     {string.Join("\n", canProxys.Select(x => MakeGenerate(x, syntaxContext.SemanticModel, proxyType, "_raw")))}
 }}
 ";
-            context.AddSource($"{name}{proxyEndName}.g.cs",source);
+            var csharp = CSharpSyntaxTree.ParseText(source);
+            var text=csharp.GetText();
+            context.AddSource($"{name}{proxyEndName}.g.cs", text);
         }
         private string MakeGenerate(MethodDeclarationSyntax x,SemanticModel model,string proxyType,string rawName)
         {
@@ -172,8 +179,13 @@ public class {name}{proxyEndName} : {declare}
     }}
 ";
         }
-        private string WriteMethod(MethodDeclarationSyntax method,SemanticModel model,string rawName,string factoryName, bool proxy)
+        private string WriteMethod(MethodDeclarationSyntax method,SemanticModel model,string rawName,string factoryName, bool proxy,bool isOverride)
         {
+            var methodtree = model.GetDeclaredSymbol(method);
+            if (isOverride&&!methodtree.IsVirtual)
+            {
+                return string.Empty;
+            }
             var returnType=model.GetSymbolInfo(method.ReturnType).Symbol.ToString();
             var isTaskAsync = returnType.StartsWith(TypeConsts.TaskTypeName) || returnType.StartsWith(TypeConsts.ValueTaskTypeName);
             var isValueTaskAsync = returnType.StartsWith(TypeConsts.ValueTaskTypeName);
@@ -187,7 +199,7 @@ public class {name}{proxyEndName} : {declare}
                 .Select(p => p.Identifier.ValueText) ?? Enumerable.Empty<string>());
                 var accesstorName = methodName + "DataAccesstor";
             var head = $@"
-    public {(isValueTaskAsync?"async":string.Empty)} {returnType} {methodName}{(string.IsNullOrEmpty(typeParameters) ? string.Empty : $"<{typeParameters}>")}({parameters})
+    public {(isOverride?"override":string.Empty)} {(isValueTaskAsync?"async":string.Empty)} {returnType} {methodName}{(string.IsNullOrEmpty(typeParameters) ? string.Empty : $"<{typeParameters}>")}({parameters})
     {{
 ";
             if (proxy)
@@ -206,10 +218,6 @@ public class {name}{proxyEndName} : {declare}
             }
             head += "   }\n";
             return head;
-        }
-        protected void ExecuteClass(SourceProductionContext context, ClassDeclarationSyntax ax, GeneratorSyntaxContext syntaxContext, AttributeData attributeData)
-        {
-
         }
     }
 }

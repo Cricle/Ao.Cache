@@ -9,24 +9,25 @@ namespace Ao.Cache.Sample.CodeGen
     {
         static void Main(string[] args)
         {
-            //var services = new ServiceCollection();
-            //services.AddScoped<DataFinders>().AddTestDataAccesstor();
-            //services.AddInMemoryFinder();
-            //var provider = services.BuildServiceProvider();
-            //var finder = provider.GetRequiredService<DataFinders>().GetTest();
-            //for (int i = 0; i < 10; i++)
-            //{
-            //    Console.WriteLine(finder.FindAsync(new A()).Result);
-            //}
+            var services = new ServiceCollection();
+            services.AddInMemoryFinder();
+            services.AddScoped<Student>();
+            services.AddScoped<StudentProxy>();
+            var provider = services.BuildServiceProvider();
+            var finder = provider.GetRequiredService<StudentProxy>();
+            for (int i = 0; i < 10; i++)
+            {
+                Console.WriteLine(finder.Get<int>(1));
+            }
+
         }
     }
-    [CacheProxy(ProxyType = typeof(Student))]
     public interface IStudent
     {
         void Run();
 
         [CacheProxyMethod]
-        int Get<T>(int? a);
+        int? Get<T>(int? a);
 
         [CacheProxyMethod]
         int Get1(A a);
@@ -37,24 +38,29 @@ namespace Ao.Cache.Sample.CodeGen
         [CacheProxyMethod]
         ValueTask<int> Get3(A a);
     }
+    [CacheProxy(ProxyType = typeof(Student))]
     public class Student : IStudent
     {
-        public int Get<T>(int? a)
+        [CacheProxyMethod]
+        public virtual int? Get<T>(int? a)
+        {
+            return Random.Shared.Next(0, 9999) + a.GetHashCode();
+        }
+
+        [CacheProxyMethod]
+        public virtual int Get1(A a)
         {
             throw new NotImplementedException();
         }
 
-        public int Get1(A a)
+        [CacheProxyMethod]
+        public virtual Task<int> Get2(A a)
         {
             throw new NotImplementedException();
         }
 
-        public Task<int> Get2(A a)
-        {
-            throw new NotImplementedException();
-        }
-
-        public ValueTask<int> Get3(A a)
+        [CacheProxyMethod]
+        public virtual ValueTask<int> Get3(A a)
         {
             throw new NotImplementedException();
         }
