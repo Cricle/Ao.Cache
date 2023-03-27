@@ -1,9 +1,7 @@
-﻿using Ao.Cache.CastleProxy.Interceptors;
+﻿using Ao.Cache.Gen;
 using Ao.Cache.Serizlier.MessagePack;
 using BenchmarkDotNet.Attributes;
-using DryIoc;
-using DryIoc.Microsoft.DependencyInjection;
-using Microsoft.EntityFrameworkCore;
+using Example;
 using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Redis;
 using System;
@@ -45,17 +43,9 @@ namespace Ao.Cache.Benchmarks.Actions
         public async Task Setup()
         {
             var ser = new ServiceCollection();
-            ser.AddPooledDbContextFactory<StudentDbContext>(x =>
-            {
-                x.UseSqlite("Data Source=student.db;");
-            }).AddDbContextPool<StudentDbContext>(x =>
-            {
-                x.UseSqlite("Data Source=student.db;");
-            });
-            ser.AddSingleton<GetTime>();
             ser.AddSingleton<GetTimeCt>();
+            ser.AddSingleton<GetTimeCtProxy>();
             ser.AddSingleton<IDataAccesstor<int, Student>, AAccesstor>();
-            ser.WithCastleCacheProxy();
             Regist(ser);
             var s = ConfigurationOptions.Parse("127.0.0.1:6379");
             ser.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(s));
@@ -70,28 +60,7 @@ namespace Ao.Cache.Benchmarks.Actions
             {
                 ser.AddInMemoryFinder();
             }
-
-            var icon = new Container(Rules.MicrosoftDependencyInjectionRules)
-                .WithDependencyInjectionAdapter(ser, null, RegistrySharing.CloneAndDropCache);
-            icon.AsyncIntercept(typeof(GetTime), typeof(CacheInterceptor));
-            provider = icon.BuildServiceProvider();
-            provider.SetGlobalMethodBoundaryFactory();
-            //using (var scope = provider.CreateScope())
-            //{
-            //    var db = scope.ServiceProvider.GetRequiredService<StudentDbContext>();
-            //    db.Database.EnsureCreated();
-            //    if (!db.Students.Any())
-            //    {
-            //        for (int i = 0; i < 1000; i++)
-            //        {
-            //            db.Students.Add(new Student
-            //            {
-            //                Name = i.ToString() + "dsadsad"
-            //            });
-            //        }
-            //        db.SaveChanges();
-            //    }
-            //}
+            provider = ser.BuildServiceProvider();
             await OnSetup();
         }
         protected virtual Task OnSetup()

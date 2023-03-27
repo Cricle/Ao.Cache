@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <IsPackable>false</IsPackable>
+	  <ImplicitUsings>true</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,8 +18,5 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Ao.Cache.Core\Ao.Cache.Core.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="../Ao.Cache.Proxy.Test/Usings.cs"></Compile>
   </ItemGroup>
 </Project>
