@@ -3,6 +3,7 @@ using Ao.Cache.Core.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Ao.Cache.Gen;
 using System.Diagnostics;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Ao.Cache.Sample.CodeGen
 {
@@ -15,13 +16,15 @@ namespace Ao.Cache.Sample.CodeGen
             services.AddScoped<Student>();
             services.AddScoped<StudentProxy>();
             var provider = services.BuildServiceProvider();
+            var mem = provider.GetRequiredService<IMemoryCache>();
             var finder = provider.GetRequiredService<StudentProxy>();
             var c = provider.GetRequiredService<Student>();
             var gc = GC.GetTotalMemory(true);
             var sw = Stopwatch.GetTimestamp();
+            var ax = new A();
             for (int i = 0; i < 1_000_000; i++)
             {
-                _ = finder.Get3(new A()).Result;
+                _ = finder.Get1(ax);
             }
             Console.WriteLine(new TimeSpan(Stopwatch.GetTimestamp() - sw));
             Console.WriteLine($"{(GC.GetTotalMemory(false) - gc) / 1024 / 1024.0}");
@@ -34,21 +37,23 @@ namespace Ao.Cache.Sample.CodeGen
 
         int? Get<T>(int? a);
 
-        int Get1(A a);
+        int? Get1(A a);
 
         Task<int> Get2(A a);
 
         ValueTask<int> Get3(A a);
     }
-    [CacheProxy(ProxyType = typeof(Student), ProxyAll = true)]
+    [CacheProxy(ProxyType = typeof(Student), ProxyAll = true,Head ="test")]
     public class Student : IStudent
     {
+        [CacheProxyMethod(Head ="ff")]
         public virtual int? Get<T>(int? a)
         {
             return Random.Shared.Next(0, 9999) + a.GetHashCode();
         }
 
-        public virtual int Get1(A a)
+        [CacheProxyMethod(Head = "ffx",HeadAbsolute =true)]
+        public virtual int? Get1(A a)
         {
             return Random.Shared.Next(0, 9999) + a.GetHashCode();
         }
@@ -72,7 +77,14 @@ namespace Ao.Cache.Sample.CodeGen
 
     public struct A
     {
-
+        public override int GetHashCode()
+        {
+            return 111;
+        }
+        public override string ToString()
+        {
+            return GetHashCode().ToString();
+        }
     }
     [DataAccesstor(NameSpace ="dsadsa")]
     public class TestDataAccesstor : IDataAccesstor<A, int?>

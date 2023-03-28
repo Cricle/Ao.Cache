@@ -2,38 +2,14 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Linq;
 using System;
-using System.Reflection;
-using System.Diagnostics;
 using System.Collections.Generic;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Text;
 using System.Text;
-using System.Runtime.InteropServices;
+using System.Diagnostics;
 
 namespace Ao.Cache.CodeGen
 {
-    internal static class GetAttributeHelper
-    {
-        public static T GetValue<T>(AttributeData attributeData, string name)
-        {
-            if (attributeData == null)
-            {
-                return default;
-            }
-            var f = attributeData.NamedArguments.FirstOrDefault(x => x.Key == name);
-            if (typeof(T) == typeof(string))
-            {
-                return f.Key == null ? default : (T)(object)f.Value.Value?.ToString();
-            }
-            return f.Key == null ? default : (T)f.Value.Value;
-        }
-        public static AttributeData GetAttribute(SyntaxNode node, SemanticModel model, string attributeName)
-        {
-            var decalre = model.GetDeclaredSymbol(node);
-            var attr = decalre.GetAttributes().FirstOrDefault(x => x.AttributeClass?.ToString().Equals(attributeName) ?? false);
-            return attr;
-        }
-    }
     [Generator]
     public class ProxyGenerator : IIncrementalGenerator
     {
@@ -95,6 +71,14 @@ namespace Ao.Cache.CodeGen
         {
             return GetAttributeHelper.GetValue<string>(attributeData, TypeConsts.CacheProxyMethodCacheTimeAttribute);
         }
+        protected string GetHead(AttributeData attributeData)
+        {
+            return GetAttributeHelper.GetValue<string>(attributeData, TypeConsts.Head);
+        }
+        protected bool GetHeadAbsolute(AttributeData attributeData)
+        {
+            return GetAttributeHelper.GetValue<bool>(attributeData, TypeConsts.HeadAbsolute);
+        }
         protected void ExecuteProxy(SourceProductionContext context, SyntaxNode ax, GeneratorSyntaxContext syntaxContext, AttributeData attributeData)
         {
             var isProxyAll = GetProxyAll(attributeData);
@@ -148,6 +132,7 @@ namespace Ao.Cache.CodeGen
             }
             var proxyEndName = GetEndName(attributeData) ?? TypeConsts.ProxyDefaultEndName;
             var @namespace = GetNameSpace(attributeData) ?? TypeConsts.DefaultNameSpace;
+            var head = GetHead(attributeData);
             var name = proxyType.Split('.').Last();
             try
             {
@@ -173,7 +158,7 @@ namespace {@namespace}
             {(isClass ? string.Empty : $"_raw=raw ?? throw new System.ArgumentNullException(nameof(raw));")}
             _factory=factory ?? throw new System.ArgumentNullException(nameof(factory));
         }}
-        {string.Join("\n", methods.Select(x => WriteMethod(x, syntaxContext.SemanticModel, "_raw", "_factory", canProxys.Contains(x), isClass, isProxyAll)))}
+        {string.Join("\n", methods.Select(x => WriteMethod(x, syntaxContext.SemanticModel, "_raw", "_factory", canProxys.Contains(x), isClass, isProxyAll,head)))}
     }}
 }}
 
@@ -189,7 +174,7 @@ namespace {@namespace}
                 }
             }
         }
-        private string WriteMethod(MethodDeclarationSyntax method, SemanticModel model, string rawName, string factoryName, bool proxy, bool isClass,bool proxyAll)
+        private string WriteMethod(MethodDeclarationSyntax method, SemanticModel model, string rawName, string factoryName, bool proxy, bool isClass,bool proxyAll,string rootHead)
         {
             var methodtree = model.GetDeclaredSymbol(method);
             if (isClass && !methodtree.IsVirtual)
@@ -215,6 +200,26 @@ namespace {@namespace}
             var accesstorName = methodName + "DataAccesstor";
             var inline = GetInline(attr);
             var noProxy = GetNoProxy(attr);
+            var partHead = GetHead(attr);
+            var headAbsolute = GetHeadAbsolute(attr);
+            var combineHead = string.Empty;
+            if (headAbsolute)
+            {
+                combineHead = partHead;
+            }
+            else if (string.IsNullOrEmpty(partHead) && !string.IsNullOrEmpty(rootHead))
+            {
+                combineHead = rootHead + "." + methodName+$"({string.Join(",",method.ParameterList.Parameters.Select(x=> x.Identifier.ValueText))})";
+            }
+            else if (!string.IsNullOrEmpty(partHead) && !string.IsNullOrEmpty(rootHead))
+            {
+                combineHead = rootHead + "." + partHead;
+            }
+            var hasHead = !string.IsNullOrEmpty(combineHead);
+            if (hasHead)
+            {
+                combineHead = "\"" + combineHead + "\"";
+            }
             if (noProxy)
             {
                 if (isClass)
@@ -263,6 +268,12 @@ namespace {@namespace}
                 head += $@"
             finder.Options.WithRenew({renewalWrite.ToString().ToLower()});
 ";
+                if (hasHead)
+                {
+                    head += $@"
+            finder.Options.WithHead({combineHead});
+";
+                }
                 head += "\n" + $@"            return {((isValueTaskAsync ? "await" : string.Empty))} finder.FindAsync({string.Join(", ", method.ParameterList.Parameters.Select(x => x.Identifier.ValueText))}){(isTaskAsync ? string.Empty : ".GetAwaiter().GetResult()")};" + "\n";
             }
             else

@@ -13,5 +13,7 @@ namespace Ao.Cache.Core.Annotations
         public string NameSpace { get; set; }
 
         public bool ProxyAll { get; set; }
+
+        public string Head { get; set; }
     }
 }

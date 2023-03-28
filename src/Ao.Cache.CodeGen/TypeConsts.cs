@@ -51,5 +51,9 @@ namespace Ao.Cache.CodeGen
 
         public const string IDataFinderName = "IDataFinder<{0},{1}>";
 
+        public const string Head = "Head";
+
+        public const string HeadAbsolute = "HeadAbsolute";
+
     }
 }

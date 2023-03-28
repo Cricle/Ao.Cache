@@ -12,5 +12,9 @@ namespace Ao.Cache.Core.Annotations
         public bool Inline { get; set; } = true;
 
         public bool NoProxy { get; set; }
+
+        public string Head { get; set; }
+
+        public bool HeadAbsolute { get; set; }
     }
 }
