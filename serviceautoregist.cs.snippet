@@ -1,0 +1,48 @@
+using Ao.Cache;
+using Ao.Cache.Core.Annotations;
+using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Linq;
+using System.Reflection;
+
+public static class EnableProxy
+{
+    public static IServiceCollection AddProxy<T>(this IServiceCollection services, ServiceLifetime lifetime = ServiceLifetime.Scoped)
+    {
+        return AddProxy(services, typeof(T), lifetime);
+    }
+    public static IServiceCollection AddProxy(this IServiceCollection services, Type targetType, ServiceLifetime lifetime = ServiceLifetime.Scoped)
+    {
+        var isClass = targetType.IsClass;
+        var x = targetType.Assembly.GetExportedTypes()
+            .Where(x =>
+            {
+                var interfaceAttr = x.GetCustomAttribute<CacheProxyByAttribute>();
+                return interfaceAttr != null && interfaceAttr.ProxyType == targetType;
+            }).FirstOrDefault();
+        if (x == null)
+        {
+            throw new ArgumentException($"Type {targetType} has not any CacheProxyByAttribute, ensure it is auto-gen, and version is right");
+        }
+        if (x != null)
+        {
+            if (isClass)
+            {
+                services.Add(new ServiceDescriptor(targetType, x, lifetime));
+            }
+            else
+            {
+                var attr = targetType.GetCustomAttribute<CacheProxyAttribute>();
+                var proxy = x.GetCustomAttribute<CacheProxyByAttribute>();
+                services.Add(new ServiceDescriptor(attr.ProxyType, attr.ProxyType, lifetime));
+                services.Add(new ServiceDescriptor(targetType, provider =>
+                {
+                    return ActivatorUtilities.CreateInstance(provider, x,
+                        ActivatorUtilities.CreateInstance(provider, attr.ProxyType, new object[0]),
+                        provider.GetRequiredService<IDataFinderFactory>());
+                }, lifetime));
+            }
+        }
+        return services;
+    }
+}
