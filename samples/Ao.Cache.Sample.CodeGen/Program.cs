@@ -7,6 +7,8 @@ using Microsoft.Extensions.Caching.Memory;
 using System.Runtime.CompilerServices;
 using System.Reflection;
 
+[assembly:EnableCacheAutoServiceRegist]
+
 namespace Ao.Cache.Sample.CodeGen
 {
     internal class Program
@@ -47,7 +49,7 @@ namespace Ao.Cache.Sample.CodeGen
 
         ValueTask<int> Get3(A a);
     }
-    [CacheProxy(ProxyType = typeof(Student), ProxyAll = true,Head ="test")]
+    [CacheProxy(ProxyType = typeof(Student), Head ="test")]
     public class Student : IStudent
     {
         public virtual int? Get<T>(int? a)

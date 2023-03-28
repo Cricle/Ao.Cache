@@ -7,6 +7,10 @@ namespace Ao.Cache.CodeGen
 
         public const string CacheForDataAccesstorServiceTypeAttribute = "ServiceType";
 
+        public const string EnableCacheAutoServiceRegistAttributeShort = "EnableCacheAutoServiceRegistAttribute";
+
+        public const string EnableCacheAutoServiceRegistShort = "EnableCacheAutoServiceRegist";
+
         public const string CacheForDataAccesstorImplementTypeAttribute = "ImplementType";
 
         public const string CacheProxyAttribute = "Ao.Cache.Core.Annotations.CacheProxyAttribute";
