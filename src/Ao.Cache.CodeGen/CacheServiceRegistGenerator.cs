@@ -28,6 +28,7 @@ namespace {(rep.NameSpace??TypeConsts.DefaultNameSpace)}
     [System.Diagnostics.DebuggerStepThrough]
     public static partial class DataFinderRegistServiceCollectionExtensions
     {{
+        [{TypeConsts.CacheForDataAccesstorAttribute}({TypeConsts.CacheForDataAccesstorServiceTypeAttribute}=typeof(IDataAccesstor<{rep.TypeArg1},{rep.TypeArg2}>),{TypeConsts.CacheForDataAccesstorImplementTypeAttribute}=typeof({rep.TypeArg2}))]
         public static IServiceCollection Add{rep.ClassName}(this IServiceCollection services)
         {{
             services.AddScoped<IDataAccesstor<{rep.TypeArg1}, {rep.TypeArg2}>,{rep.Target}>();
@@ -35,6 +36,7 @@ namespace {(rep.NameSpace??TypeConsts.DefaultNameSpace)}
         }}
     }}
 }}
+/// </auto-generated>
 ";
             context.AddSource($"DataFindersServices.{rep.ClassName}.g.cs", sourceText);
         }

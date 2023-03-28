@@ -3,9 +3,23 @@ namespace Ao.Cache.CodeGen
 {
     internal static class TypeConsts
     {
-        public const string DataAccesstorAttribute = "Ao.Cache.Core.Annotations.DataAccesstorAttribute";
+        public const string CacheForDataAccesstorAttribute = "Ao.Cache.Core.Annotations.CacheForDataAccesstorAttribute";
+
+        public const string CacheForDataAccesstorServiceTypeAttribute = "ServiceType";
+
+        public const string CacheForDataAccesstorImplementTypeAttribute = "ImplementType";
 
         public const string CacheProxyAttribute = "Ao.Cache.Core.Annotations.CacheProxyAttribute";
+
+        public const string CacheProxyProxyAllAttribute = "ProxyAll";
+
+        public const string DataAccesstorAttribute = "Ao.Cache.Core.Annotations.DataAccesstorAttribute";
+
+        public const string CacheProxyByInterfaceAttribute = "Ao.Cache.Core.Annotations.CacheProxyByInterfaceAttribute";
+
+        public const string CacheProxyByClassAttribute = "Ao.Cache.Core.Annotations.CacheProxyByClassAttribute";
+
+        public const string CacheProxyByProxyTypeAttribute = "ProxyType";
 
         public const string CacheProxyAttributeProxyTypeName = "ProxyType";
 
@@ -16,6 +30,10 @@ namespace Ao.Cache.CodeGen
         public const string CacheProxyMethodAttribute = "Ao.Cache.Core.Annotations.CacheProxyMethodAttribute";
 
         public const string CacheProxyMethodCacheTimeAttribute = "CacheTime";
+
+        public const string CacheProxyMethodInlineAttribute = "Inline";
+
+        public const string CacheProxyMethodNoProxyAttribute = "NoProxy";
 
         public const string CacheProxyMethodRenewalAttribute = "Renewal";
 
