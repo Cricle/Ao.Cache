@@ -49,7 +49,7 @@ namespace Ao.Cache.Sample.CodeGen
 
         ValueTask<int> Get3(A a);
     }
-    [CacheProxy(ProxyType = typeof(Student), Head ="test")]
+    [CacheProxy(Head ="test")]
     public class Student : IStudent
     {
         public virtual int? Get<T>(int? a)

@@ -41,7 +41,12 @@ namespace Ao.Cache.CodeGen
         }
         protected bool GetProxyAll(AttributeData attributeData)
         {
-            return GetAttributeHelper.GetValue<bool>(attributeData, TypeConsts.CacheProxyProxyAllAttribute);
+            var res = GetAttributeHelper.GetValue<string>(attributeData, TypeConsts.CacheProxyProxyAllAttribute);
+            if (string.IsNullOrEmpty(res))
+            {
+                return true;
+            }
+            return bool.Parse(res);
         }
         protected string GetProxyType(AttributeData attributeData)
         {
@@ -90,9 +95,12 @@ namespace Ao.Cache.CodeGen
             foreach (var item in methods)
             {
                 var methodDecalre = syntaxContext.SemanticModel.GetDeclaredSymbol(item);
-                if (!isProxyAll&&!methodDecalre.GetAttributes().Any(attr => attr.AttributeClass?.ToString().Equals(TypeConsts.CacheProxyMethodAttribute) ?? false))
+                if (!isProxyAll)
                 {
-                    continue;
+                    if (!methodDecalre.GetAttributes().Any(attr => attr.AttributeClass?.ToString().Equals(TypeConsts.CacheProxyMethodAttribute) ?? false))
+                    {
+                        continue;
+                    }
                 }
                 var symbol = syntaxContext.SemanticModel.GetSymbolInfo(item.ReturnType);
                 var symbolName = symbol.Symbol?.ToString();
@@ -220,7 +228,7 @@ namespace {@namespace}
             {
                 combineHead = "\"" + combineHead + "\"";
             }
-            if (noProxy)
+            if (!proxyAll&&noProxy)
             {
                 if (isClass)
                 {
