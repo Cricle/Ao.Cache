@@ -4,6 +4,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Ao.Cache.Gen;
 using System.Diagnostics;
 using Microsoft.Extensions.Caching.Memory;
+using System.Runtime.CompilerServices;
+using System.Reflection;
 
 namespace Ao.Cache.Sample.CodeGen
 {
@@ -19,12 +21,14 @@ namespace Ao.Cache.Sample.CodeGen
             var mem = provider.GetRequiredService<IMemoryCache>();
             var finder = provider.GetRequiredService<StudentProxy>();
             var c = provider.GetRequiredService<Student>();
+            var ax = new A();
+            _ = finder.Get2(ax).Result;
+            _ = c.Get2(ax).Result;
             var gc = GC.GetTotalMemory(true);
             var sw = Stopwatch.GetTimestamp();
-            var ax = new A();
             for (int i = 0; i < 1_000_000; i++)
             {
-                _ = finder.Get1(ax);
+                _ = finder.Get2(ax).Result;
             }
             Console.WriteLine(new TimeSpan(Stopwatch.GetTimestamp() - sw));
             Console.WriteLine($"{(GC.GetTotalMemory(false) - gc) / 1024 / 1024.0}");
@@ -39,26 +43,24 @@ namespace Ao.Cache.Sample.CodeGen
 
         int? Get1(A a);
 
-        Task<int> Get2(A a);
+        Task<int?> Get2(A a);
 
         ValueTask<int> Get3(A a);
     }
     [CacheProxy(ProxyType = typeof(Student), ProxyAll = true,Head ="test")]
     public class Student : IStudent
     {
-        [CacheProxyMethod(Head ="ff")]
         public virtual int? Get<T>(int? a)
         {
             return Random.Shared.Next(0, 9999) + a.GetHashCode();
         }
 
-        [CacheProxyMethod(Head = "ffx",HeadAbsolute =true)]
         public virtual int? Get1(A a)
         {
             return Random.Shared.Next(0, 9999) + a.GetHashCode();
         }
 
-        public virtual async Task<int> Get2(A a)
+        public virtual async Task<int?> Get2(A a)
         {
             await Task.Yield();
             return Random.Shared.Next(0, 9999) + a.GetHashCode();
