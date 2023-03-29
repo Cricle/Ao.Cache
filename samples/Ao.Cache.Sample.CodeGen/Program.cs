@@ -18,10 +18,10 @@ namespace Ao.Cache.Sample.CodeGen
             var services = new ServiceCollection();
             services.AddInMemoryFinder();
             services.AddScoped<Student>();
-            services.AddScoped<StudentProxya>();
+            services.AddScoped<StudentProxy>();
             var provider = services.BuildServiceProvider();
             var mem = provider.GetRequiredService<IMemoryCache>();
-            var finder = provider.GetRequiredService<StudentProxya>();
+            var finder = provider.GetRequiredService<StudentProxy>();
             var c = provider.GetRequiredService<Student>();
             var ax = new A();
             _ = finder.Get2(ax).Result;
@@ -98,79 +98,4 @@ namespace Ao.Cache.Sample.CodeGen
             return Task.FromResult<int?>(identity.GetHashCode() + Random.Shared.Next(0,9999));
         }
     }
-    public class StudentProxya : Ao.Cache.Sample.CodeGen.Student
-    {
-
-        protected readonly IDataFinderFactory _factory;
-
-        public StudentProxya(IDataFinderFactory factory)
-        {
-
-            _factory = factory ?? throw new System.ArgumentNullException(nameof(factory));
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override int? Get<T>(int? a)
-        {
-
-            var finder = _factory.Create(new DelegateDataAccesstor<int?, int?>(identity => base.Get<T>(identity)));
-
-            finder.Options.WithRenew(false);
-
-            finder.Options.WithHead("test.Get(a)");
-
-            return finder.FindAsync(a).GetAwaiter().GetResult();
-        }
-
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override int? Get1(Ao.Cache.Sample.CodeGen.A a)
-        {
-
-            var finder = _factory.Create(new DelegateDataAccesstor<Ao.Cache.Sample.CodeGen.A, int?>(identity => base.Get1(identity)));
-
-            finder.Options.WithRenew(false);
-
-            finder.Options.WithHead("test.Get1(a)");
-
-            return finder.FindAsync(a).GetAwaiter().GetResult();
-        }
-
-
-        public override System.Threading.Tasks.Task<int?> Get2(Ao.Cache.Sample.CodeGen.A a)
-        {
-
-            var finder = _factory.Create(new DelegateDataAccesstor<Ao.Cache.Sample.CodeGen.A, int?>(base.Get2));
-
-            finder.Options.WithRenew(false);
-
-            finder.Options.WithHead("test.Get2(a)");
-
-            return finder.FindAsync(a);
-        }
-
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override async System.Threading.Tasks.ValueTask<int> Get3(Ao.Cache.Sample.CodeGen.A a)
-        {
-
-            var finder = _factory.Create(new DelegateDataAccesstor<Ao.Cache.Sample.CodeGen.A, int>(base.Get3));
-
-            finder.Options.WithRenew(false);
-
-            finder.Options.WithHead("test.Get3(a)");
-
-            return await finder.FindAsync(a);
-        }
-
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override void Run()
-        {
-
-            base.Run();
-        }
-
-    }
-
 }

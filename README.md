@@ -52,41 +52,16 @@ public interface IStudent
 {
     void Run();
 
-    [CacheProxyMethod]
     int? Get<T>(int? a);
 
-    [CacheProxyMethod]
     int Get1(A a);
 
     [CacheProxyMethod(CacheTime = "00:00:11")]
     Task<int> Get2(A a);
 
-    [CacheProxyMethod]
     ValueTask<int> Get3(A a);
 }
 ```
-
-# Why
-
-## Why I use generic `TIdentity` not `string`
-
-I think `string` can't reflect the identification of looking for cache, so i add one more step, but this is one-way.
-
-## Why has interface `IDataAccesstor<TIdentity, TEntry>` and `IBatchDataAccesstor<TIdentity, TEntry>`
-
-I think cache mode `can` split with physical data find and cache operator. So i only define how to fetch physical data.
-
-## Why not define `IDataAccesstor<string,byte[]>`
-
-I don't want to make `object<->byte[]` when not necessary, like in memory, sqlite etc.
-
-## Why all method only async
-
-I think cache always in other process, like redis, so i want all cache operator only async call. 
-
-## Why has batch data finder
-
-Sometimes there are such scenes, the request want find range data, but some exists, some miss, this is an embarrassing thing, so it will found miss in physical data, merge cache data and return.
 
 # Nuget
 
