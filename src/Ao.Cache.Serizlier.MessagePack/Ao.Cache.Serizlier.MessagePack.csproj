@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MessagePack" Version="2.4.59" />
+    <PackageReference Include="MessagePack" Version="2.5.108" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="../Shareds/Encodings/*.cs" />

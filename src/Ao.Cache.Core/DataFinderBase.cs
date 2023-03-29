@@ -40,7 +40,7 @@ namespace Ao.Cache
 
         public virtual TimeSpan? GetCacheTime(TIdentity identity)
         {
-            return Options.GetCacheTime(identity);
+            return options.GetCacheTime(identity);
         }
 
         public abstract Task<bool> DeleteAsync(TIdentity entity);
@@ -48,24 +48,24 @@ namespace Ao.Cache
 
         public virtual bool CanRenewal(TIdentity identity)
         {
-            return Options.CanRenewal(identity);
+            return options.CanRenewal(identity);
         }
 
         public abstract Task<bool> RenewalAsync(TIdentity identity, TimeSpan? time);
 
         public string GetEntryKey(TIdentity identity)
         {
-            return Options.GetEntryKey(identity);
+            return options.GetEntryKey(identity);
         }
 
         public string GetHead()
         {
-            return Options.GetHead();
+            return options.GetHead();
         }
 
         public string GetPart(TIdentity identity)
         {
-            return Options.GetPart(identity);
+            return options.GetPart(identity);
         }
 
         Task<bool> IDataFinder.DeleteAsync(object identity)

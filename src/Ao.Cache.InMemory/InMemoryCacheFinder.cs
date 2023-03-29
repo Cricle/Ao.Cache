@@ -8,17 +8,24 @@ namespace Ao.Cache.InMemory
     {
         private static readonly Task<bool> trueTask = Task.FromResult(true);
 
-        protected abstract IMemoryCache GetMemoryCache();
+        protected InMemoryCacheFinder(IMemoryCache memoryCache)
+        {
+            this.memoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
+        }
+
+        private readonly IMemoryCache memoryCache;
+
+        public IMemoryCache MemoryCache => memoryCache;
 
         public override Task<bool> DeleteAsync(TIdentity identity)
         {
-            GetMemoryCache().Remove(GetEntryKey(identity));
+            memoryCache.Remove(GetEntryKey(identity));
             return trueTask;
         }
 
         public override Task<bool> ExistsAsync(TIdentity identity)
         {
-            var r = GetMemoryCache().TryGetValue(GetEntryKey(identity), out _);
+            var r = memoryCache.TryGetValue(GetEntryKey(identity), out _);
             return Task.FromResult(r);
         }
 
@@ -31,7 +38,7 @@ namespace Ao.Cache.InMemory
         }
         protected override Task<TEntry> CoreFindInCacheAsync(string key, TIdentity identity)
         {
-            if (GetMemoryCache().TryGetValue<TEntry>(key, out var data))
+            if (memoryCache.TryGetValue<TEntry>(key, out var data))
             {
                 return Task.FromResult(data);
             }
@@ -41,20 +48,19 @@ namespace Ao.Cache.InMemory
         protected override Task<bool> SetInCacheAsync(string key, TIdentity identity, TEntry entity, TimeSpan? caheTime)
         {
             var options = GetMemoryCacheEntryOptions(identity, caheTime);
-            GetMemoryCache().Set(key, entity, options);
+            memoryCache.Set(key, entity, options);
             return trueTask;
         }
         public override Task<bool> RenewalAsync(TIdentity identity, TimeSpan? time)
         {
             var key = GetEntryKey(identity);
-            var mem = GetMemoryCache();
-            var val = mem.Get(key);
+            var val = memoryCache.Get(key);
             if (val == null)
             {
                 return Task.FromResult(false);
             }
             var options = GetMemoryCacheEntryOptions(identity, time);
-            mem.Set(key, val, options);
+            memoryCache.Set(key, val, options);
             return Task.FromResult(true);
         }
 

@@ -7,7 +7,7 @@
             Options = DefaultDataFinderOptions<TIdentity, TEntity>.Default;
         }
 
-        private IDataFinderOptions<TIdentity, TEntity> options;
+        internal IDataFinderOptions<TIdentity, TEntity> options;
 
         public IDataFinderOptions<TIdentity, TEntity> Options
         {

@@ -13,7 +13,7 @@
 
   <ItemGroup>
 	  <ProjectReference Include="..\..\src\Ao.Cache.Core\Ao.Cache.Core.csproj" />
-	  <ProjectReference Include="..\..\src\Ao.Cache.CodeGen\Ao.Cache.CodeGen.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+	  <ProjectReference Include="..\..\src\Ao.Cache.CodeGen\Ao.Cache.CodeGen.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
 	  <ProjectReference Include="..\..\src\Ao.Cache.InMemory.Microsoft.DependencyInjection\Ao.Cache.InMemory.Microsoft.DependencyInjection.csproj" />
   </ItemGroup>
 
