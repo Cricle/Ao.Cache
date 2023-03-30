@@ -30,7 +30,7 @@ namespace Ao.Cache.Sample.CodeGen
             var sw = Stopwatch.GetTimestamp();
             for (int i = 0; i < 1_000_000; i++)
             {
-                _ = finder.Get2(ax).Result;
+                _ = c.Get<int>(1);
             }
             Console.WriteLine(new TimeSpan(Stopwatch.GetTimestamp() - sw));
             Console.WriteLine($"{(GC.GetTotalMemory(false) - gc) / 1024 / 1024.0}");
@@ -61,7 +61,10 @@ namespace Ao.Cache.Sample.CodeGen
         {
             return Random.Shared.Next(0, 9999) + a.GetHashCode();
         }
-
+        public virtual int? Getmul(A a,int b,DateTime c)
+        {
+            return Random.Shared.Next(0, 9999) + a.GetHashCode();
+        }
         public virtual async Task<int?> Get2(A a)
         {
             await Task.Yield();

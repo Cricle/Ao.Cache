@@ -10,11 +10,6 @@ namespace Ao.Cache.CodeGen
             "The class must implement IDataAccesstor<T1,T2>",
             "AOCACHE", DiagnosticSeverity.Error, true);
 
-        public static readonly DiagnosticDescriptor ProxyParaNo1 = new DiagnosticDescriptor(
-            "AOCACHE_0002",
-            "Fail to proxy",
-            "The method args must only 1",
-            "AOCACHE", DiagnosticSeverity.Error, true);
         public static readonly DiagnosticDescriptor InterfaceProxyMustGivenProxyType = new DiagnosticDescriptor(
             "AOCACHE_0003",
             "Fail to proxy",

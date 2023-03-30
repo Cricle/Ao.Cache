@@ -21,6 +21,7 @@ using Ao.Cache;
 
 namespace {(rep.NameSpace ?? TypeConsts.DefaultNameSpace)}
 {{
+    [System.Runtime.CompilerServices.CompilerGenerated]
     {InternalData.GeneratedCode}
     [System.Diagnostics.DebuggerStepThrough]
     public static class {rep.ClassNameTrim}DataFindersExtensions
