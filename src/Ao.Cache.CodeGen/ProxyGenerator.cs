@@ -236,7 +236,7 @@ namespace {@namespace}
                     actualRetType = returnType.Substring(returnType.IndexOf('<') + 1, returnType.Length - returnType.IndexOf('<') - 2);
                 }
                 var notOnlyOneParamter = method.ParameterList.Parameters.Count != 1;
-                string argType ="bool";
+                string argType ="string";
                 if (!notOnlyOneParamter)
                 {
                     argType = model.GetSymbolInfo(method.ParameterList.Parameters[0].Type).Symbol.ToString();
@@ -282,7 +282,7 @@ namespace {@namespace}
                 }
                 if (notOnlyOneParamter)
                 {
-                    head += "\n" + $@"            return {((isValueTaskAsync ? "await" : string.Empty))} finder.FindAsync(false){(isTaskAsync ? string.Empty : ".GetAwaiter().GetResult()")};" + "\n";
+                    head += "\n" + $@"            return {((isValueTaskAsync ? "await" : string.Empty))} finder.FindAsync(string.Join("","",{string.Join(",",method.ParameterList.Parameters.Select(x=>x.Identifier.Value))})){(isTaskAsync ? string.Empty : ".GetAwaiter().GetResult()")};" + "\n";
                 }
                 else
                 {

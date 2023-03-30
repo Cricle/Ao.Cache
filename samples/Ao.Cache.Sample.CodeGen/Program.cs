@@ -26,11 +26,12 @@ namespace Ao.Cache.Sample.CodeGen
             var ax = new A();
             _ = finder.Get2(ax).Result;
             _ = c.Get2(ax).Result;
+            var now = DateTime.Now;
             var gc = GC.GetTotalMemory(true);
             var sw = Stopwatch.GetTimestamp();
             for (int i = 0; i < 1_000_000; i++)
             {
-                _ = c.Get<int>(1);
+                _ = finder.Getmul(ax,0, now);
             }
             Console.WriteLine(new TimeSpan(Stopwatch.GetTimestamp() - sw));
             Console.WriteLine($"{(GC.GetTotalMemory(false) - gc) / 1024 / 1024.0}");

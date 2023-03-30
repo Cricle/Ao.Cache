@@ -1,7 +1,7 @@
 <Project>
   <PropertyGroup>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Version>1.4.4</Version>
+    <Version>1.4.6</Version>
     <Authors>HCricle</Authors>
     <Description>A cache model</Description>
   </PropertyGroup>
