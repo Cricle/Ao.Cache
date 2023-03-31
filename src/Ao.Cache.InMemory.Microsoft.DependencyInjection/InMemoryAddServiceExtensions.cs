@@ -8,6 +8,8 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddInMemoryFinder(this IServiceCollection services)
         {
             services.AddMemoryCache();
+            services.AddSingleton<ICacheHelperCreator, CacheHelperCreator>();
+            services.AddSingleton<IStringMaker, DefaultStringMaker>();
             services.AddSingleton<ILockerFactory, MemoryLockFactory>();
             services.AddSingleton<InMemoryCacheFinderFactory>();
             services.AddSingleton<IDataFinderFactory>(x => x.GetRequiredService<InMemoryCacheFinderFactory>());

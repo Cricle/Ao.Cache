@@ -18,10 +18,11 @@ namespace Ao.Cache.Sample.CodeGen
         {
             var services = new ServiceCollection();
             services.AddInMemoryFinder();
-            services.AddSingleton<ICacheHelperCreator, CacheHelperCreator>();
             services.AddScoped<Student>();
             services.AddScoped<StudentProxy>();
             var provider = services.BuildServiceProvider();
+            var mem = provider.GetRequiredService<IMemoryCache>();
+            var creator = provider.GetRequiredService<ICacheHelperCreator>();
             var finder = provider.GetRequiredService<StudentProxy>();
             var c = provider.GetRequiredService<Student>();
             var ax = new A();
@@ -29,15 +30,16 @@ namespace Ao.Cache.Sample.CodeGen
             _ = c.Get2(ax).Result;
             var gc = GC.GetTotalMemory(true);
             var sw = Stopwatch.GetTimestamp();
-            for (int i = 0; i < 1_000_000; i++)
+            for (int i = 0; i < 1; i++)
             {
-                _ = finder.Get<int>(0);
+                _ = finder.Get2(ax).Result;
+                Console.WriteLine(creator.ExistsAsync(()=> finder.Get2(ax)).Result);
             }
             Console.WriteLine(new TimeSpan(Stopwatch.GetTimestamp() - sw));
             Console.WriteLine($"{(GC.GetTotalMemory(false) - gc) / 1024 / 1024.0}");
         }
     }
-    [CacheProxy(ProxyType = typeof(Student), ProxyAll = true)]
+    //[CacheProxy(ProxyType = typeof(Student), ProxyAll = true)]
     public interface IStudent
     {
         void Run();
@@ -50,7 +52,7 @@ namespace Ao.Cache.Sample.CodeGen
 
         ValueTask<int> Get3(A a);
     }
-    //[CacheProxy(Head = "test")]
+    [CacheProxy(Head = "test")]
     public class Student : IStudent
     {
         public virtual int? Get<T>(int? a)

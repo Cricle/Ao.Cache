@@ -4,6 +4,8 @@ using System.Reflection;
 using System;
 using Ao.Cache.Core.Annotations;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
+using System.Linq;
 
 namespace Ao.Cache
 {
@@ -44,6 +46,66 @@ namespace Ao.Cache
     public interface ICacheHelperCreator
     {
         ICacheHelper<TReturn> GetHelper<TReturn>();
+    }
+    public static class CacheHelperCreatorFetchHelper
+    {
+        public static Task<bool> SetInCacheAsync<T>(this ICacheHelperCreator creator, Expression<Func<T>> exp,T value)
+        {
+            var finder = creator.GetHelper<T>().GetFinder(exp);
+            var identity = GetIdentity(exp);
+            return finder.SetInCacheAsync(identity, value);
+        }
+        public static Task<T> FindInCacheAsync<T>(this ICacheHelperCreator creator, Expression<Func<T>> exp)
+        {
+            var finder = creator.GetHelper<T>().GetFinder(exp);
+            var identity = GetIdentity(exp);
+            return finder.FindInCacheAsync(identity);
+        }
+        public static Task<bool> ExistsAsync<T>(this ICacheHelperCreator creator, Expression<Func<T>> exp)
+        {
+            var finder = creator.GetHelper<T>().GetFinder(exp);
+            var identity = GetIdentity(exp);
+            return finder.ExistsAsync(identity);
+        }
+        public static Task<bool> RenewalAsync<T>(this ICacheHelperCreator creator, Expression<Func<T>> exp,TimeSpan? time)
+        {
+            var finder = creator.GetHelper<T>().GetFinder(exp);
+            var identity = GetIdentity(exp);
+            return finder.RenewalAsync(identity,time);
+        }
+        public static Task<bool> RenewalAsync<T>(this ICacheHelperCreator creator, Expression<Func<T>> exp)
+        {
+            var finder = creator.GetHelper<T>().GetFinder(exp);
+            var identity = GetIdentity(exp);
+            return finder.RenewalAsync(identity);
+        }
+        public static Task<bool> DeleteAsync<T>(this ICacheHelperCreator creator,Expression<Func<T>> exp)
+        {
+            var finder = creator.GetHelper<T>().GetFinder(exp);
+            var identity = GetIdentity(exp);
+            return finder.DeleteAsync(identity);
+        }
+        public static string GetIdentity<T>(Expression<Func<T>> exp)
+        {
+            if (exp.Body is MethodCallExpression methodCall)
+            {
+                var args = new object[methodCall.Arguments.Count];
+                for (int i = 0; i < methodCall.Arguments.Count; i++)
+                {
+                    var arg = methodCall.Arguments[i];
+                    if (arg is ConstantExpression constExp)
+                    {
+                        args[i] = constExp.Value;
+                    }
+                    else
+                    {
+                        args[i] = Expression.Lambda(arg).Compile().DynamicInvoke();
+                    }
+                }
+                return string.Join(",", args);
+            }
+            throw new NotSupportedException(exp.ToString());
+        }
     }
     public class CacheHelperCreator : ICacheHelperCreator
     {
@@ -105,26 +167,35 @@ namespace Ao.Cache
             {
                 return null;
             }
+            Type ret = null;
             if (expression is NewExpression newExp)
             {
-                return newExp.Constructor.DeclaringType;
+                ret= newExp.Constructor.DeclaringType;
             }
-            if (expression is MemberExpression memberExp)
+            else if (expression is MemberExpression memberExp)
             {
                 if (memberExp.Member is FieldInfo field)
                 {
-                    return field.FieldType;
+                    ret = field.FieldType;
                 }
                 else if (memberExp.Member is PropertyInfo property)
                 {
-                    return property.PropertyType;
+                    ret = property.PropertyType;
                 }
             }
-            if (expression is ConstantExpression constExp && constExp.Value != null)
+            else if (expression is ConstantExpression constExp && constExp.Value != null)
             {
-                return constExp.Value.GetType();
+                ret = constExp.Value.GetType();
             }
-            return null;
+            if (ret!=null)
+            {
+                var proxy = ret.GetCustomAttribute<CacheProxyByAttribute>();
+                if (proxy!=null)
+                {
+                    ret = proxy.ProxyType;
+                }
+            }
+            return ret;
         }
         public IDataFinder<string, TReturn> GetFinder(Type instanceType, MethodInfo method)
         {
@@ -142,22 +213,24 @@ namespace Ao.Cache
                         }
                         var proxyAttr = method.GetCustomAttribute<CacheProxyMethodAttribute>();
                         finder = Factory.CreateEmpty<string, TReturn>();
+                        string head = null;
                         if (proxyAttr != null)
                         {
-                            var head = proxyAttr.Head;
+                            head = proxyAttr.Head;
                             if (!proxyAttr.HeadAbsolute)
                             {
                                 head = (string.IsNullOrEmpty(declareAttr?.Head) ? string.Empty : ".") + head;
-                            }
-                            if (!string.IsNullOrEmpty(head))
-                            {
-                                finder.Options.WithHead(head);
                             }
                             if (TimeSpan.TryParse(proxyAttr.CacheTime, out var tp))
                             {
                                 finder.Options.WithCacheTime(tp);
                             }
                         }
+                        if (string.IsNullOrEmpty(head))
+                        {
+                            head = $"{instanceType.FullName}.{method.Name}[{method.GetGenericArguments().Length}]({method.GetParameters().Length})";
+                        }
+                        finder.Options.WithHead(head);
                         if (proxyAttr==null||!proxyAttr.Renewal)
                         {
                             finder.Options.WithRenew(false);
