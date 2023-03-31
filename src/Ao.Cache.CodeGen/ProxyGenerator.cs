@@ -143,13 +143,15 @@ namespace {@namespace}
     [{(isClass?TypeConsts.CacheProxyByClassAttribute:TypeConsts.CacheProxyByInterfaceAttribute)}({TypeConsts.CacheProxyByProxyTypeAttribute}=typeof({declare}))]
     public class {name}{proxyEndName} : {declare}
     {{
+        private static readonly System.Type type = typeof({declare});
+        {string.Join("\n        ", canProxys.Select(x=>$@" private static readonly MethodInfo {x.Identifier.ValueText}MethodInfo = type.GetMethod(nameof({x.Identifier.ValueText})) ?? throw new ArgumentException($""{{type}} no method {{nameof({x.Identifier.ValueText})}}"");"))}
         {(isClass ? string.Empty : $"protected readonly {proxyType} _raw;")}
-        protected readonly IDataFinderFactory _factory;
+        protected readonly ICacheHelperCreator _helperCreator;
 
-        public {name}{proxyEndName}({(isClass ? string.Empty : $"{proxyType} raw,")} IDataFinderFactory factory)
+        public {name}{proxyEndName}({(isClass ? string.Empty : $"{proxyType} raw,")} ICacheHelperCreator helperCreator)
         {{
-            {(isClass ? string.Empty : $"_raw=raw ?? throw new System.ArgumentNullException(nameof(raw));")}
-            _factory=factory ?? throw new System.ArgumentNullException(nameof(factory));
+            {(isClass ? string.Empty : $"_raw = raw ?? throw new System.ArgumentNullException(nameof(raw));")}
+            _helperCreator=helperCreator ?? throw new System.ArgumentNullException(nameof(helperCreator));
         }}
         {string.Join("\n", methods.Select(x => WriteMethod(x, syntaxContext.SemanticModel, "_raw", "_factory", canProxys.Contains(x), isClass, isProxyAll,head)))}
     }}

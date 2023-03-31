@@ -1,9 +1,9 @@
-﻿#if !NETSTANDARD1_0
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 using System;
 using Ao.Cache.Core.Annotations;
+using System.Runtime.CompilerServices;
 
 namespace Ao.Cache
 {
@@ -41,8 +41,52 @@ namespace Ao.Cache
             return other.Type == Type && other.Method == Method;
         }
     }
+    public interface ICacheHelperCreator
+    {
+        ICacheHelper<TReturn> GetHelper<TReturn>();
+    }
+    public class CacheHelperCreator : ICacheHelperCreator
+    {
+        public CacheHelperCreator(IDataFinderFactory factory)
+        {
+            Factory = factory;
+        }
 
-    public class CacheHelper<TReturn>
+        public IDataFinderFactory Factory { get; }
+
+        public ICacheHelper<TReturn> GetHelper<TReturn>()
+        {
+            return CacheHelperStore<TReturn>.Get(Factory);
+        }
+        static class CacheHelperStore<TReturn>
+        {
+            private static ICacheHelper<TReturn> instance;
+            private static readonly object locker = new object();
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public static ICacheHelper<TReturn> Get(IDataFinderFactory factory)
+            {
+                if (instance==null)
+                {
+                    lock (locker)
+                    {
+                        if (instance == null)
+                        {
+                            instance = new CacheHelper<TReturn>(factory);
+                        }
+                    }
+                }
+                return instance;
+            }
+        }
+    }
+    public interface ICacheHelper<TReturn>
+    {
+        IDataFinder<string, TReturn> GetFinder(Type instanceType, MethodInfo method);
+
+        IDataFinder<string, TReturn> GetFinder(Expression<Func<TReturn>> exp);
+    }
+    public class CacheHelper<TReturn>: ICacheHelper<TReturn>
     {
         private readonly Dictionary<DeclareInfo, IDataFinder<string, TReturn>> finders = new Dictionary<DeclareInfo, IDataFinder<string, TReturn>>();
 
@@ -113,10 +157,10 @@ namespace Ao.Cache
                             {
                                 finder.Options.WithCacheTime(tp);
                             }
-                            if (proxyAttr.Renewal)
-                            {
-                                finder.Options.WithRenew(true);
-                            }
+                        }
+                        if (proxyAttr==null||!proxyAttr.Renewal)
+                        {
+                            finder.Options.WithRenew(false);
                         }
                         finders.Add(key, finder);
                     }
@@ -137,4 +181,3 @@ namespace Ao.Cache
     }
 
 }
-#endif
