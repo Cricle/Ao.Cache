@@ -6,6 +6,7 @@ using System.Diagnostics;
 using Microsoft.Extensions.Caching.Memory;
 using System.Runtime.CompilerServices;
 using System.Reflection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 [assembly:EnableCacheAutoServiceRegist]
 
@@ -17,6 +18,7 @@ namespace Ao.Cache.Sample.CodeGen
         {
             var services = new ServiceCollection();
             services.AddInMemoryFinder();
+            services.Add(ServiceDescriptor.Singleton(typeof(CacheHelper<>)));
             services.AddScoped<Student>();
             services.AddScoped<StudentProxy>();
             var provider = services.BuildServiceProvider();
