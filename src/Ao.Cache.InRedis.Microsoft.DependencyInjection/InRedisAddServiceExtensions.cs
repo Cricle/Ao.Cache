@@ -23,6 +23,8 @@ namespace Microsoft.Extensions.DependencyInjection
         }
         public static IServiceCollection AddInRedisFinder(this IServiceCollection services)
         {
+            services.AddSingleton<ICacheHelperCreator, CacheHelperCreator>();
+            services.AddSingleton<IStringMaker, DefaultStringMaker>();
             services.AddSingleton<ILockerFactory, RedisLockFactory>();
             services.AddSingleton<RedisDataFinderFactory>();
             services.AddSingleton<IDataFinderFactory>(x => x.GetRequiredService<RedisDataFinderFactory>());
