@@ -63,27 +63,37 @@ namespace Ao.Cache
         }
         public static Task<bool> ExistsAsync<T>(this ICacheHelperCreator creator, Expression<Func<T>> exp)
         {
-            var finder = creator.GetHelper<T>().GetFinder(exp);
+            var finder = GetFinder(creator, exp);
             var identity = GetIdentity(exp);
             return finder.ExistsAsync(identity);
         }
         public static Task<bool> RenewalAsync<T>(this ICacheHelperCreator creator, Expression<Func<T>> exp,TimeSpan? time)
         {
-            var finder = creator.GetHelper<T>().GetFinder(exp);
+            var finder = GetFinder(creator, exp);
             var identity = GetIdentity(exp);
             return finder.RenewalAsync(identity,time);
         }
         public static Task<bool> RenewalAsync<T>(this ICacheHelperCreator creator, Expression<Func<T>> exp)
         {
-            var finder = creator.GetHelper<T>().GetFinder(exp);
+            var finder = GetFinder(creator, exp);
             var identity = GetIdentity(exp);
             return finder.RenewalAsync(identity);
         }
         public static Task<bool> DeleteAsync<T>(this ICacheHelperCreator creator,Expression<Func<T>> exp)
         {
-            var finder = creator.GetHelper<T>().GetFinder(exp);
+            var finder = GetFinder(creator,exp);
             var identity = GetIdentity(exp);
             return finder.DeleteAsync(identity);
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IDataFinder<string,T> GetFinder<T>(this ICacheHelperCreator creator, Expression<Func<T>> exp)
+        {
+            return creator.GetHelper<T>().GetFinder(exp);
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static string GetIdentity(object[] args)
+        {
+            return string.Join(",", args);
         }
         public static string GetIdentity<T>(Expression<Func<T>> exp)
         {

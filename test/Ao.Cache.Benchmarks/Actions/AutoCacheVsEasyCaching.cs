@@ -1,4 +1,4 @@
-﻿//using Ao.Cache.Gen;
+﻿using Ao.Cache.Gen;
 using BenchmarkDotNet.Attributes;
 using EasyCaching.Core;
 using Microsoft.Extensions.DependencyInjection;
