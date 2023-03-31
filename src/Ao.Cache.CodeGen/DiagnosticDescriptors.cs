@@ -20,5 +20,11 @@ namespace Ao.Cache.CodeGen
             "Fail convert cache time",
             "The cache time must be HH:mm:SS",
             "AOCACHE", DiagnosticSeverity.Error, true);
+        public static readonly DiagnosticDescriptor ReturnMustRefOrNullable = new DiagnosticDescriptor(
+           "AOCACHE_0005",
+           "Will fail to proxy with value return",
+           "The return is struct, must only class or Nullable<> can be check is in cache!",
+           "AOCACHE", DiagnosticSeverity.Warning, true);
+
     }
 }

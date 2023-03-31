@@ -1,7 +1,7 @@
 ﻿
 using Ao.Cache.Core.Annotations;
 using Microsoft.Extensions.DependencyInjection;
-//using Ao.Cache.Gen;
+using Ao.Cache.Gen;
 using System.Diagnostics;
 using Microsoft.Extensions.Caching.Memory;
 using System.Runtime.CompilerServices;
@@ -20,15 +20,13 @@ namespace Ao.Cache.Sample.CodeGen
             services.AddInMemoryFinder();
             services.AddSingleton<ICacheHelperCreator, CacheHelperCreator>();
             services.AddScoped<Student>();
-            services.AddScoped<StudentProxy1>();
+            services.AddScoped<StudentProxy>();
             var provider = services.BuildServiceProvider();
-            var mem = provider.GetRequiredService<IMemoryCache>();
-            var finder = provider.GetRequiredService<StudentProxy1>();
+            var finder = provider.GetRequiredService<StudentProxy>();
             var c = provider.GetRequiredService<Student>();
             var ax = new A();
             _ = finder.Get<int>(0);
             _ = c.Get2(ax).Result;
-            var now = DateTime.Now;
             var gc = GC.GetTotalMemory(true);
             var sw = Stopwatch.GetTimestamp();
             for (int i = 0; i < 1_000_000; i++)
@@ -39,7 +37,7 @@ namespace Ao.Cache.Sample.CodeGen
             Console.WriteLine($"{(GC.GetTotalMemory(false) - gc) / 1024 / 1024.0}");
         }
     }
-    //[CacheProxy(ProxyType = typeof(Student), ProxyAll = true)]
+    [CacheProxy(ProxyType = typeof(Student), ProxyAll = true)]
     public interface IStudent
     {
         void Run();
@@ -73,7 +71,6 @@ namespace Ao.Cache.Sample.CodeGen
             await Task.Yield();
             return Random.Shared.Next(0, 9999) + a.GetHashCode();
         }
-
         public virtual ValueTask<int> Get3(A a)
         {
             return new ValueTask<int>(Random.Shared.Next(0, 9999) + a.GetHashCode());
@@ -103,40 +100,6 @@ namespace Ao.Cache.Sample.CodeGen
         {
             return Task.FromResult<int?>(identity.GetHashCode() + Random.Shared.Next(0, 9999));
         }
-    }
-    public class StudentProxy1 : Ao.Cache.Sample.CodeGen.Student
-    {
-        private static readonly System.Type type = typeof(Ao.Cache.Sample.CodeGen.Student);
-        private static readonly MethodInfo GetMethodInfo = type.GetMethod(nameof(Get)) ?? throw new ArgumentException($"{type} no method {nameof(Get)}");
-
-        protected readonly ICacheHelperCreator _helperCreator;
-
-        public StudentProxy1(ICacheHelperCreator helperCreator)
-        {
-            _helperCreator = helperCreator ?? throw new System.ArgumentNullException(nameof(helperCreator));
-        }
-        
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override int? Get<T>(int? a)
-        {
-            var _finder = _helperCreator.GetHelper<int?>().GetFinder(type, GetMethodInfo);
-
-            var key = a?.ToString()??string.Empty;
-
-            var inCache = _finder.FindInCacheAsync(key).GetAwaiter().GetResult();
-            if (inCache == null)
-            {
-                var actual = base.Get<T>(a);
-                if (actual != null)
-                {
-                    _finder.SetInCacheAsync(key, actual).GetAwaiter().GetResult();
-                }
-                return actual;
-            }
-
-            return inCache;
-        }
-
     }
 
 }

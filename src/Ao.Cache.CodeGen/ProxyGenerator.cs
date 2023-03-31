@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Text;
 using System.Text;
-using System.Diagnostics;
 
 namespace Ao.Cache.CodeGen
 {
@@ -91,7 +90,7 @@ namespace Ao.Cache.CodeGen
             var declare = syntaxContext.SemanticModel.GetDeclaredSymbol(ax);
             var isInterface = ax is InterfaceDeclarationSyntax;
             var isClass = ax is ClassDeclarationSyntax;
-            var methods = (isInterface ? ((InterfaceDeclarationSyntax)ax).Members : ((ClassDeclarationSyntax)ax).Members).OfType<MethodDeclarationSyntax>();
+            var methods =((isInterface ? ((InterfaceDeclarationSyntax)ax).Members : ((ClassDeclarationSyntax)ax).Members).OfType<MethodDeclarationSyntax>()).ToList();
             foreach (var item in methods)
             {
                 var methodDecalre = syntaxContext.SemanticModel.GetDeclaredSymbol(item);
@@ -122,7 +121,6 @@ namespace Ao.Cache.CodeGen
             }
             var proxyEndName = GetEndName(attributeData) ?? TypeConsts.ProxyDefaultEndName;
             var @namespace = GetNameSpace(attributeData) ?? TypeConsts.DefaultNameSpace;
-            var head = GetHead(attributeData);
             var name = proxyType.Split('.').Last();
             try
             {
@@ -144,7 +142,7 @@ namespace {@namespace}
     public class {name}{proxyEndName} : {declare}
     {{
         private static readonly System.Type type = typeof({declare});
-        {string.Join("\n        ", canProxys.Select(x=>$@" private static readonly MethodInfo {x.Identifier.ValueText}MethodInfo = type.GetMethod(nameof({x.Identifier.ValueText})) ?? throw new ArgumentException($""{{type}} no method {{nameof({x.Identifier.ValueText})}}"");"))}
+        {string.Join("\n        ", canProxys.Select(x=>$@" private static readonly System.Reflection.MethodInfo {GetMethodInfoName(methods.IndexOf(x),x,syntaxContext.SemanticModel)} = type.GetMethod(nameof({x.Identifier.ValueText}),{x.TypeParameterList?.Parameters.Count??0}, System.Reflection.BindingFlags.Public| System.Reflection.BindingFlags.Instance,null,new Type[] {{ {string.Join(",",x.ParameterList.Parameters.Select(y=>$"typeof({syntaxContext.SemanticModel.GetSymbolInfo(y.Type).Symbol})"))} }},null) ?? throw new ArgumentException($""{{type}} no method {{nameof({x.Identifier.ValueText})}}"");"))}
         {(isClass ? string.Empty : $"protected readonly {proxyType} _raw;")}
         protected readonly ICacheHelperCreator _helperCreator;
 
@@ -153,7 +151,7 @@ namespace {@namespace}
             {(isClass ? string.Empty : $"_raw = raw ?? throw new System.ArgumentNullException(nameof(raw));")}
             _helperCreator=helperCreator ?? throw new System.ArgumentNullException(nameof(helperCreator));
         }}
-        {string.Join("\n", methods.Select(x => WriteMethod(x, syntaxContext.SemanticModel, "_raw", "_factory", canProxys.Contains(x), isClass, isProxyAll,head)))}
+        {string.Join("\n", methods.Select(x => WriteMethod(context,x, syntaxContext.SemanticModel, isClass?"base":"_raw", "_helperCreator", canProxys.Contains(x), isClass, isProxyAll, methods.IndexOf(x))))}
     }}
 }}
 #pragma warning restore IDE1006
@@ -169,7 +167,11 @@ namespace {@namespace}
                 }
             }
         }
-        private string WriteMethod(MethodDeclarationSyntax method, SemanticModel model, string rawName, string factoryName, bool proxy, bool isClass,bool proxyAll,string rootHead)
+        private string GetMethodInfoName(int index,MethodDeclarationSyntax syntax,SemanticModel model)
+        {
+            return $"{syntax.Identifier.ValueText}_{index}";
+        }
+        private string WriteMethod(SourceProductionContext context,MethodDeclarationSyntax method, SemanticModel model, string rawName, string factoryName, bool proxy, bool isClass,bool proxyAll,int index)
         {
             var methodtree = model.GetDeclaredSymbol(method);
             if (isClass && !methodtree.IsVirtual)
@@ -181,41 +183,33 @@ namespace {@namespace}
             {
                 return string.Empty;
             }
-            var returnType = model.GetSymbolInfo(method.ReturnType).Symbol.ToString();
+            var returnTypeSymbol = model.GetSymbolInfo(method.ReturnType).Symbol;
+            var returnType = returnTypeSymbol.ToString();
+            var actualRetType = returnType;
             var isTaskAsync = returnType.StartsWith(TypeConsts.TaskTypeName) || returnType.StartsWith(TypeConsts.ValueTaskTypeName);
-            var isValueTaskAsync = returnType.StartsWith(TypeConsts.ValueTaskTypeName);
+            if (isTaskAsync)
+            {
+                actualRetType = returnType.Substring(returnType.IndexOf('<') + 1, returnType.Length - returnType.IndexOf('<') - 2);
+            }
+            if (proxy &&!isTaskAsync&& returnTypeSymbol is ITypeSymbol typeSymbol&&!typeSymbol.IsReferenceType)
+            {
+                if (typeSymbol.OriginalDefinition.SpecialType!= SpecialType.System_Nullable_T)
+                {
+                    context.ReportDiagnostic(Diagnostic.Create(DiagnosticDescriptors.ReturnMustRefOrNullable,Location.Create(method.SyntaxTree,method.Span)));
+                }
+            }
 
             var methodName = method.Identifier.ValueText;
 
             var parameters = string.Join(", ", method.ParameterList.Parameters
-                .Select(p => $"{model.GetSymbolInfo(p.Type).Symbol} {p.Identifier.ValueText}"));
+    .Select(p => $"{model.GetSymbolInfo(p.Type).Symbol} {p.Identifier.ValueText}"));
 
             var typeParameters = string.Join(", ", method.TypeParameterList?.Parameters
                 .Select(p => p.Identifier.ValueText) ?? Enumerable.Empty<string>());
-            var accesstorName = methodName + "DataAccesstor";
+            var typeParInline = string.IsNullOrEmpty(typeParameters) ? string.Empty : $"<{typeParameters}>";
             var inline = GetInline(attr);
             var noProxy = GetNoProxy(attr);
-            var partHead = GetHead(attr);
-            var headAbsolute = GetHeadAbsolute(attr);
-            var combineHead = string.Empty;
-            if (headAbsolute)
-            {
-                combineHead = partHead;
-            }
-            else if (string.IsNullOrEmpty(partHead) && !string.IsNullOrEmpty(rootHead))
-            {
-                combineHead = rootHead + "." + methodName+$"({string.Join(",",method.ParameterList.Parameters.Select(x=> x.Identifier.ValueText))})";
-            }
-            else if (!string.IsNullOrEmpty(partHead) && !string.IsNullOrEmpty(rootHead))
-            {
-                combineHead = rootHead + "." + partHead;
-            }
-            var hasHead = !string.IsNullOrEmpty(combineHead);
-            if (hasHead)
-            {
-                combineHead = "\"" + combineHead + "\"";
-            }
-            if (!proxyAll&&noProxy)
+            if (!proxyAll && noProxy)
             {
                 if (isClass)
                 {
@@ -225,71 +219,43 @@ namespace {@namespace}
             }
             var head = $@"
         {((attr==null||inline) ? "[MethodImpl(MethodImplOptions.AggressiveInlining)]":string.Empty)}
-        public {(isClass ? "override " : string.Empty)}{((isValueTaskAsync&&proxy) ? "async " : string.Empty)}{returnType} {methodName}{(string.IsNullOrEmpty(typeParameters) ? string.Empty : $"<{typeParameters}>")}({parameters})
+        public {(isClass ? "override " : string.Empty)}{((isTaskAsync&&proxy) ? "async " : string.Empty)}{returnType} {methodName}{(string.IsNullOrEmpty(typeParameters) ? string.Empty : $"<{typeParameters}>")}({parameters})
         {{
 ";
             if (proxy)
             {
-                var cacheTime = GetCacheTime(attr);
-                var renewal = GetRenewal(attr);
-                var actualRetType = returnType;
-                if (isTaskAsync || isValueTaskAsync)
+                var keyGen = "var key = ";
+                if (method.ParameterList.Parameters.Count==1)
                 {
-                    actualRetType = returnType.Substring(returnType.IndexOf('<') + 1, returnType.Length - returnType.IndexOf('<') - 2);
-                }
-                var notOnlyOneParamter = method.ParameterList.Parameters.Count != 1;
-                string argType ="string";
-                if (!notOnlyOneParamter)
-                {
-                    argType = model.GetSymbolInfo(method.ParameterList.Parameters[0].Type).Symbol.ToString();
-                }
-                string body = null;
-                if (notOnlyOneParamter)
-                {
-                    body = $@"input=>{(!isTaskAsync? "System.Threading.Tasks.Task.FromResult(":string.Empty)}{(isClass ? "base" : rawName)}.{methodName}{(string.IsNullOrEmpty(typeParameters) ? string.Empty : $"<{typeParameters}>")}({string.Join(",",method.ParameterList.Parameters.Select(y=> y.Identifier.ValueText))}{(!isTaskAsync ? ")" : string.Empty)})";
-                }
-                else if (isTaskAsync)
-                {
-                    body = $@"{(isClass ? "base" : rawName)}.{methodName}{(string.IsNullOrEmpty(typeParameters) ? string.Empty : $"<{typeParameters}>")}";
-                }
-                else
-                {
-                    body = $@"identity=>{(!isTaskAsync ? "System.Threading.Tasks.Task.FromResult(" : string.Empty)}{(isClass ? "base" : rawName)}.{methodName}{(string.IsNullOrEmpty(typeParameters) ? string.Empty : $"<{typeParameters}>")}(identity){(!isTaskAsync ? ")" : string.Empty)}";
-                }
-                head += $@"
-            var finder = {factoryName}.Create(new DelegateDataAccesstor<{argType},{actualRetType}>({body}));
-";
-                if (!string.IsNullOrEmpty(cacheTime))
-                {
-                    if (!TimeSpan.TryParse(cacheTime, out var tp))
+                    var par= method.ParameterList.Parameters[0];
+                    keyGen += par.Identifier.ValueText;
+                    var parSymbol=(ITypeSymbol)model.GetSymbolInfo(par.Type).Symbol;
+                    if (parSymbol.IsReferenceType)
                     {
-                        throw new AoCacheException
-                        {
-                            Error = Diagnostic.Create(DiagnosticDescriptors.CacheTimeCanNotConvert, Location.Create(method.SyntaxTree, method.Span))
-                        };
+                        keyGen += "?";
                     }
-                    head += $@"
-            finder.Options.WithCacheTime(new TimeSpan({tp.Ticks}L));
-";
-                }
-                var renewalWrite = !string.IsNullOrEmpty(renewal) && renewal.Equals(bool.TrueString, StringComparison.OrdinalIgnoreCase);
-                head += $@"
-            finder.Options.WithRenew({renewalWrite.ToString().ToLower()});
-";
-                if (hasHead)
-                {
-                    head += $@"
-            finder.Options.WithHead({combineHead});
-";
-                }
-                if (notOnlyOneParamter)
-                {
-                    head += "\n" + $@"            return {((isValueTaskAsync ? "await" : string.Empty))} finder.FindAsync(string.Join("","",{string.Join(",",method.ParameterList.Parameters.Select(x=>x.Identifier.Value))})){(isTaskAsync ? string.Empty : ".GetAwaiter().GetResult()")};" + "\n";
+                    keyGen += ".ToString();";
                 }
                 else
                 {
-                    head += "\n" + $@"            return {((isValueTaskAsync ? "await" : string.Empty))} finder.FindAsync({string.Join(", ", method.ParameterList.Parameters.Select(x => x.Identifier.ValueText))}){(isTaskAsync ? string.Empty : ".GetAwaiter().GetResult()")};" + "\n";
+                    keyGen += $"string.Join(\",\",{string.Join(",",method.ParameterList.Parameters.Select(x=>x.Identifier.ValueText))});";
                 }
+                var s = $@"var finder = {factoryName}.GetHelper<{actualRetType}>().GetFinder(type, {GetMethodInfoName(index,method,model)});
+            {keyGen}
+            var inCache = {(isTaskAsync?"await":string.Empty)} finder.FindInCacheAsync(key){(isTaskAsync ? string.Empty: ".GetAwaiter().GetResult()")};
+            if (inCache == null)
+            {{
+                var actual = {(isTaskAsync ? "await" : string.Empty)} {rawName}.{methodName}{typeParInline}({string.Join(",", method.ParameterList.Parameters.Select(x =>x.Identifier.ValueText))});
+                if (actual != null)
+                {{
+                    {(isTaskAsync ? "await" : string.Empty)} finder.SetInCacheAsync(key, actual){(isTaskAsync ? string.Empty : ".GetAwaiter().GetResult()")};
+                }}
+                return actual;
+            }}
+
+            return inCache;
+";
+                head += s+ "\n";
             }
             else
             {
