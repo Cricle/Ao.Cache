@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 
 namespace Ao.Cache.InRedis
 {
-    public abstract class BitRedisDataFinder<TIdentity, TEntity> : DataFinderBase<TIdentity, TEntity>
+    public class BitRedisDataFinder<TIdentity, TEntity> : DataFinderBase<TIdentity, TEntity>
     {
-        protected BitRedisDataFinder(IDatabase database,
+        public BitRedisDataFinder(IDatabase database,
             IEntityConvertor entityConvertor)
         {
             Database = database ?? throw new ArgumentNullException(nameof(database));

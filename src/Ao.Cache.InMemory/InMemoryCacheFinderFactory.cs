@@ -12,14 +12,24 @@ namespace Ao.Cache.InMemory
 
         public IMemoryCache MemoryCache { get; }
 
-        public IDataFinder<TIdentity, TEntry> Create<TIdentity, TEntry>(IDataAccesstor<TIdentity, TEntry> accesstor)
+        public IDataFinder<TIdentity, TEntity> Create<TIdentity, TEntity>()
         {
-            return new DefaultInMemoryCacheFinder<TIdentity, TEntry>(MemoryCache, accesstor);
+            return new InMemoryCacheFinder<TIdentity, TEntity>(MemoryCache);
         }
 
-        public IBatchDataFinder<TIdentity, TEntry> Create<TIdentity, TEntry>(IBatchDataAccesstor<TIdentity, TEntry> accesstor)
+        public IWithDataFinder<TIdentity, TEntity> Create<TIdentity, TEntity>(IDataAccesstor<TIdentity, TEntity> accesstor)
         {
-            return new DefaultInMemoryBatchCacheFinder<TIdentity, TEntry>(MemoryCache, accesstor);
+            return new DefaultInMemoryCacheFinder<TIdentity, TEntity>(MemoryCache, accesstor);
+        }
+
+        public IWithBatchDataFinder<TIdentity, TEntity> CreateBatch<TIdentity, TEntity>(IBatchDataAccesstor<TIdentity, TEntity> accesstor)
+        {
+            return new DefaultInMemoryBatchCacheFinder<TIdentity, TEntity>(MemoryCache, accesstor);
+        }
+
+        public IBatchDataFinder<TIdentity, TEntity> CreateBatch<TIdentity, TEntity>()
+        {
+            return new InMemoryBatchCacheFinder<TIdentity, TEntity>(MemoryCache);
         }
     }
 }

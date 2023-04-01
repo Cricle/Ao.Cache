@@ -5,7 +5,9 @@ namespace Ao.Cache
 {
     public interface IDataFinderFactory
     {
-        IDataFinder<TIdentity, TEntity> Create<TIdentity, TEntity>(IDataAccesstor<TIdentity, TEntity> accesstor);
+        IDataFinder<TIdentity,TEntity> Create<TIdentity, TEntity>();
+
+        IWithDataFinder<TIdentity, TEntity> Create<TIdentity, TEntity>(IDataAccesstor<TIdentity, TEntity> accesstor);
     }
     public interface IStringMaker
     {

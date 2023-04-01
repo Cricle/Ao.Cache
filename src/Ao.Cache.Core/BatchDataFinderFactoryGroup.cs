@@ -7,7 +7,17 @@ namespace Ao.Cache
     {
         public IBatchDataFinder<TIdentity, TEntity> Create<TIdentity, TEntity>(IBatchDataAccesstor<TIdentity, TEntity> accesstor)
         {
-            return new BatchDataFinderGroup<TIdentity, TEntity>(this.Select(x => x.Create(accesstor)));
+            return new BatchDataFinderGroup<TIdentity, TEntity>(this.Select(x => x.CreateBatch(accesstor)));
+        }
+
+        public IBatchDataFinder<TIdentity, TEntity> CreateBatch<TIdentity, TEntity>()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public IWithBatchDataFinder<TIdentity, TEntity> CreateBatch<TIdentity, TEntity>(IBatchDataAccesstor<TIdentity, TEntity> accesstor)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

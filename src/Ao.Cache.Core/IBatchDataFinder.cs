@@ -9,11 +9,8 @@ namespace Ao.Cache
     {
         IDataFinderOptions<TIdentity, TEntity> Options { get; set; }
     }
-    public interface IBatchDataFinder : IBatchCacheFinder, IBatchPhysicalFinder, IBatchRenewalable
+    public interface IWithBatchDataFinder<TIdentity, TEntity> : IBatchDataFinder<TIdentity, TEntity>, IWithBatchDataAccesstorFinder<TIdentity, TEntity>
     {
-        Task<long> DeleteAsync(IList identity);
-
-        Task<IDictionary<object, bool>> ExistsAsync(IList identity);
     }
     public interface IBatchDataFinder<TIdentity, TEntity> : IWithDataFinderOptions<TIdentity, TEntity>, IBatchCacheFinder<TIdentity, TEntity>, IBatchPhysicalFinder<TIdentity, TEntity>, IBatchRenewalable<TIdentity>
     {

@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace Ao.Cache.InLitedb
 {
-    public abstract class LitedbCacheFinder<TIdentity, TEntry> : DataFinderBase<TIdentity, TEntry>
+    public class LitedbCacheFinder<TIdentity, TEntry> : DataFinderBase<TIdentity, TEntry>
     {
-        protected LitedbCacheFinder(ILiteDatabase database, ILiteCollection<LiteCacheEntity> collection, IEntityConvertor entityConvertor)
+        public LitedbCacheFinder(ILiteDatabase database, ILiteCollection<LiteCacheEntity> collection, IEntityConvertor entityConvertor)
         {
             Database = database ?? throw new ArgumentNullException(nameof(database));
             Collection = collection ?? throw new ArgumentNullException(nameof(collection));

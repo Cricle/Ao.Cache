@@ -15,14 +15,25 @@ namespace Ao.Cache.InRedis
 
         public IEntityConvertor EntityConvertor { get; }
 
-        public IBatchDataFinder<TIdentity, TEntity> Create<TIdentity, TEntity>(IBatchDataAccesstor<TIdentity, TEntity> accesstor)
+        public IWithBatchDataFinder<TIdentity, TEntity> CreateBatch<TIdentity, TEntity>(IBatchDataAccesstor<TIdentity, TEntity> accesstor)
         {
             return new DefaultBitRedisBatchFinder<TIdentity, TEntity>(Connection.GetDatabase(), accesstor, EntityConvertor);
         }
 
-        public IDataFinder<TIdentity, TEntity> Create<TIdentity, TEntity>(IDataAccesstor<TIdentity, TEntity> accesstor)
+        public IWithDataFinder<TIdentity, TEntity> Create<TIdentity, TEntity>(IDataAccesstor<TIdentity, TEntity> accesstor)
         {
             return new DefaultBitRedisDataFinder<TIdentity, TEntity>(Connection.GetDatabase(), accesstor, EntityConvertor);
         }
+
+        public IDataFinder<TIdentity, TEntity> Create<TIdentity, TEntity>()
+        {
+            return new BitRedisDataFinder<TIdentity, TEntity>(Connection.GetDatabase(), EntityConvertor);
+        }
+
+        public IBatchDataFinder<TIdentity, TEntity> CreateBatch<TIdentity, TEntity>()
+        {
+            return new BitRedisBatchFinder<TIdentity, TEntity>(Connection.GetDatabase(), EntityConvertor);
+        }
+
     }
 }

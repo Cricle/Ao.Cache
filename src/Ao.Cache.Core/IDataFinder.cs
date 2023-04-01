@@ -2,11 +2,9 @@
 
 namespace Ao.Cache
 {
-    public interface IDataFinder : ICacheFinder, IPhysicalFinder, IRenewalable
+    public interface IWithDataFinder<TIdentity, TEntity> : IDataFinder<TIdentity, TEntity>,IWithDataAccesstorFinder<TIdentity,TEntity>
     {
-        Task<bool> DeleteAsync(object identity);
 
-        Task<bool> ExistsAsync(object identity);
     }
     public interface IDataFinder<TIdentity, TEntity> : IWithDataFinderOptions<TIdentity, TEntity>, ICacheFinder<TIdentity, TEntity>, IPhysicalFinder<TIdentity, TEntity>, IRenewalable<TIdentity>
     {

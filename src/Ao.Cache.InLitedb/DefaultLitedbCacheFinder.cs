@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Ao.Cache.InLitedb
 {
-    public class DefaultLitedbCacheFinder<TIdentity, TEntry> : LitedbCacheFinder<TIdentity, TEntry>, IWithDataAccesstorFinder<TIdentity, TEntry>
+    public class DefaultLitedbCacheFinder<TIdentity, TEntry> : LitedbCacheFinder<TIdentity, TEntry>, IWithDataFinder<TIdentity, TEntry>
     {
         public DefaultLitedbCacheFinder(ILiteDatabase database,
             ILiteCollection<LiteCacheEntity> collection,
@@ -18,9 +18,15 @@ namespace Ao.Cache.InLitedb
 
         public IDataAccesstor<TIdentity, TEntry> DataAccesstor { get; }
 
-        protected override Task<TEntry> OnFindInDbAsync(TIdentity identity)
+        public async Task<TEntry> FindInDbAsync(TIdentity identity, bool cache)
         {
-            return DataAccesstor.FindAsync(identity);
+            var entity = await DataAccesstor.FindAsync(identity);
+            if (cache&&entity!=null)
+            {
+                await SetInCacheAsync(identity, entity);
+            }
+            return entity;
         }
+
     }
 }

@@ -21,8 +21,7 @@ namespace Ao.Cache.Serizlier.MessagePack
     }
     public class MessagePackEntityConvertor : IEntityConvertor
     {
-        private static readonly MP.MessagePackSerializerOptions defaultOptions = MP.MessagePackSerializerOptions.Standard.WithResolver(TypelessObjectResolver.Instance)
-            .WithCompression(MP.MessagePackCompression.Lz4Block);
+        private static readonly MP.MessagePackSerializerOptions defaultOptions = MP.MessagePackSerializerOptions.Standard.WithResolver(TypelessObjectResolver.Instance);
 
         public static readonly MessagePackEntityConvertor Default = new MessagePackEntityConvertor();
 

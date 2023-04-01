@@ -6,10 +6,6 @@ namespace Ao.Cache
 {
     public interface IBatchPhysicalFinder<TIdentity, TEntity>
     {
-        Task<IDictionary<TIdentity, TEntity>> FindInDbAsync(IReadOnlyList<TIdentity> identity, bool cache);
-    }
-    public interface IBatchPhysicalFinder
-    {
-        Task<IDictionary> FindInDbAsync(IList identity, bool cache);
+        Task<IDictionary<TIdentity, TEntity>> FindInDbAsync(IBatchDataAccesstor<TIdentity,TEntity> batchDataAccesstor,IReadOnlyList<TIdentity> identity, bool cache);
     }
 }

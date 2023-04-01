@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Ao.Cache.InRedis
 {
-    public class DefaultBitRedisDataFinder<TIdentity, TEntity> : BitRedisDataFinder<TIdentity, TEntity>, IWithDataAccesstorFinder<TIdentity, TEntity>
+    public class DefaultBitRedisDataFinder<TIdentity, TEntity> : BitRedisDataFinder<TIdentity, TEntity>, IWithDataFinder<TIdentity, TEntity>
     {
         public DefaultBitRedisDataFinder(IDatabase database,
             IDataAccesstor<TIdentity, TEntity> dataAccesstor,
@@ -21,9 +21,14 @@ namespace Ao.Cache.InRedis
 
         public IDataAccesstor<TIdentity, TEntity> DataAccesstor { get; }
 
-        protected override Task<TEntity> OnFindInDbAsync(TIdentity identity)
+        public async Task<TEntity> FindInDbAsync(TIdentity identity, bool cache)
         {
-            return DataAccesstor.FindAsync(identity);
+            var entity = await DataAccesstor.FindAsync(identity);
+            if (cache&&entity!=null)
+            {
+                await SetInCacheAsync(identity, entity);
+            }
+            return entity;
         }
 
     }

@@ -8,11 +8,17 @@ namespace Ao.Cache
 {
     public class WithHeaderIdentityGenerater<TIdentity, TEntity> : IdentityGenerater<TIdentity, TEntity>, IWithHeaderIdentityGenerater<TIdentity>
     {
-        public bool IgnoreHead { get; set; }
+        private bool ignoreHead;
+
+        public bool IgnoreHead
+        {
+            get => ignoreHead;
+            set=> ignoreHead = value;
+        }
 
         public override string GetEntryKey(TIdentity identity)
         {
-            if (IgnoreHead)
+            if (ignoreHead)
             {
                 return GetPart(identity);
             }

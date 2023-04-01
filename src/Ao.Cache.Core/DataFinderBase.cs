@@ -3,13 +3,13 @@ using System.Threading.Tasks;
 
 namespace Ao.Cache
 {
-    public abstract class DataFinderBase<TIdentity, TEntity> : OptionalDataFinder<TIdentity, TEntity>, IIdentityGenerater<TIdentity>, IDataFinder<TIdentity, TEntity>, IDataFinder, IDataFinderOptions<TIdentity, TEntity>
+    public abstract class DataFinderBase<TIdentity, TEntity> : OptionalDataFinder<TIdentity, TEntity>, IIdentityGenerater<TIdentity>, IDataFinder<TIdentity, TEntity>, IDataFinderOptions<TIdentity, TEntity>
     {
         public async Task<TEntity> FindInCacheAsync(TIdentity identity)
         {
             var key = GetEntryKey(identity);
             var entity = await CoreFindInCacheAsync(key, identity);
-            if (entity != null && CanRenewal(identity))
+            if (CanRenewal(identity)&&entity != null)
             {
                 await RenewalAsync(identity);
             }
@@ -18,17 +18,15 @@ namespace Ao.Cache
 
         protected abstract Task<TEntity> CoreFindInCacheAsync(string key, TIdentity identity);
 
-        public async Task<TEntity> FindInDbAsync(TIdentity identity, bool cache = true)
+        public async Task<TEntity> FindInDbAsync(IDataAccesstor<TIdentity, TEntity> dataAccesstor, TIdentity identity, bool cache = true)
         {
-            var entry = await OnFindInDbAsync(identity);
+            var entry = await dataAccesstor.FindAsync(identity);
             if (entry != null && cache)
             {
                 await SetInCacheAsync(identity, entry);
             }
             return entry;
         }
-
-        protected abstract Task<TEntity> OnFindInDbAsync(TIdentity identity);
 
         public Task<bool> SetInCacheAsync(TIdentity identity, TEntity entity)
         {
@@ -38,77 +36,17 @@ namespace Ao.Cache
         }
         protected abstract Task<bool> SetInCacheAsync(string key, TIdentity identity, TEntity entity, TimeSpan? caheTime);
 
-        public virtual TimeSpan? GetCacheTime(TIdentity identity)
-        {
-            return options.GetCacheTime(identity);
-        }
 
         public abstract Task<bool> DeleteAsync(TIdentity entity);
         public abstract Task<bool> ExistsAsync(TIdentity identity);
 
-        public virtual bool CanRenewal(TIdentity identity)
-        {
-            return options.CanRenewal(identity);
-        }
-
         public abstract Task<bool> RenewalAsync(TIdentity identity, TimeSpan? time);
-
-        public string GetEntryKey(TIdentity identity)
-        {
-            return options.GetEntryKey(identity);
-        }
-
-        public string GetHead()
-        {
-            return options.GetHead();
-        }
-
-        public string GetPart(TIdentity identity)
-        {
-            return options.GetPart(identity);
-        }
-
-        Task<bool> IDataFinder.DeleteAsync(object identity)
-        {
-            return DeleteAsync((TIdentity)identity);
-        }
-
-        Task<bool> IDataFinder.ExistsAsync(object identity)
-        {
-            return ExistsAsync((TIdentity)identity);
-        }
-
-        Task<bool> ICacheFinder.SetInCacheAsync(object identity, object entity)
-        {
-            return SetInCacheAsync((TIdentity)identity, (TEntity)entity);
-        }
-
-        async Task<object> ICacheFinder.FindInCacheAsync(object identity)
-        {
-            var res = await FindInCacheAsync((TIdentity)identity);
-            return res;
-        }
-
-        async Task<object> IPhysicalFinder.FindInDbAsync(object identity, bool cache)
-        {
-            var res = await FindInDbAsync((TIdentity)identity);
-            return res;
-        }
-
-        Task<bool> IRenewalable.RenewalAsync(object identity, TimeSpan? time)
-        {
-            return RenewalAsync((TIdentity)identity, time);
-        }
 
         public Task<bool> RenewalAsync(TIdentity identity)
         {
             return RenewalAsync(identity, GetCacheTime(identity));
         }
 
-        Task<bool> IRenewalable.RenewalAsync(object identity)
-        {
-            return RenewalAsync((TIdentity)identity, GetCacheTime((TIdentity)identity));
-        }
     }
 
 }

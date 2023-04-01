@@ -4,16 +4,17 @@ using System.Threading.Tasks;
 
 namespace Ao.Cache.InMemory
 {
-    public abstract class InMemoryCacheFinder<TIdentity, TEntry> : DataFinderBase<TIdentity, TEntry>
+    public class InMemoryCacheFinder<TIdentity, TEntry> : DataFinderBase<TIdentity, TEntry>
     {
         private static readonly Task<bool> trueTask = Task.FromResult(true);
+        private static readonly Task<bool> falseTask = Task.FromResult(false);
 
-        protected InMemoryCacheFinder(IMemoryCache memoryCache)
+        public InMemoryCacheFinder(IMemoryCache memoryCache)
         {
             this.memoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
         }
 
-        private readonly IMemoryCache memoryCache;
+        internal readonly IMemoryCache memoryCache;
 
         public IMemoryCache MemoryCache => memoryCache;
 
@@ -26,7 +27,7 @@ namespace Ao.Cache.InMemory
         public override Task<bool> ExistsAsync(TIdentity identity)
         {
             var r = memoryCache.TryGetValue(GetEntryKey(identity), out _);
-            return Task.FromResult(r);
+            return r? trueTask:falseTask;
         }
 
         protected virtual MemoryCacheEntryOptions GetMemoryCacheEntryOptions(TIdentity identity, TimeSpan? time)
@@ -63,6 +64,5 @@ namespace Ao.Cache.InMemory
             memoryCache.Set(key, val, options);
             return Task.FromResult(true);
         }
-
     }
 }

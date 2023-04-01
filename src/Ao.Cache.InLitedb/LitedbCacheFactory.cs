@@ -19,14 +19,24 @@ namespace Ao.Cache.InLitedb
 
         public IEntityConvertor EntityConvertor { get; }
 
-        public IDataFinder<TIdentity, TEntry> Create<TIdentity, TEntry>(IDataAccesstor<TIdentity, TEntry> accesstor)
+        public IWithDataFinder<TIdentity, TEntry> Create<TIdentity, TEntry>(IDataAccesstor<TIdentity, TEntry> accesstor)
         {
             return new DefaultLitedbCacheFinder<TIdentity, TEntry>(Database, Collection, EntityConvertor, accesstor);
         }
 
-        public IBatchDataFinder<TIdentity, TEntry> Create<TIdentity, TEntry>(IBatchDataAccesstor<TIdentity, TEntry> accesstor)
+        public IDataFinder<TIdentity, TEntity> Create<TIdentity, TEntity>()
+        {
+            return new LitedbCacheFinder<TIdentity, TEntity>(Database, Collection, EntityConvertor);
+        }
+
+        public IWithBatchDataFinder<TIdentity, TEntry> CreateBatch<TIdentity, TEntry>(IBatchDataAccesstor<TIdentity, TEntry> accesstor)
         {
             return new DefaultBatchLitedbCacheFinder<TIdentity, TEntry>(Database, Collection, EntityConvertor, accesstor);
+        }
+
+        public IBatchDataFinder<TIdentity, TEntity> CreateBatch<TIdentity, TEntity>()
+        {
+            return new LitedbBatchCacheFinder<TIdentity, TEntity>(Database, Collection, EntityConvertor);
         }
     }
 }

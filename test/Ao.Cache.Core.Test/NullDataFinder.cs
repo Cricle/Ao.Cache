@@ -29,11 +29,6 @@ namespace Ao.Cache.Core.Test
             return Task.FromResult(identity.ToString());
         }
 
-        protected override Task<string> OnFindInDbAsync(int identity)
-        {
-            return Task.FromResult((identity % 10).ToString());
-        }
-
         protected override Task<bool> SetInCacheAsync(string key, int identity, string entity, TimeSpan? caheTime)
         {
             return Task.FromResult(true);

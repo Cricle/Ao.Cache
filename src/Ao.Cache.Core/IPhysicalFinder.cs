@@ -1,14 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using System.Security.Principal;
+using System.Threading.Tasks;
 
 namespace Ao.Cache
 {
-    public interface IPhysicalFinder
-    {
-        Task<object> FindInDbAsync(object identity, bool cache);
-    }
     public interface IPhysicalFinder<TIdentity, TEntity>
     {
-        Task<TEntity> FindInDbAsync(TIdentity identity, bool cache);
+        Task<TEntity> FindInDbAsync(IDataAccesstor<TIdentity,TEntity> dataAccesstor,TIdentity identity, bool cache);
     }
 
 }

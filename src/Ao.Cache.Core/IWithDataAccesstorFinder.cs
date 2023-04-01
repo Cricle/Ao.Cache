@@ -1,7 +1,11 @@
-﻿namespace Ao.Cache
+﻿using System.Threading.Tasks;
+
+namespace Ao.Cache
 {
-    public interface IWithDataAccesstorFinder<TIdentity, TEntry>
+    public interface IWithDataAccesstorFinder<TIdentity, TEntity>
     {
-        IDataAccesstor<TIdentity, TEntry> DataAccesstor { get; }
+        IDataAccesstor<TIdentity, TEntity> DataAccesstor { get; }
+
+        Task<TEntity> FindInDbAsync(TIdentity identity, bool cache);
     }
 }

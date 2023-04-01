@@ -25,10 +25,9 @@ namespace Ao.Cache.Sample.CodeGen
             _ = c.Get2(ax).Result;
             var gc = GC.GetTotalMemory(true);
             var sw = Stopwatch.GetTimestamp();
-            for (int i = 0; i < 1; i++)
+            for (int i = 0; i < 1_000_000; i++)
             {
                 _ = finder.Get2(ax).Result;
-                Console.WriteLine(creator.DeleteAsync(() => finder.Get2(ax)).Result);
             }
             Console.WriteLine(new TimeSpan(Stopwatch.GetTimestamp() - sw));
             Console.WriteLine($"{(GC.GetTotalMemory(false) - gc) / 1024 / 1024.0}");

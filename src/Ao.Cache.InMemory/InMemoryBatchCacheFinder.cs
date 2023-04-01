@@ -5,42 +5,45 @@ using System.Threading.Tasks;
 
 namespace Ao.Cache.InMemory
 {
-    public class DefaultInMemoryBatchCacheFinder<TIdentity, TEntry> : InMemoryBatchCacheFinder<TIdentity, TEntry>
+    public class DefaultInMemoryBatchCacheFinder<TIdentity, TEntry> : InMemoryBatchCacheFinder<TIdentity, TEntry>,IWithBatchDataFinder<TIdentity, TEntry>
     {
         public DefaultInMemoryBatchCacheFinder(IMemoryCache memoryCache, IBatchDataAccesstor<TIdentity, TEntry> dataAccesstor)
+            :base(memoryCache)
         {
-            MemoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
             DataAccesstor = dataAccesstor ?? throw new ArgumentNullException(nameof(dataAccesstor));
         }
 
-        public IMemoryCache MemoryCache { get; }
-
         public IBatchDataAccesstor<TIdentity, TEntry> DataAccesstor { get; }
 
-        protected override IMemoryCache GetMemoryCache()
+        public async Task<IDictionary<TIdentity, TEntry>> FindInDbAsync(IReadOnlyList<TIdentity> identity, bool cache)
         {
-            return MemoryCache;
-        }
-
-        protected override Task<IDictionary<TIdentity, TEntry>> OnFindInDbAsync(IReadOnlyList<TIdentity> identities)
-        {
-            return DataAccesstor.FindAsync(identities);
+            var entitys = await DataAccesstor.FindAsync(identity);
+            if (entitys.Count!=0&&cache)
+            {
+                await SetInCacheAsync(entitys);
+            }
+            return entitys;
         }
     }
-    public abstract class InMemoryBatchCacheFinder<TIdentity, TEntry> : BatchDataFinderBase<TIdentity, TEntry>
+    public class InMemoryBatchCacheFinder<TIdentity, TEntry> : BatchDataFinderBase<TIdentity, TEntry>
     {
-        protected abstract IMemoryCache GetMemoryCache();
+        public InMemoryBatchCacheFinder(IMemoryCache memoryCache)
+        {
+            this.memoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
+        }
+        private readonly IMemoryCache memoryCache;
+
+        public IMemoryCache MemoryCache => memoryCache;
 
         public override Task<long> DeleteAsync(IReadOnlyList<TIdentity> identity)
         {
             var res = 0L;
-            var mem = GetMemoryCache();
             foreach (var item in identity)
             {
-                if (mem.TryGetValue(item, out _))
+                if (memoryCache.TryGetValue(item, out _))
                 {
                     res++;
-                    mem.Remove(item);
+                    memoryCache.Remove(item);
                 }
             }
             return Task.FromResult(res);
@@ -49,11 +52,10 @@ namespace Ao.Cache.InMemory
         public override Task<IDictionary<TIdentity, bool>> ExistsAsync(IReadOnlyList<TIdentity> identity)
         {
             var res = new Dictionary<TIdentity, bool>(identity.Count);
-            var mem = GetMemoryCache();
             foreach (var item in identity)
             {
                 var key = GetEntryKey(item);
-                res[item] = mem.TryGetValue(key, out _);
+                res[item] = memoryCache.TryGetValue(key, out _);
             }
             return Task.FromResult<IDictionary<TIdentity, bool>>(res);
         }
@@ -61,11 +63,10 @@ namespace Ao.Cache.InMemory
         protected override Task<IDictionary<TIdentity, TEntry>> CoreFindInCacheAsync(IReadOnlyList<TIdentity> identity)
         {
             var res = new Dictionary<TIdentity, TEntry>(identity.Count);
-            var mem = GetMemoryCache();
             foreach (var item in identity)
             {
                 var key = GetEntryKey(item);
-                if (mem.TryGetValue<TEntry>(key, out var r))
+                if (memoryCache.TryGetValue<TEntry>(key, out var r))
                 {
                     res[item] = r;
                 }
@@ -79,12 +80,11 @@ namespace Ao.Cache.InMemory
             foreach (var item in input)
             {
                 var key = GetEntryKey(item.Key);
-                var mem = GetMemoryCache();
-                var val = mem.Get(key);
+                var val = memoryCache.Get(key);
                 if (val != null)
                 {
                     var options = GetMemoryCacheEntryOptions(item.Key, item.Value);
-                    mem.Set(key, val, options);
+                    memoryCache.Set(key, val, options);
                     res++;
                 }
             }
@@ -94,13 +94,12 @@ namespace Ao.Cache.InMemory
         public override Task<long> SetInCacheAsync(IDictionary<TIdentity, TEntry> pairs)
         {
             var res = 0L;
-            var mem = GetMemoryCache();
             foreach (var item in pairs)
             {
                 var time = GetCacheTime(item.Key);
                 var options = GetMemoryCacheEntryOptions(item.Key, time);
                 var key = GetEntryKey(item.Key);
-                mem.Set(key, item.Value, options);
+                memoryCache.Set(key, item.Value, options);
                 res++;
             }
             return Task.FromResult(res);

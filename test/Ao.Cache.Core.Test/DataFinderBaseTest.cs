@@ -25,7 +25,7 @@ namespace Ao.Cache.Core.Test
         public async Task FindInDb_WithSetCache()
         {
             var finder = new NullDataFinder();
-            var str = await finder.FindInDbAsync(99);
+            var str = await finder.FindInDbAsync(new DelegateDataAccesstor<int,string>(x=>Task.FromResult("9")),99);
             Assert.AreEqual("9", str);
         }
         [TestMethod]

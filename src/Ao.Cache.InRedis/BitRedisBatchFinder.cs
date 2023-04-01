@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Ao.Cache.InRedis
 {
-    public abstract class BitRedisBatchFinder<TIdentity, TEntity> : BatchDataFinderBase<TIdentity, TEntity>
+    public class BitRedisBatchFinder<TIdentity, TEntity> : BatchDataFinderBase<TIdentity, TEntity>
     {
-        protected BitRedisBatchFinder(IDatabase database,
+        public BitRedisBatchFinder(IDatabase database,
             IEntityConvertor entityConvertor)
         {
             Database = database ?? throw new ArgumentNullException(nameof(database));

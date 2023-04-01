@@ -222,7 +222,7 @@ namespace Ao.Cache
                             declareAttr = instanceType.GetCustomAttribute<CacheProxyAttribute>();
                         }
                         var proxyAttr = method.GetCustomAttribute<CacheProxyMethodAttribute>();
-                        finder = Factory.CreateEmpty<string, TReturn>();
+                        finder = Factory.Create<string, TReturn>();
                         string head = null;
                         if (proxyAttr != null)
                         {
@@ -241,9 +241,9 @@ namespace Ao.Cache
                             head = $"{instanceType.FullName}.{method.Name}[{method.GetGenericArguments().Length}]({method.GetParameters().Length})";
                         }
                         finder.Options.WithHead(head);
-                        if (proxyAttr==null||!proxyAttr.Renewal)
+                        if (proxyAttr!=null&&proxyAttr.Renewal)
                         {
-                            finder.Options.WithRenew(false);
+                            finder.Options.WithRenew(true);
                         }
                         finders.Add(key, finder);
                     }

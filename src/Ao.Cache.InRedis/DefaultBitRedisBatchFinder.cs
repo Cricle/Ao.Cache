@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Ao.Cache.InRedis
 {
-    public class DefaultBitRedisBatchFinder<TIdentity, TEntity> : BitRedisBatchFinder<TIdentity, TEntity>, IWithBatchDataAccesstorFinder<TIdentity, TEntity>
+    public class DefaultBitRedisBatchFinder<TIdentity, TEntity> : BitRedisBatchFinder<TIdentity, TEntity>, IWithBatchDataFinder<TIdentity, TEntity>
     {
         public DefaultBitRedisBatchFinder(IDatabase database,
             IBatchDataAccesstor<TIdentity, TEntity> dataAccesstor,
@@ -22,9 +22,14 @@ namespace Ao.Cache.InRedis
 
         public IBatchDataAccesstor<TIdentity, TEntity> DataAccesstor { get; }
 
-        protected override Task<IDictionary<TIdentity, TEntity>> OnFindInDbAsync(IReadOnlyList<TIdentity> identities)
+        public async Task<IDictionary<TIdentity, TEntity>> FindInDbAsync(IReadOnlyList<TIdentity> identity, bool cache)
         {
-            return DataAccesstor.FindAsync(identities);
+            var entity=await DataAccesstor.FindAsync(identity);
+            if (cache&&entity!=null)
+            {
+                await SetInCacheAsync(entity);
+            }
+            return entity;
         }
     }
 }

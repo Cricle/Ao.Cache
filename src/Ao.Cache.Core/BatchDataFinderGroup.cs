@@ -31,7 +31,7 @@ namespace Ao.Cache
             }
             set
             {
-                value = value ?? DefaultDataFinderOptions<TIdentity, TEntity>.Default;
+                value = value ?? this.OfType<IDataFinderOptions<TIdentity, TEntity>>().FirstOrDefault() ?? new DefaultDataFinderOptions<TIdentity, TEntity>();
                 foreach (var item in this)
                 {
                     item.Options = value;
@@ -103,14 +103,14 @@ namespace Ao.Cache
             return res;
         }
 
-        public async Task<IDictionary<TIdentity, TEntity>> FindInDbAsync(IReadOnlyList<TIdentity> identity, bool cache)
+        public async Task<IDictionary<TIdentity, TEntity>> FindInDbAsync(IBatchDataAccesstor<TIdentity, TEntity> batchDataAccesstor, IReadOnlyList<TIdentity> identity, bool cache)
         {
             var exists = identity.ToList();
             var res = new Dictionary<TIdentity, TEntity>(identity.Count);
             for (int i = 0; i < Count; i++)
             {
                 var item = this[i];
-                var r = await item.FindInDbAsync(exists, false);
+                var r = await item.FindInDbAsync(batchDataAccesstor,exists, false);
                 foreach (var it in r)
                 {
                     res[it.Key] = it.Value;

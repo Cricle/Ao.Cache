@@ -59,8 +59,7 @@ namespace Ao.Cache.Core.Test
             }
             return Task.FromResult<IDictionary<TIdentity, TEntity>>(m);
         }
-
-        protected override Task<IDictionary<TIdentity, TEntity>> OnFindInDbAsync(IReadOnlyList<TIdentity> identities)
+        public override Task<IDictionary<TIdentity, TEntity>> FindInDbAsync(IBatchDataAccesstor<TIdentity, TEntity> batchDataAccesstor, IReadOnlyList<TIdentity> identity, bool cache)
         {
             return Task.FromResult<IDictionary<TIdentity, TEntity>>(new Dictionary<TIdentity, TEntity>());
         }

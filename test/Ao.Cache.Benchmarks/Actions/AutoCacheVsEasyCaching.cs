@@ -75,11 +75,13 @@ namespace Ao.Cache.Benchmarks.Actions
                 using (var scope = provider.CreateScope())
                 {
                     var finder = scope.ServiceProvider.GetRequiredService<IDataFinder<int, Student>>();
-                    if (finder.Options is DefaultDataFinderOptions<int, Student> op)
+                    var q = i % 5;
+                    var cache =await finder.FindInCacheAsync(q);
+                    if (cache == null)
                     {
-                        op.IsCanRenewal = false;
+                        var s = await scope.ServiceProvider.GetRequiredService<GetTimeCt>().Raw(i);
+                        await finder.SetInCacheAsync(q, s);
                     }
-                    await finder.FindAsync(i % 5);
                 }
             });
 
