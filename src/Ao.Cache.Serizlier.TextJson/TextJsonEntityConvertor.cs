@@ -42,30 +42,20 @@ namespace Ao.Cache.Serizlier.TextJson
             var bytes = Encoding.GetBytes(str);
             return JsonSerializer.Deserialize(bytes, type, Options);
         }
-    }
 
-    public class TextJsonEntityConvertor<TEntity> : TextJsonEntityConvertor, IEntityConvertor<TEntity>
-    {
-        public static new readonly TextJsonEntityConvertor<TEntity> Default = new TextJsonEntityConvertor<TEntity>();
+        public string TransferToString(object obj, Type type)
+        {
+            return ToString(obj, type);
+        }
 
-        public static readonly Type EntityType = typeof(TEntity);
+        public object TransferFromString(string data, Type type)
+        {
+            return ToEntry(data, type);
+        }
 
-        public byte[] ToBytes(TEntity entry)
+        public object ToEntry(ReadOnlyMemory<byte> bytes, Type type)
         {
-            return ToBytes(entry, EntityType);
-        }
-        public string ToString(TEntity entry)
-        {
-            return ToString(entry, EntityType);
-        }
-        public TEntity ToEntry(byte[] bytes)
-        {
-            return (TEntity)ToEntry(bytes, EntityType);
-        }
-        public TEntity ToEntry(string str)
-        {
-            return (TEntity)ToEntry(str, EntityType);
+            return JsonSerializer.Deserialize(bytes.Span, type, Options);
         }
     }
-
 }

@@ -8,16 +8,16 @@ namespace Ao.Cache.InRedis
 {
     public class BitRedisBatchFinder<TIdentity, TEntity> : BatchDataFinderBase<TIdentity, TEntity>
     {
-        public BitRedisBatchFinder(IDatabase database,
+        public BitRedisBatchFinder(IConnectionMultiplexer multiplexer,
             IEntityConvertor entityConvertor)
         {
-            Database = database ?? throw new ArgumentNullException(nameof(database));
+            Multiplexer = multiplexer ?? throw new ArgumentNullException(nameof(multiplexer));
             EntityConvertor = entityConvertor ?? throw new ArgumentNullException(nameof(entityConvertor));
         }
 
         public IEntityConvertor EntityConvertor { get; }
 
-        public IDatabase Database { get; }
+        public IConnectionMultiplexer Multiplexer { get; }
 
         protected virtual RedisKey[] AsKeys(IReadOnlyList<TIdentity> identities)
         {
@@ -40,8 +40,7 @@ namespace Ao.Cache.InRedis
         protected async Task<IDictionary<TIdentity, TResult>> DoInRedisAsync<TResult>(IReadOnlyList<TIdentity> identities,
             Func<IBatch, TIdentity, Task<TResult>> fetch)
         {
-            var db = Database;
-            var batch = db.CreateBatch();
+            var batch = Multiplexer.GetDatabase().CreateBatch();
             var tasks = new Task<TResult>[identities.Count];
             for (int i = 0; i < identities.Count; i++)
             {
@@ -60,13 +59,12 @@ namespace Ao.Cache.InRedis
         }
         public override Task<long> DeleteAsync(IReadOnlyList<TIdentity> identities)
         {
-            var db = Database;
             var keys = new RedisKey[identities.Count];
             for (int i = 0; i < identities.Count; i++)
             {
                 keys[i] = GetEntryKey(identities[i]);
             }
-            return db.KeyDeleteAsync(keys);
+            return Multiplexer.GetDatabase().KeyDeleteAsync(keys);
         }
 
         public override Task<IDictionary<TIdentity, bool>> ExistsAsync(IReadOnlyList<TIdentity> identities)
@@ -86,8 +84,7 @@ namespace Ao.Cache.InRedis
         {
             var keyMap = AsKeyMap(identity);
             var keys = keyMap.Keys.ToArray();
-            var db = Database;
-            var datas = await db.StringGetAsync(keys);
+            var datas = await Multiplexer.GetDatabase().StringGetAsync(keys);
             var map = new Dictionary<TIdentity, TEntity>(keys.Length);
             for (int i = 0; i < datas.Length; i++)
             {

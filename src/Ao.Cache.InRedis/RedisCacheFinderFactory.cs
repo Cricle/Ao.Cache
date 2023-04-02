@@ -17,23 +17,64 @@ namespace Ao.Cache.InRedis
 
         public IWithBatchDataFinder<TIdentity, TEntity> CreateBatch<TIdentity, TEntity>(IBatchDataAccesstor<TIdentity, TEntity> accesstor)
         {
-            return new DefaultBitRedisBatchFinder<TIdentity, TEntity>(Connection.GetDatabase(), accesstor, EntityConvertor);
+            return new DefaultBitRedisBatchFinder<TIdentity, TEntity>(Connection, accesstor, EntityConvertor);
         }
 
         public IWithDataFinder<TIdentity, TEntity> Create<TIdentity, TEntity>(IDataAccesstor<TIdentity, TEntity> accesstor)
         {
-            return new DefaultBitRedisDataFinder<TIdentity, TEntity>(Connection.GetDatabase(), accesstor, EntityConvertor);
+            return new DefaultBitRedisDataFinder<TIdentity, TEntity>(Connection, accesstor, EntityConvertor);
         }
-
+        
         public IDataFinder<TIdentity, TEntity> Create<TIdentity, TEntity>()
         {
-            return new BitRedisDataFinder<TIdentity, TEntity>(Connection.GetDatabase(), EntityConvertor);
+            return BitRedisDataFinderInstances<TIdentity, TEntity>.Get(Connection, EntityConvertor);
         }
 
         public IBatchDataFinder<TIdentity, TEntity> CreateBatch<TIdentity, TEntity>()
         {
-            return new BitRedisBatchFinder<TIdentity, TEntity>(Connection.GetDatabase(), EntityConvertor);
+            return BitRedisBatchFinderInstances<TIdentity, TEntity>.Get(Connection, EntityConvertor);
         }
+        static class BitRedisBatchFinderInstances<TIdentity, TEntity>
+        {
+            private static BitRedisBatchFinder<TIdentity, TEntity> Instance;
 
+            public static readonly object Locker = new object();
+
+            public static BitRedisBatchFinder<TIdentity, TEntity> Get(IConnectionMultiplexer multiplexer, IEntityConvertor convertor)
+            {
+                if (Instance == null)
+                {
+                    lock (Locker)
+                    {
+                        if (Instance == null)
+                        {
+                            Instance = new BitRedisBatchFinder<TIdentity, TEntity>(multiplexer, convertor);
+                        }
+                    }
+                }
+                return Instance;
+            }
+        }
+        static class BitRedisDataFinderInstances<TIdentity, TEntity>
+        {
+            private static BitRedisDataFinder<TIdentity, TEntity> Instance;
+
+            public static readonly object Locker = new object();
+
+            public static BitRedisDataFinder<TIdentity, TEntity> Get(IConnectionMultiplexer multiplexer,IEntityConvertor convertor)
+            {
+                if (Instance==null)
+                {
+                    lock (Locker)
+                    {
+                        if (Instance==null)
+                        {
+                            Instance = new BitRedisDataFinder<TIdentity, TEntity>(multiplexer,convertor);
+                        }
+                    }
+                }
+                return Instance;
+            }
+        }
     }
 }

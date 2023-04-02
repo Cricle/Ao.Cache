@@ -6,7 +6,17 @@ namespace Ao.Cache
 {
     public class IdentityGenerater<TIdentity, TEntity> : IIdentityGenerater<TIdentity>
     {
-        public string Head { get; set; } = FriendlyNameHelper<TEntity>.FriendlyName;
+        private string head = FriendlyNameHelper<TEntity>.FriendlyName;
+        private string headWithPoint = FriendlyNameHelper<TEntity>.FriendlyName + ".";
+        public string Head
+        {
+            get => head;
+            set 
+            {
+                head = value;
+                headWithPoint= value+".";
+            }
+        }
 
         public virtual string GetPart(TIdentity identity)
         {
@@ -17,10 +27,14 @@ namespace Ao.Cache
         {
             return Head;
         }
+        public string GetHeadWithPoint()
+        {
+            return headWithPoint;
+        }
 
         public virtual string GetEntryKey(TIdentity identity)
         {
-            return $"{GetHead()}.{GetPart(identity)}";
+            return headWithPoint + GetPart(identity);
         }
     }
 

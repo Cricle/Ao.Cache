@@ -12,10 +12,6 @@ namespace Ao.Cache.InMemory
 
         public IMemoryCache MemoryCache { get; }
 
-        public IDataFinder<TIdentity, TEntity> Create<TIdentity, TEntity>()
-        {
-            return new InMemoryCacheFinder<TIdentity, TEntity>(MemoryCache);
-        }
 
         public IWithDataFinder<TIdentity, TEntity> Create<TIdentity, TEntity>(IDataAccesstor<TIdentity, TEntity> accesstor)
         {
@@ -29,7 +25,53 @@ namespace Ao.Cache.InMemory
 
         public IBatchDataFinder<TIdentity, TEntity> CreateBatch<TIdentity, TEntity>()
         {
-            return new InMemoryBatchCacheFinder<TIdentity, TEntity>(MemoryCache);
+            return InMemoryBatchCacheFinderInstances<TIdentity, TEntity>.Get(MemoryCache);
+        }
+        public IDataFinder<TIdentity, TEntity> Create<TIdentity, TEntity>()
+        {
+            return InMemoryCacheFinderInstances<TIdentity, TEntity>.Get(MemoryCache);
+        }
+        static class InMemoryBatchCacheFinderInstances<TIdentity, TEntity>
+        {
+            private static InMemoryBatchCacheFinder<TIdentity, TEntity> Instance;
+
+            public static readonly object Locker = new object();
+
+            public static InMemoryBatchCacheFinder<TIdentity, TEntity> Get(IMemoryCache memoryCache)
+            {
+                if (Instance == null)
+                {
+                    lock (Locker)
+                    {
+                        if (Instance == null)
+                        {
+                            Instance = new InMemoryBatchCacheFinder<TIdentity, TEntity>(memoryCache);
+                        }
+                    }
+                }
+                return Instance;
+            }
+        }
+        static class InMemoryCacheFinderInstances<TIdentity, TEntity>
+        {
+            private static InMemoryCacheFinder<TIdentity, TEntity> Instance;
+
+            public static readonly object Locker = new object();
+
+            public static InMemoryCacheFinder<TIdentity, TEntity> Get(IMemoryCache memoryCache)
+            {
+                if (Instance == null)
+                {
+                    lock (Locker)
+                    {
+                        if (Instance == null)
+                        {
+                            Instance = new InMemoryCacheFinder<TIdentity, TEntity>(memoryCache);
+                        }
+                    }
+                }
+                return Instance;
+            }
         }
     }
 }

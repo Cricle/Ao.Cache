@@ -1,6 +1,8 @@
 ﻿using Ao.Cache.Gen;
 using BenchmarkDotNet.Attributes;
 using EasyCaching.Core;
+using MessagePack;
+using MessagePack.Resolvers;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Threading.Tasks;
@@ -36,7 +38,11 @@ namespace Ao.Cache.Benchmarks.Actions
                         config.DBConfig.SyncTimeout = 10000;
                         config.DBConfig.AsyncTimeout = 10000;
                         config.SerializerName = "mymsgpack";
-                    }, "m1").WithMessagePack("mymsgpack");
+                    }, "m1").WithMessagePack(x =>
+                    {
+                        x.EnableCustomResolver = true;
+                        x.CustomResolvers= TypelessObjectResolver.Instance;
+                    },"mymsgpack");
                 }
                 else
                 {
@@ -62,10 +68,29 @@ namespace Ao.Cache.Benchmarks.Actions
                     if (!stu.HasValue)
                     {
                         var s = await scope.ServiceProvider.GetRequiredService<GetTimeCt>().Raw(i);
-                        mCache.Set(str, s, TimeSpan.FromSeconds(3));
+                        await mCache.SetAsync(str, s, TimeSpan.FromSeconds(3));
                     }
                 }
             });
+        }
+        public async Task UseProvider1()
+        {
+            for (int i = 0; i < Times*Concurrent; i++)
+            {
+                using (var scope = provider.CreateScope())
+                {
+                    var finder = scope.ServiceProvider.GetRequiredService<IDataFinder<int, Student>>();
+                    var q = i % 5;
+                    var cache = await finder.FindInCacheAsync(q);
+                    if (cache == null)
+                    {
+                        var s = await scope.ServiceProvider.GetRequiredService<GetTimeCt>().Raw(i);
+                        await finder.SetInCacheAsync(q, s);
+                    }
+                }
+
+            }
+
         }
         [Benchmark]
         public async Task UseProvider()

@@ -7,10 +7,10 @@ namespace Ao.Cache.InRedis
 {
     public class DefaultBitRedisBatchFinder<TIdentity, TEntity> : BitRedisBatchFinder<TIdentity, TEntity>, IWithBatchDataFinder<TIdentity, TEntity>
     {
-        public DefaultBitRedisBatchFinder(IDatabase database,
+        public DefaultBitRedisBatchFinder(IConnectionMultiplexer multiplexer,
             IBatchDataAccesstor<TIdentity, TEntity> dataAccesstor,
             IEntityConvertor entityConvertor)
-            : base(database, entityConvertor)
+            : base(multiplexer, entityConvertor)
         {
             if (entityConvertor is null)
             {

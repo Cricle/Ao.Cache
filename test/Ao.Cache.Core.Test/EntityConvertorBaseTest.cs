@@ -11,24 +11,39 @@ namespace Ao.Cache.Core.Test
     public class EntityConvertorBaseTest
     {
         [ExcludeFromCodeCoverage]
-        class NullEntityConvertor<TEntity> : EntityConvertorBase<TEntity>
+        class NullEntityConvertor : IEntityConvertor
         {
-            public override byte[] ToBytes(object entry, Type type)
+            public byte[] ToBytes(object entry, Type type)
             {
                 return new byte[0];
             }
 
-            public override object ToEntry(byte[] bytes, Type type)
+            public object ToEntry(byte[] bytes, Type type)
             {
-                return default(TEntity);
+                return null;
+            }
+
+            public object ToEntry(ReadOnlyMemory<byte> bytes, Type type)
+            {
+                return null;
+            }
+
+            public object TransferFromString(string data, Type type)
+            {
+                return null;
+            }
+
+            public string TransferToString(object obj, Type type)
+            {
+                return null;
             }
         }
         [TestMethod]
         public void Conver()
         {
-            var cov = new NullEntityConvertor<int>();
-            cov.ToBytes(1);
-            cov.ToEntry(new byte[0]);
+            var cov = new NullEntityConvertor();
+            cov.ToBytes(1,typeof(int));
+            cov.ToEntry(new byte[0], typeof(object));
         }
     }
 }

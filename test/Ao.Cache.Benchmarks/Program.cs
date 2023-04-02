@@ -8,8 +8,9 @@ namespace Ao.Cache.Benchmarks
         static void Main(string[] args)
         {
             //var r = new AutoCacheVsEasyCaching();
-            //r.Times = 1;
-            //r.Concurrent = 1;
+            //r.Times = 100;
+            //r.Concurrent = 100;
+            //r.IsUseRedis = true;
             //r.Setup().GetAwaiter().GetResult();
             //r.UseProxy().GetAwaiter().GetResult();
             //r.UseProvider().GetAwaiter().GetResult();

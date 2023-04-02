@@ -6,10 +6,10 @@ namespace Ao.Cache.InRedis
 {
     public class DefaultBitRedisDataFinder<TIdentity, TEntity> : BitRedisDataFinder<TIdentity, TEntity>, IWithDataFinder<TIdentity, TEntity>
     {
-        public DefaultBitRedisDataFinder(IDatabase database,
+        public DefaultBitRedisDataFinder(IConnectionMultiplexer multiplexer,
             IDataAccesstor<TIdentity, TEntity> dataAccesstor,
             IEntityConvertor entityConvertor)
-            : base(database, entityConvertor)
+            : base(multiplexer, entityConvertor)
         {
             if (entityConvertor is null)
             {

@@ -51,7 +51,7 @@ namespace Ao.Cache.Benchmarks.Actions
             ser.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(s));
             ser.AddScoped(x => x.GetRequiredService<IConnectionMultiplexer>().GetDatabase());
             ser.AddSingleton<IEntityConvertor, MessagePackEntityConvertor>();
-            ser.AddSingleton(typeof(IEntityConvertor<>), typeof(MessagePackEntityConvertor<>));
+            ser.AddSingleton(typeof(IEntityConvertor), typeof(MessagePackEntityConvertor));
             if (UseRedis())
             {
                 ser.AddInRedisFinder();

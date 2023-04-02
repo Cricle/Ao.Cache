@@ -21,20 +21,6 @@ namespace Ao.Cache.InRedis
                 return input;
             }
         }
-        class TransferInputCase<T> : IInputCase<RedisValue, T>
-        {
-            public TransferInputCase(IObjectTransfer objectTransfer)
-            {
-                ObjectTransfer = objectTransfer;
-            }
-
-            public IObjectTransfer ObjectTransfer { get; }
-
-            public T Case(in RedisValue input)
-            {
-                return ObjectTransfer.Transfer<T>(input);
-            }
-        }
         class NullInputCase<T> : IInputCase<T, T>
         {
             public static readonly NullInputCase<T> Default = new NullInputCase<T>();
@@ -79,10 +65,11 @@ namespace Ao.Cache.InRedis
         }
         private IDictionary<string, T> CreateMap<T>(IReadOnlyList<string> keys, RedisValue[] values)
         {
+            var type=typeof(T);
             var map = new Dictionary<string, T>(keys.Count);
             for (int i = 0; i < values.Length; i++)
             {
-                map[keys[i]] = ObjectTransfer.Transfer<T>(values[i]);
+                map[keys[i]] = (T)EntityConvertor.ToEntry(values[i], type);
             }
             return map;
         }
@@ -125,9 +112,10 @@ namespace Ao.Cache.InRedis
         }
         public async Task<IDictionary<string, bool>> SetAsync<T>(KeyValuePair<string, T>[] datas, TimeSpan? cacheTime, CacheSetIf cacheSetIf = CacheSetIf.Always)
         {
+            var type = typeof(T);
             var task = CreateBatch(x =>
                 datas.Select(y =>
-                    x.StringSetAsync(y.Key, ObjectTransfer.Transfer(y.Value), cacheTime, (When)cacheSetIf)).ToArray());
+                    x.StringSetAsync(y.Key, EntityConvertor.ToBytes(y.Value,type), cacheTime, (When)cacheSetIf)).ToArray());
             await task.Task;
             var map = new Dictionary<string, bool>(datas.Length);
             for (int i = 0; i < task.Results.Length; i++)

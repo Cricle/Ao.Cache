@@ -6,15 +6,15 @@ namespace Ao.Cache.InRedis
 {
     public partial class RedisCacheVisitor : ICacheVisitor
     {
-        public RedisCacheVisitor(IDatabase database, IObjectTransfer objectTransfer)
+        public RedisCacheVisitor(IDatabase database, IEntityConvertor entityConvertor)
         {
             Database = database ?? throw new ArgumentNullException(nameof(database));
-            ObjectTransfer = objectTransfer ?? throw new ArgumentNullException(nameof(objectTransfer));
+            EntityConvertor = entityConvertor ?? throw new ArgumentNullException(nameof(entityConvertor));
         }
 
         public IDatabase Database { get; }
 
-        public IObjectTransfer ObjectTransfer { get; }
+        public IEntityConvertor EntityConvertor { get; }
 
         public bool Delete(string key)
         {
@@ -41,7 +41,7 @@ namespace Ao.Cache.InRedis
             var val = Database.StringGet(key);
             if (val.HasValue)
             {
-                return ObjectTransfer.Transfer<T>(val);
+                return (T)EntityConvertor.ToEntry(val,typeof(T));
             }
             return default;
         }
@@ -51,7 +51,7 @@ namespace Ao.Cache.InRedis
             var val = await Database.StringGetAsync(key);
             if (val.HasValue)
             {
-                return ObjectTransfer.Transfer<T>(val);
+                return (T)EntityConvertor.ToEntry(val, typeof(T));
             }
             return default;
         }
@@ -69,13 +69,13 @@ namespace Ao.Cache.InRedis
 
         public bool Set<T>(string key, T value, TimeSpan? cacheTime, CacheSetIf cacheSetIf = CacheSetIf.Always)
         {
-            var buffer = ObjectTransfer.Transfer(value);
+            var buffer = EntityConvertor.ToBytes(value, typeof(T));
             return Database.StringSet(key, buffer, cacheTime, (When)cacheSetIf, CommandFlags.None);
         }
 
         public Task<bool> SetAsync<T>(string key, T value, TimeSpan? cacheTime, CacheSetIf cacheSetIf = CacheSetIf.Always)
         {
-            var buffer = ObjectTransfer.Transfer(value);
+            var buffer = EntityConvertor.ToBytes(value, typeof(T));
             return Database.StringSetAsync(key, buffer, cacheTime, (When)cacheSetIf, CommandFlags.None);
         }
 

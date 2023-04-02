@@ -6,46 +6,48 @@ namespace Ao.Cache.InRedis
 {
     public class BitRedisDataFinder<TIdentity, TEntity> : DataFinderBase<TIdentity, TEntity>
     {
-        public BitRedisDataFinder(IDatabase database,
+        private static readonly Type EntityType = typeof(TEntity);
+        public BitRedisDataFinder(IConnectionMultiplexer multiplexer,
             IEntityConvertor entityConvertor)
         {
-            Database = database ?? throw new ArgumentNullException(nameof(database));
+            Multiplexer = multiplexer ?? throw new ArgumentNullException(nameof(multiplexer));
             EntityConvertor = entityConvertor ?? throw new ArgumentNullException(nameof(entityConvertor));
         }
 
         public IEntityConvertor EntityConvertor { get; }
 
-        public IDatabase Database { get; }
+        public IConnectionMultiplexer Multiplexer { get; }
 
         public override Task<bool> DeleteAsync(TIdentity identity)
         {
-            return Database.KeyDeleteAsync(GetEntryKey(identity));
+            return Multiplexer.GetDatabase().KeyDeleteAsync(GetEntryKey(identity));
         }
 
         public override Task<bool> ExistsAsync(TIdentity identity)
         {
-            return Database.KeyExistsAsync(GetEntryKey(identity));
+            return Multiplexer.GetDatabase().KeyExistsAsync(GetEntryKey(identity));
         }
 
         public override Task<bool> RenewalAsync(TIdentity identity, TimeSpan? time)
         {
-            return Database.KeyExpireAsync(GetEntryKey(identity), time);
+            return Multiplexer.GetDatabase().KeyExpireAsync(GetEntryKey(identity), time);
         }
         protected override async Task<TEntity> CoreFindInCacheAsync(string key, TIdentity identity)
         {
-            var data = await Database.StringGetAsync(key);
+            var data = await Multiplexer.GetDatabase().StringGetAsync(key);
             if (data.HasValue)
             {
-                return (TEntity)EntityConvertor.ToEntry(data, typeof(TEntity));
+                var memory = (ReadOnlyMemory<byte>)data;
+                return (TEntity)EntityConvertor.ToEntry(memory, EntityType);
             }
             return default;
         }
 
         protected override Task<bool> SetInCacheAsync(string key, TIdentity identity, TEntity entity, TimeSpan? caheTime)
         {
-            var bs = EntityConvertor.ToBytes(entity, typeof(TEntity));
+            var bs = EntityConvertor.ToBytes(entity, EntityType);
 
-            return Database.StringSetAsync(key, bs, caheTime);
+            return Multiplexer.GetDatabase().StringSetAsync(key, bs, caheTime);
         }
     }
 }
