@@ -191,11 +191,24 @@ namespace {@namespace}
             {
                 actualRetType = returnType.Substring(returnType.IndexOf('<') + 1, returnType.Length - returnType.IndexOf('<') - 2);
             }
-            if (proxy &&!isTaskAsync&& returnTypeSymbol is ITypeSymbol typeSymbol&&!typeSymbol.IsReferenceType)
+            if (proxy)
             {
-                if (typeSymbol.OriginalDefinition.SpecialType!= SpecialType.System_Nullable_T)
+                if (!isTaskAsync && returnTypeSymbol is ITypeSymbol typeSymbol && !typeSymbol.IsReferenceType)
                 {
-                    context.ReportDiagnostic(Diagnostic.Create(DiagnosticDescriptors.ReturnMustRefOrNullable,Location.Create(method.SyntaxTree,method.Span)));
+                    if (typeSymbol.OriginalDefinition.SpecialType != SpecialType.System_Nullable_T)
+                    {
+                        context.ReportDiagnostic(Diagnostic.Create(DiagnosticDescriptors.ReturnMustRefOrNullable, Location.Create(method.SyntaxTree, method.Span)));
+                    }
+                }
+                if (isTaskAsync && method.ReturnType is GenericNameSyntax genericNameSyntax &&
+                    genericNameSyntax.TypeArgumentList.Arguments.Count == 1)
+                {
+                    var arg = genericNameSyntax.TypeArgumentList.Arguments[0];
+                    var symbol =(ITypeSymbol)model.GetSymbolInfo(arg).Symbol ;
+                    if (!symbol.IsReferenceType && symbol.OriginalDefinition.SpecialType != SpecialType.System_Nullable_T)
+                    {
+                        context.ReportDiagnostic(Diagnostic.Create(DiagnosticDescriptors.ReturnMustRefOrNullable, Location.Create(method.SyntaxTree, method.Span)));
+                    }
                 }
             }
 
