@@ -258,7 +258,7 @@ namespace {@namespace}
                 {
                     keyGen += $"string.Join(\",\",{string.Join(",",method.ParameterList.Parameters.Select(x=>x.Identifier.ValueText))});";
                 }
-                var s = $@"var finder = {factoryName}.GetHelper<{actualRetType}>().GetFinder(type, {GetMethodInfoName(index,method,model)});
+                var s = $@"            var finder = {factoryName}.GetHelper<{actualRetType}>().GetFinder(type, {GetMethodInfoName(index,method,model)});
             {keyGen}
             var inCache = {(isTaskAsync?"await":string.Empty)} finder.FindInCacheAsync(key){(isTaskAsync ? string.Empty: ".GetAwaiter().GetResult()")};
             if (inCache == null)
