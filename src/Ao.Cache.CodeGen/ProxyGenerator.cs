@@ -229,6 +229,14 @@ namespace {@namespace}
                     context.ReportDiagnostic(Diagnostic.Create(DiagnosticDescriptors.ReturnMustRefOrNullable,Location.Create(method.SyntaxTree,method.Span)));
                 }
             }
+            else if(proxy&&isTaskAsync&& returnTypeSymbol is INamedTypeSymbol namedTypeSymbol&&namedTypeSymbol.IsGenericType)
+            {
+                var typeArg = namedTypeSymbol.TypeArguments[0];
+                if (!typeArg.IsReferenceType&&typeArg.OriginalDefinition.SpecialType!= SpecialType.System_Nullable_T)
+                {
+                    context.ReportDiagnostic(Diagnostic.Create(DiagnosticDescriptors.ReturnMustRefOrNullable, Location.Create(method.SyntaxTree, method.Span)));
+                }
+            }
 
             var methodName = method.Identifier.ValueText;
 
