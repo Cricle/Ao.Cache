@@ -47,6 +47,10 @@ namespace Ao.Cache.Sample.CodeGen
     [CacheProxy(Head = "test")]
     public class Student : IStudent
     {
+        public Student(object obj)
+        {
+
+        }
         public virtual int? Get<T>(int? a)
         {
             return Random.Shared.Next(0, 9999) + a.GetHashCode();

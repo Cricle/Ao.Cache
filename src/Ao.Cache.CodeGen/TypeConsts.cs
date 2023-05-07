@@ -59,5 +59,7 @@ namespace Ao.Cache.CodeGen
 
         public const string HeadAbsolute = "HeadAbsolute";
 
+        public const string CacheConstructorAttribute = "Ao.Cache.Core.Annotations.CacheConstructorAttribute";
+
     }
 }
