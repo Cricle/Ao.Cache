@@ -61,5 +61,7 @@ namespace Ao.Cache.CodeGen
 
         public const string CacheConstructorAttribute = "Ao.Cache.Core.Annotations.CacheConstructorAttribute";
 
+        public const string ICacheHelperCreator = "Ao.Cache.ICacheHelperCreator";
+
     }
 }
