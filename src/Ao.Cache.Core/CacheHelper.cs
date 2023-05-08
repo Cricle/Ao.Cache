@@ -6,6 +6,7 @@ using Ao.Cache.Core.Annotations;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Linq;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Ao.Cache
 {
@@ -26,7 +27,7 @@ namespace Ao.Cache
 #if NETSTANDARD2_0
             return Type?.GetHashCode() ?? 0 ^ Method?.GetHashCode() ?? 0;
 #else
-                return HashCode.Combine(Type, Method);
+            return HashCode.Combine(Type, Method);
 #endif
         }
         public override bool Equals(object obj)
@@ -49,7 +50,7 @@ namespace Ao.Cache
     }
     public static class CacheHelperCreatorFetchHelper
     {
-        public static Task<bool> SetInCacheAsync<T>(this ICacheHelperCreator creator, Expression<Func<T>> exp,T value)
+        public static Task<bool> SetInCacheAsync<T>(this ICacheHelperCreator creator, Expression<Func<T>> exp, T value)
         {
             var finder = creator.GetHelper<T>().GetFinder(exp);
             var identity = GetIdentity(exp);
@@ -67,11 +68,11 @@ namespace Ao.Cache
             var identity = GetIdentity(exp);
             return finder.ExistsAsync(identity);
         }
-        public static Task<bool> RenewalAsync<T>(this ICacheHelperCreator creator, Expression<Func<T>> exp,TimeSpan? time)
+        public static Task<bool> RenewalAsync<T>(this ICacheHelperCreator creator, Expression<Func<T>> exp, TimeSpan? time)
         {
             var finder = GetFinder(creator, exp);
             var identity = GetIdentity(exp);
-            return finder.RenewalAsync(identity,time);
+            return finder.RenewalAsync(identity, time);
         }
         public static Task<bool> RenewalAsync<T>(this ICacheHelperCreator creator, Expression<Func<T>> exp)
         {
@@ -79,14 +80,14 @@ namespace Ao.Cache
             var identity = GetIdentity(exp);
             return finder.RenewalAsync(identity);
         }
-        public static Task<bool> DeleteAsync<T>(this ICacheHelperCreator creator,Expression<Func<T>> exp)
+        public static Task<bool> DeleteAsync<T>(this ICacheHelperCreator creator, Expression<Func<T>> exp)
         {
-            var finder = GetFinder(creator,exp);
+            var finder = GetFinder(creator, exp);
             var identity = GetIdentity(exp);
             return finder.DeleteAsync(identity);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static IDataFinder<string,T> GetFinder<T>(this ICacheHelperCreator creator, Expression<Func<T>> exp)
+        public static IDataFinder<string, T> GetFinder<T>(this ICacheHelperCreator creator, Expression<Func<T>> exp)
         {
             return creator.GetHelper<T>().GetFinder(exp);
         }
@@ -138,7 +139,7 @@ namespace Ao.Cache
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public static ICacheHelper<TReturn> Get(IDataFinderFactory factory)
             {
-                if (instance==null)
+                if (instance == null)
                 {
                     lock (locker)
                     {
@@ -158,7 +159,11 @@ namespace Ao.Cache
 
         IDataFinder<string, TReturn> GetFinder(Expression<Func<TReturn>> exp);
     }
-    public class CacheHelper<TReturn>: ICacheHelper<TReturn>
+    public class CacheHelper<
+#if NET6_0_OR_GREATER
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
+#endif
+    TReturn> : ICacheHelper<TReturn>
     {
         private readonly Dictionary<DeclareInfo, IDataFinder<string, TReturn>> finders = new Dictionary<DeclareInfo, IDataFinder<string, TReturn>>();
 
@@ -180,7 +185,7 @@ namespace Ao.Cache
             Type ret = null;
             if (expression is NewExpression newExp)
             {
-                ret= newExp.Constructor.DeclaringType;
+                ret = newExp.Constructor.DeclaringType;
             }
             else if (expression is MemberExpression memberExp)
             {
@@ -197,10 +202,10 @@ namespace Ao.Cache
             {
                 ret = constExp.Value.GetType();
             }
-            if (ret!=null)
+            if (ret != null)
             {
                 var proxy = ret.GetCustomAttribute<CacheProxyByAttribute>();
-                if (proxy!=null)
+                if (proxy != null)
                 {
                     ret = proxy.ProxyType;
                 }
@@ -241,7 +246,7 @@ namespace Ao.Cache
                             head = $"{instanceType.FullName}.{method.Name}[{method.GetGenericArguments().Length}]({method.GetParameters().Length})";
                         }
                         finder.Options.WithHead(head);
-                        if (proxyAttr!=null&&proxyAttr.Renewal)
+                        if (proxyAttr != null && proxyAttr.Renewal)
                         {
                             finder.Options.WithRenew(true);
                         }
@@ -260,7 +265,6 @@ namespace Ao.Cache
             }
             throw new NotSupportedException(exp.ToString());
         }
-
     }
 
 }

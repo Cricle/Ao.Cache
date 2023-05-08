@@ -134,25 +134,28 @@ namespace Ao.Cache.CodeGen
                 {
                     //Debugger.Launch();
                     var cs = ax as ClassDeclarationSyntax;
-                    var constructor=cs.DescendantNodes().OfType<ConstructorDeclarationSyntax>().ToList();
+                    var constructor = cs.DescendantNodes().OfType<ConstructorDeclarationSyntax>().ToList();
                     var constructorModel = constructor.Select(x => syntaxContext.SemanticModel.GetDeclaredSymbol(x))
-                        .Where(x=>x.DeclaredAccessibility== Accessibility.ProtectedOrInternal||x.DeclaredAccessibility== Accessibility.Public).ToList();
-                    var best = constructorModel.Where(x => x.GetAttributes().Any(y=> y.ToString() == TypeConsts.CacheConstructorAttribute)).FirstOrDefault();
-                    if (best == null)
+                        .Where(x => x.DeclaredAccessibility == Accessibility.ProtectedOrInternal || x.DeclaredAccessibility == Accessibility.Public).ToList();
+                    var best = constructorModel.Where(x => x.GetAttributes().Any(y => y.ToString() == TypeConsts.CacheConstructorAttribute)).FirstOrDefault();
+                    if (constructorModel.Count != 0)
                     {
-                        best = constructorModel[0];
-                    }
-                    if (best.Parameters.Length != 0)
-                    {
-
-                        pars = string.Join(",", best.Parameters.Select(p => $"{p.Type} {p.Name}"));
-                        @base = $":base({string.Join(",", best.Parameters.Select(p => p.Name))})";
-                        helperCreatorConstruct += ",";
-                        var helperPar = best.Parameters.Where(x => x.Type.ToString() == TypeConsts.ICacheHelperCreator).FirstOrDefault();
-                        if (helperPar != null)
+                        if (best == null)
                         {
-                            helperCreatorName = helperPar.Name;
-                            helperCreatorConstruct = string.Empty;
+                            best = constructorModel[0];
+                        }
+                        if (best.Parameters.Length != 0)
+                        {
+
+                            pars = string.Join(",", best.Parameters.Select(p => $"{p.Type} {p.Name}"));
+                            @base = $":base({string.Join(",", best.Parameters.Select(p => p.Name))})";
+                            helperCreatorConstruct += ",";
+                            var helperPar = best.Parameters.Where(x => x.Type.ToString() == TypeConsts.ICacheHelperCreator).FirstOrDefault();
+                            if (helperPar != null)
+                            {
+                                helperCreatorName = helperPar.Name;
+                                helperCreatorConstruct = string.Empty;
+                            }
                         }
                     }
                 }
@@ -171,7 +174,8 @@ namespace {@namespace}
     [System.Diagnostics.DebuggerStepThrough]
     [{(isClass?TypeConsts.CacheProxyByClassAttribute:TypeConsts.CacheProxyByInterfaceAttribute)}({TypeConsts.CacheProxyByProxyTypeAttribute}=typeof({declare}))]
     public class {name}{proxyEndName} : {declare}
-    {{
+    {{        
+        [System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembers(System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.PublicConstructors| System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.PublicMethods)]
         private static readonly System.Type type = typeof({declare});
         {string.Join("\n        ", canProxys.Select(x=>$@" private static readonly System.Reflection.MethodInfo {GetMethodInfoName(methods.IndexOf(x),x,syntaxContext.SemanticModel)} = type.GetMethod(nameof({x.Identifier.ValueText}),{x.TypeParameterList?.Parameters.Count??0}, System.Reflection.BindingFlags.Public| System.Reflection.BindingFlags.Instance,null,new Type[] {{ {string.Join(",",x.ParameterList.Parameters.Select(y=>$"typeof({syntaxContext.SemanticModel.GetSymbolInfo(y.Type).Symbol})"))} }},null) ?? throw new ArgumentException($""{{type}} no method {{nameof({x.Identifier.ValueText})}}"");"))}
         {(isClass ? string.Empty : $"protected readonly {proxyType} _raw;")}
@@ -191,7 +195,7 @@ namespace {@namespace}
                 var tree = CSharpSyntaxTree.ParseText(source);
                 var root = tree.GetRoot();
                 var formattedRoot = root.NormalizeWhitespace().ToFullString();
-
+                //Debugger.Launch();
                 context.AddSource($"{name}{proxyEndName}.g.cs", SourceText.From(formattedRoot, Encoding.UTF8));
             }
             catch (AoCacheException ex)

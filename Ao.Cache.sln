@@ -42,6 +42,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ao.Cache.CodeGen", "src\Ao.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ao.Cache.Sample.CodeGen", "samples\Ao.Cache.Sample.CodeGen\Ao.Cache.Sample.CodeGen.csproj", "{728AB9F2-B7C6-451A-BEAA-3E40A09AF6A0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ao.Cache.Sample.CodeGenAot", "src\Ao.Cache.Sample.CodeGenAot\Ao.Cache.Sample.CodeGenAot.csproj", "{2117B4F1-884F-425F-8048-26248CCCEC3D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -104,6 +106,10 @@ Global
 		{728AB9F2-B7C6-451A-BEAA-3E40A09AF6A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{728AB9F2-B7C6-451A-BEAA-3E40A09AF6A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{728AB9F2-B7C6-451A-BEAA-3E40A09AF6A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2117B4F1-884F-425F-8048-26248CCCEC3D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2117B4F1-884F-425F-8048-26248CCCEC3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2117B4F1-884F-425F-8048-26248CCCEC3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2117B4F1-884F-425F-8048-26248CCCEC3D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -116,6 +122,7 @@ Global
 		{693621BF-4EF6-43DA-9FAC-C1D02F1D040D} = {11090D69-D856-4AD5-8862-CF560B9CBDA0}
 		{42CC9B09-8003-47F6-867C-E6FEA693FFDF} = {11090D69-D856-4AD5-8862-CF560B9CBDA0}
 		{728AB9F2-B7C6-451A-BEAA-3E40A09AF6A0} = {A52E7B5C-66EF-4377-847C-B1BA11168C56}
+		{2117B4F1-884F-425F-8048-26248CCCEC3D} = {A52E7B5C-66EF-4377-847C-B1BA11168C56}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {55157C22-E7CC-4639-A568-1305AB03681E}
