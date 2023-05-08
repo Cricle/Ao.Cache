@@ -188,7 +188,11 @@ namespace {@namespace}
 #pragma warning restore IDE1006
 /// </auto-generated>
 ";
-                context.AddSource($"{name}{proxyEndName}.g.cs", SourceText.From(source, Encoding.UTF8));
+                var tree = CSharpSyntaxTree.ParseText(source);
+                var root = tree.GetRoot();
+                var formattedRoot = root.NormalizeWhitespace().ToFullString();
+
+                context.AddSource($"{name}{proxyEndName}.g.cs", SourceText.From(formattedRoot, Encoding.UTF8));
             }
             catch (AoCacheException ex)
             {
@@ -299,6 +303,10 @@ namespace {@namespace}
             return inCache;
 ";
                 head += s+ "\n";
+            }
+            else if(isClass)
+            {
+                return string.Empty;
             }
             else
             {
