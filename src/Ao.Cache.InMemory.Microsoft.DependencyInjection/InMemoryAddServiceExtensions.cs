@@ -20,6 +20,10 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddScoped(typeof(IBatchDataFinder<,>), typeof(InMemoryBatchCacheFinder<,>));
             services.AddScoped(typeof(IWithDataFinder<,>), typeof(DefaultInMemoryCacheFinder<,>));
             services.AddScoped(typeof(IWithDataFinder<,>), typeof(DefaultInMemoryBatchCacheFinder<,>));
+            services.AddScoped(typeof(ISyncDataFinder<,>), typeof(InMemoryCacheFinder<,>));
+            services.AddScoped(typeof(ISyncBatchDataFinder<,>), typeof(InMemoryBatchCacheFinder<,>));
+            services.AddScoped(typeof(ISyncWithDataFinder<,>), typeof(DefaultSyncInMemoryCacheFinder<,>));
+            services.AddScoped(typeof(ISyncWithDataFinder<,>), typeof(DefaultSyncInMemoryBatchCacheFinder<,>));
             return services;
         }
     }

@@ -304,15 +304,15 @@ namespace {@namespace}
                 {
                     keyGen += $"string.Empty;";
                 }
-                var s = $@"            var finder = {factoryName}.GetHelper<{actualRetType}>().GetFinder(type, {GetMethodInfoName(index,method,model)});
+                var s = $@"            var finder = {factoryName}.GetHelper<{actualRetType}>().{(isTaskAsync? "GetFinder": "GetFinderSync")}(type, {GetMethodInfoName(index,method,model)});
             {keyGen}
-            var inCache = {(isTaskAsync?"await":string.Empty)} finder.FindInCacheAsync(key){(isTaskAsync ? string.Empty: ".GetAwaiter().GetResult()")};
+            var inCache = {(isTaskAsync?"await":string.Empty)} finder.{(isTaskAsync ? "FindInCacheAsync" : "FindInCache")}(key);
             if (inCache == null)
             {{
                 var actual = {(isTaskAsync ? "await" : string.Empty)} {rawName}.{methodName}{typeParInline}({string.Join(",", method.ParameterList.Parameters.Select(x =>x.Identifier.ValueText))});
                 if (actual != null)
                 {{
-                    {(isTaskAsync ? "await" : string.Empty)} finder.SetInCacheAsync(key, actual){(isTaskAsync ? string.Empty : ".GetAwaiter().GetResult()")};
+                    {(isTaskAsync ? "await" : string.Empty)} finder.{(isTaskAsync ? "SetInCacheAsync" : "SetInCache")}(key, actual);
                 }}
                 return actual;
             }}

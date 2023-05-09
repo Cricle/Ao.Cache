@@ -35,6 +35,10 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddScoped(typeof(IWithBatchDataFinder<,>), typeof(DefaultBitRedisBatchFinder<,>));
             services.AddSingleton(typeof(IDataFinder<,>), typeof(BitRedisDataFinder<,>));
             services.AddSingleton(typeof(IBatchDataFinder<,>), typeof(BitRedisBatchFinder<,>));
+            services.AddScoped(typeof(ISyncWithDataFinder<,>), typeof(DefaultSyncBitRedisDataFinder<,>));
+            services.AddScoped(typeof(ISyncWithBatchDataFinder<,>), typeof(DefaultSyncBitRedisBatchFinder<,>));
+            services.AddSingleton(typeof(ISyncDataFinder<,>), typeof(BitRedisDataFinder<,>));
+            services.AddSingleton(typeof(ISyncBatchDataFinder<,>), typeof(BitRedisBatchFinder<,>));
             return services;
         }
     }
