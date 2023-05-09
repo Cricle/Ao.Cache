@@ -1,11 +1,63 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Principal;
 using System.Threading.Tasks;
 
 namespace Ao.Cache
 {
+    public static class SyncBatchDataFinderExtensions
+    {
+        public static TEntity Find<TIdentity, TEntity>(this ISyncWithDataFinder<TIdentity, TEntity> finder, TIdentity identity, bool cache = true)
+        {
+            return Find(finder, identity, finder.DataAccesstor, cache);
+        }
+        public static IDictionary<TIdentity, TEntity> Find<TIdentity, TEntity>(this ISyncWithBatchDataFinder<TIdentity, TEntity> finder, IReadOnlyList<TIdentity> identities, bool cache = true)
+        {
+            return Find(finder, identities, finder.DataAccesstor, cache);
+        }
+        public static TEntity Find<TIdentity, TEntity>(this ISyncDataFinder<TIdentity, TEntity> finder, TIdentity identity, ISyncDataAccesstor<TIdentity, TEntity> dataAccesstor, bool cache = true)
+        {
+            if (finder is null)
+            {
+                throw new ArgumentNullException(nameof(finder));
+            }
+            var val = finder.FindInCache(identity);
+            if (val == null)
+            {
+                return finder.FindInDb(dataAccesstor, identity, cache);
+            }
+            return val;
+        }
+        public static IDictionary<TIdentity, TEntity> Find<TIdentity, TEntity>(this ISyncBatchDataFinder<TIdentity, TEntity> finder, IReadOnlyList<TIdentity> identities, ISyncBatchDataAccesstor<TIdentity, TEntity> batchDataAccesstor, bool cache = true)
+        {
+            if (finder is null)
+            {
+                throw new ArgumentNullException(nameof(finder));
+            }
+
+            if (identities is null)
+            {
+                throw new ArgumentNullException(nameof(identities));
+            }
+
+            var cacheDatas = finder.FindInCache(identities);
+            var notIncludes = identities.Except(cacheDatas.Keys);
+            if (!notIncludes.Any())
+            {
+                return cacheDatas;
+            }
+
+            var dbDatas = finder.FindInDb(batchDataAccesstor, notIncludes.ToList(), cache);
+
+            foreach (var item in dbDatas)
+            {
+                cacheDatas[item.Key] = item.Value;
+            }
+
+            return cacheDatas;
+        }
+    }
+
     public static class BatchDataFinderExtensions
     {
         public static Task<TEntity> FindAsync<TIdentity, TEntity>(this IWithDataFinder<TIdentity, TEntity> finder, TIdentity identity, bool cache = true)

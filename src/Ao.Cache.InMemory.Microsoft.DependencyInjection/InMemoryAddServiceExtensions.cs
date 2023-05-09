@@ -14,6 +14,8 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<InMemoryCacheFinderFactory>();
             services.AddSingleton<IDataFinderFactory>(x => x.GetRequiredService<InMemoryCacheFinderFactory>());
             services.AddSingleton<IBatchDataFinderFactory>(x => x.GetRequiredService<InMemoryCacheFinderFactory>());
+            services.AddSingleton<ISyncDataFinderFactory>(x => x.GetRequiredService<InMemoryCacheFinderFactory>());
+            services.AddSingleton<ISyncBatchDataFinderFactory>(x => x.GetRequiredService<InMemoryCacheFinderFactory>());
             services.AddScoped(typeof(IDataFinder<,>), typeof(InMemoryCacheFinder<,>));
             services.AddScoped(typeof(IBatchDataFinder<,>), typeof(InMemoryBatchCacheFinder<,>));
             services.AddScoped(typeof(IWithDataFinder<,>), typeof(DefaultInMemoryCacheFinder<,>));

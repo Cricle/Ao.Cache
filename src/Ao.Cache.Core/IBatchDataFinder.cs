@@ -9,6 +9,9 @@ namespace Ao.Cache
     {
         IDataFinderOptions<TIdentity, TEntity> Options { get; set; }
     }
+    public interface ISyncWithBatchDataFinder<TIdentity, TEntity> : ISyncBatchDataFinder<TIdentity, TEntity>, ISyncWithBatchDataAccesstorFinder<TIdentity, TEntity>
+    {
+    }
     public interface IWithBatchDataFinder<TIdentity, TEntity> : IBatchDataFinder<TIdentity, TEntity>, IWithBatchDataAccesstorFinder<TIdentity, TEntity>
     {
     }

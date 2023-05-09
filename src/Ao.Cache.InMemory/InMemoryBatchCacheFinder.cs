@@ -5,6 +5,26 @@ using System.Threading.Tasks;
 
 namespace Ao.Cache.InMemory
 {
+    public class DefaultSyncInMemoryBatchCacheFinder<TIdentity, TEntry> : InMemoryBatchCacheFinder<TIdentity, TEntry>, ISyncWithBatchDataFinder<TIdentity, TEntry>
+    {
+        public DefaultSyncInMemoryBatchCacheFinder(IMemoryCache memoryCache, ISyncBatchDataAccesstor<TIdentity, TEntry> dataAccesstor)
+            : base(memoryCache)
+        {
+            DataAccesstor = dataAccesstor ?? throw new ArgumentNullException(nameof(dataAccesstor));
+        }
+
+        public ISyncBatchDataAccesstor<TIdentity, TEntry> DataAccesstor { get; }
+
+        public IDictionary<TIdentity, TEntry> FindInDb(IReadOnlyList<TIdentity> identity, bool cache)
+        {
+            var entitys = DataAccesstor.Find(identity);
+            if (entitys.Count != 0 && cache)
+            {
+                SetInCache(entitys);
+            }
+            return entitys;
+        }
+    }
     public class DefaultInMemoryBatchCacheFinder<TIdentity, TEntry> : InMemoryBatchCacheFinder<TIdentity, TEntry>,IWithBatchDataFinder<TIdentity, TEntry>
     {
         public DefaultInMemoryBatchCacheFinder(IMemoryCache memoryCache, IBatchDataAccesstor<TIdentity, TEntry> dataAccesstor)

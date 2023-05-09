@@ -2,6 +2,10 @@
 
 namespace Ao.Cache
 {
+    public interface ISyncWithDataFinder<TIdentity, TEntity> : ISyncDataFinder<TIdentity, TEntity>, ISyncWithDataAccesstorFinder<TIdentity, TEntity>
+    {
+
+    }
     public interface IWithDataFinder<TIdentity, TEntity> : IDataFinder<TIdentity, TEntity>,IWithDataAccesstorFinder<TIdentity,TEntity>
     {
 

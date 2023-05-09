@@ -10,7 +10,7 @@ namespace Ao.Cache
     }
     public interface ISyncWithDataAccesstorFinder<TIdentity, TEntity>
     {
-        IDataAccesstor<TIdentity, TEntity> DataAccesstor { get; }
+        ISyncDataAccesstor<TIdentity, TEntity> DataAccesstor { get; }
 
         TEntity FindInDb(TIdentity identity, bool cache);
     }
