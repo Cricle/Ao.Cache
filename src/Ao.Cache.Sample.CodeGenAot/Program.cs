@@ -33,7 +33,7 @@ namespace Ao.Cache.Sample.CodeGenAot
         }
     }
     [CacheProxy]
-    public class NowService
+    class NowService
     {
         public virtual DateTime? NowSync(int? add)
         {

@@ -85,6 +85,23 @@ namespace Ao.Cache.CodeGen
         {
             return GetAttributeHelper.GetValue<bool>(attributeData, TypeConsts.HeadAbsolute);
         }
+        private static string GetVisibility(Accessibility accessibility)
+        {
+            switch (accessibility)
+            {
+                case Accessibility.NotApplicable:
+                    return string.Empty;
+                case Accessibility.Private:
+                    return "private";
+                case Accessibility.Protected:
+                    return "protected";
+                case Accessibility.Internal:
+                    return "internal";
+                case Accessibility.Public:
+                default:
+                    return "public";
+            }
+        }
         protected void ExecuteProxy(SourceProductionContext context, SyntaxNode ax, GeneratorSyntaxContext syntaxContext, AttributeData attributeData)
         {
             var isProxyAll = GetProxyAll(attributeData);
@@ -173,7 +190,7 @@ namespace {@namespace}
     {InternalData.GeneratedCode}
     [System.Diagnostics.DebuggerStepThrough]
     [{(isClass?TypeConsts.CacheProxyByClassAttribute:TypeConsts.CacheProxyByInterfaceAttribute)}({TypeConsts.CacheProxyByProxyTypeAttribute}=typeof({declare}))]
-    public class {name}{proxyEndName} : {declare}
+    {GetVisibility(declare.DeclaredAccessibility)} class {name}{proxyEndName} : {declare}
     {{        
         [System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembers(System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.PublicConstructors| System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.PublicMethods)]
         private static readonly System.Type type = typeof({declare});
