@@ -37,6 +37,39 @@ namespace Ao.Cache.InMemory
 
         public override Task<long> DeleteAsync(IReadOnlyList<TIdentity> identity)
         {
+            return Task.FromResult(Delete(identity));
+        }
+
+        public override Task<IDictionary<TIdentity, bool>> ExistsAsync(IReadOnlyList<TIdentity> identity)
+        {
+            return Task.FromResult(Exists(identity));
+        }
+
+        protected override Task<IDictionary<TIdentity, TEntry>> CoreFindInCacheAsync(IReadOnlyList<TIdentity> identity)
+        {
+            return Task.FromResult(CoreFindInCache(identity));
+        }
+
+        public override Task<long> RenewalAsync(IDictionary<TIdentity, TimeSpan?> input)
+        {
+            return Task.FromResult(Renewal(input));
+        }
+
+        public override Task<long> SetInCacheAsync(IDictionary<TIdentity, TEntry> pairs)
+        {
+            return Task.FromResult(SetInCache(pairs));
+        }
+
+        protected virtual MemoryCacheEntryOptions GetMemoryCacheEntryOptions(TIdentity identity, TimeSpan? time)
+        {
+            return new MemoryCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = time
+            };
+        }
+
+        public override long Delete(IReadOnlyList<TIdentity> identity)
+        {
             var res = 0L;
             foreach (var item in identity)
             {
@@ -46,10 +79,10 @@ namespace Ao.Cache.InMemory
                     memoryCache.Remove(item);
                 }
             }
-            return Task.FromResult(res);
+            return res;
         }
 
-        public override Task<IDictionary<TIdentity, bool>> ExistsAsync(IReadOnlyList<TIdentity> identity)
+        public override IDictionary<TIdentity, bool> Exists(IReadOnlyList<TIdentity> identity)
         {
             var res = new Dictionary<TIdentity, bool>(identity.Count);
             foreach (var item in identity)
@@ -57,10 +90,24 @@ namespace Ao.Cache.InMemory
                 var key = GetEntryKey(item);
                 res[item] = memoryCache.TryGetValue(key, out _);
             }
-            return Task.FromResult<IDictionary<TIdentity, bool>>(res);
+            return res;
         }
 
-        protected override Task<IDictionary<TIdentity, TEntry>> CoreFindInCacheAsync(IReadOnlyList<TIdentity> identity)
+        public override long SetInCache(IDictionary<TIdentity, TEntry> pairs)
+        {
+            var res = 0L;
+            foreach (var item in pairs)
+            {
+                var time = GetCacheTime(item.Key);
+                var options = GetMemoryCacheEntryOptions(item.Key, time);
+                var key = GetEntryKey(item.Key);
+                memoryCache.Set(key, item.Value, options);
+                res++;
+            }
+            return res;
+        }
+
+        protected override IDictionary<TIdentity, TEntry> CoreFindInCache(IReadOnlyList<TIdentity> identity)
         {
             var res = new Dictionary<TIdentity, TEntry>(identity.Count);
             foreach (var item in identity)
@@ -71,10 +118,10 @@ namespace Ao.Cache.InMemory
                     res[item] = r;
                 }
             }
-            return Task.FromResult<IDictionary<TIdentity, TEntry>>(res);
+            return res;
         }
 
-        public override Task<long> RenewalAsync(IDictionary<TIdentity, TimeSpan?> input)
+        public override long Renewal(IDictionary<TIdentity, TimeSpan?> input)
         {
             var res = 0L;
             foreach (var item in input)
@@ -88,29 +135,7 @@ namespace Ao.Cache.InMemory
                     res++;
                 }
             }
-            return Task.FromResult(res);
-        }
-
-        public override Task<long> SetInCacheAsync(IDictionary<TIdentity, TEntry> pairs)
-        {
-            var res = 0L;
-            foreach (var item in pairs)
-            {
-                var time = GetCacheTime(item.Key);
-                var options = GetMemoryCacheEntryOptions(item.Key, time);
-                var key = GetEntryKey(item.Key);
-                memoryCache.Set(key, item.Value, options);
-                res++;
-            }
-            return Task.FromResult(res);
-        }
-
-        protected virtual MemoryCacheEntryOptions GetMemoryCacheEntryOptions(TIdentity identity, TimeSpan? time)
-        {
-            return new MemoryCacheEntryOptions
-            {
-                AbsoluteExpirationRelativeToNow = time
-            };
+            return res;
         }
     }
 }

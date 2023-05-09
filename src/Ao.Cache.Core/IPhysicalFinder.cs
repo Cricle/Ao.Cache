@@ -7,5 +7,8 @@ namespace Ao.Cache
     {
         Task<TEntity> FindInDbAsync(IDataAccesstor<TIdentity,TEntity> dataAccesstor,TIdentity identity, bool cache);
     }
-
+    public interface ISyncPhysicalFinder<TIdentity, TEntity>
+    {
+        TEntity FindInDb(ISyncDataAccesstor<TIdentity, TEntity> dataAccesstor, TIdentity identity, bool cache);
+    }
 }

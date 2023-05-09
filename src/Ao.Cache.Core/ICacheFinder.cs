@@ -8,5 +8,10 @@ namespace Ao.Cache
 
         Task<TEntity> FindInCacheAsync(TIdentity identity);
     }
+    public interface ISyncCacheFinder<TIdentity, TEntity>
+    {
+        bool SetInCache(TIdentity identity, TEntity entity);
 
+        TEntity FindInCache(TIdentity identity);
+    }
 }

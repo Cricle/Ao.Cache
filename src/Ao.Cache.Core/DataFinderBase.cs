@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Ao.Cache
 {
-    public abstract class DataFinderBase<TIdentity, TEntity> : OptionalDataFinder<TIdentity, TEntity>, IIdentityGenerater<TIdentity>, IDataFinder<TIdentity, TEntity>, IDataFinderOptions<TIdentity, TEntity>
+    public abstract class DataFinderBase<TIdentity, TEntity> : OptionalDataFinder<TIdentity, TEntity>, IIdentityGenerater<TIdentity>, IDataFinder<TIdentity, TEntity>,ISyncDataFinder<TIdentity,TEntity>, IDataFinderOptions<TIdentity, TEntity>
     {
         public async Task<TEntity> FindInCacheAsync(TIdentity identity)
         {
@@ -47,6 +47,47 @@ namespace Ao.Cache
             return RenewalAsync(identity, GetCacheTime(identity));
         }
 
+        public abstract bool Delete(TIdentity identity);
+        public abstract bool Exists(TIdentity identity);
+
+        protected abstract bool SetInCache(string key, TIdentity identity, TEntity entity, TimeSpan? caheTime);
+
+        public bool SetInCache(TIdentity identity, TEntity entity)
+        {
+            var key = GetEntryKey(identity);
+            var cacheTime = GetCacheTime(identity);
+            return SetInCache(key, identity, entity, cacheTime);
+        }
+
+        protected abstract TEntity CoreFindInCache(string key, TIdentity identity);
+
+        public TEntity FindInCache(TIdentity identity)
+        {
+            var key = GetEntryKey(identity);
+            var entity = CoreFindInCache(key, identity);
+            if (CanRenewal(identity) && entity != null)
+            {
+                Renewal(identity);
+            }
+            return entity;
+        }
+
+        public TEntity FindInDb(ISyncDataAccesstor<TIdentity, TEntity> dataAccesstor, TIdentity identity, bool cache)
+        {
+            var entry = dataAccesstor.Find(identity);
+            if (entry != null && cache)
+            {
+                SetInCache(identity, entry);
+            }
+            return entry;
+        }
+
+        public bool Renewal(TIdentity identity)
+        {
+            return Renewal(identity, GetCacheTime(identity));
+        }
+
+        public abstract bool Renewal(TIdentity identity, TimeSpan? time);
     }
 
 }

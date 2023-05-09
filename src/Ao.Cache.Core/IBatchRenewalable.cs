@@ -10,4 +10,10 @@ namespace Ao.Cache
 
         Task<long> RenewalAsync(IDictionary<TIdentity, TimeSpan?> input);
     }
+    public interface ISyncBatchRenewalable<TIdentity>
+    {
+        long Renewal(IReadOnlyList<TIdentity> input);
+
+        long Renewal(IDictionary<TIdentity, TimeSpan?> input);
+    }
 }
