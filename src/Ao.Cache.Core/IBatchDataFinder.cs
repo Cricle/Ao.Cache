@@ -9,6 +9,9 @@ namespace Ao.Cache
     {
         IDataFinderOptions<TIdentity, TEntity> Options { get; set; }
     }
+    public interface ISyncWithBatchDataFinder<TIdentity, TEntity> : ISyncBatchDataFinder<TIdentity, TEntity>, ISyncWithBatchDataAccesstorFinder<TIdentity, TEntity>
+    {
+    }
     public interface IWithBatchDataFinder<TIdentity, TEntity> : IBatchDataFinder<TIdentity, TEntity>, IWithBatchDataAccesstorFinder<TIdentity, TEntity>
     {
     }
@@ -17,5 +20,11 @@ namespace Ao.Cache
         Task<long> DeleteAsync(IReadOnlyList<TIdentity> identity);
 
         Task<IDictionary<TIdentity, bool>> ExistsAsync(IReadOnlyList<TIdentity> identity);
+    }
+    public interface ISyncBatchDataFinder<TIdentity, TEntity> : IWithDataFinderOptions<TIdentity, TEntity>, ISyncBatchCacheFinder<TIdentity, TEntity>, ISyncBatchPhysicalFinder<TIdentity, TEntity>, ISyncBatchRenewalable<TIdentity>
+    {
+        long Delete(IReadOnlyList<TIdentity> identity);
+
+        IDictionary<TIdentity, bool> Exists(IReadOnlyList<TIdentity> identity);
     }
 }

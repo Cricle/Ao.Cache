@@ -2,6 +2,10 @@
 
 namespace Ao.Cache
 {
+    public interface ISyncWithDataFinder<TIdentity, TEntity> : ISyncDataFinder<TIdentity, TEntity>, ISyncWithDataAccesstorFinder<TIdentity, TEntity>
+    {
+
+    }
     public interface IWithDataFinder<TIdentity, TEntity> : IDataFinder<TIdentity, TEntity>,IWithDataAccesstorFinder<TIdentity,TEntity>
     {
 
@@ -12,5 +16,10 @@ namespace Ao.Cache
 
         Task<bool> ExistsAsync(TIdentity identity);
     }
+    public interface ISyncDataFinder<TIdentity, TEntity> : IWithDataFinderOptions<TIdentity, TEntity>, ISyncCacheFinder<TIdentity, TEntity>, ISyncPhysicalFinder<TIdentity, TEntity>, ISyncRenewalable<TIdentity>
+    {
+        bool Delete(TIdentity identity);
 
+        bool Exists(TIdentity identity);
+    }
 }

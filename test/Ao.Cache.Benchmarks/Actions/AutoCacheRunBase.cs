@@ -22,6 +22,17 @@ namespace Ao.Cache.Benchmarks.Actions
         {
             return false;
         }
+        protected void Run(int times, int concurrent, Action<int> action)
+        {
+            var ts = times / concurrent;
+            for (int i = 0; i < concurrent; i++)
+            {
+                for (int j = 0; j < ts; j++)
+                {
+                     action(j % 5);
+                }
+            }
+        }
         protected async Task Run(int times, int concurrent, Func<int, Task> action)
         {
             var tasks = new Task[concurrent];

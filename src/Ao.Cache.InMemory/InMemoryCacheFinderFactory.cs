@@ -3,7 +3,7 @@ using System;
 
 namespace Ao.Cache.InMemory
 {
-    public class InMemoryCacheFinderFactory : IDataFinderFactory, IBatchDataFinderFactory
+    public class InMemoryCacheFinderFactory : IDataFinderFactory, IBatchDataFinderFactory, ISyncDataFinderFactory, ISyncBatchDataFinderFactory
     {
         public InMemoryCacheFinderFactory(IMemoryCache memoryCache)
         {
@@ -31,6 +31,27 @@ namespace Ao.Cache.InMemory
         {
             return InMemoryCacheFinderInstances<TIdentity, TEntity>.Get(MemoryCache);
         }
+
+        public ISyncBatchDataFinder<TIdentity, TEntity> CreateBatchSync<TIdentity, TEntity>()
+        {
+            return InMemoryBatchCacheFinderInstances<TIdentity, TEntity>.Get(MemoryCache);
+        }
+
+        public ISyncWithBatchDataFinder<TIdentity, TEntity> CreateBatchSync<TIdentity, TEntity>(ISyncBatchDataAccesstor<TIdentity, TEntity> accesstor)
+        {
+            return new DefaultSyncInMemoryBatchCacheFinder<TIdentity, TEntity>(MemoryCache, accesstor);
+        }
+
+        public ISyncDataFinder<TIdentity, TEntity> CreateSync<TIdentity, TEntity>()
+        {
+            return InMemoryCacheFinderInstances<TIdentity, TEntity>.Get(MemoryCache);
+        }
+
+        public ISyncWithDataFinder<TIdentity, TEntity> CreateSync<TIdentity, TEntity>(ISyncDataAccesstor<TIdentity, TEntity> accesstor)
+        {
+            return new DefaultSyncInMemoryCacheFinder<TIdentity, TEntity>(MemoryCache, accesstor);
+        }
+
         static class InMemoryBatchCacheFinderInstances<TIdentity, TEntity>
         {
             private static InMemoryBatchCacheFinder<TIdentity, TEntity> Instance;

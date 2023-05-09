@@ -11,7 +11,16 @@ namespace Ao.Cache.Benchmarks.Actions
         {
             return await Raw(id);
         }
+        [CacheProxyMethod]
+        public virtual Student NowTimeSync(int id)
+        {
+            return RawSync(id);
+        }
         public async Task<Student> Raw(int id)
+        {
+            return new Student { Id = id };
+        }
+        public Student RawSync(int id)
         {
             return new Student { Id = id };
         }

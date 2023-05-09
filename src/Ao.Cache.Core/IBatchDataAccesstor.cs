@@ -7,5 +7,8 @@ namespace Ao.Cache
     {
         Task<IDictionary<TIdentity, TEntry>> FindAsync(IReadOnlyList<TIdentity> identities);
     }
-
+    public interface ISyncBatchDataAccesstor<TIdentity, TEntry>
+    {
+        IDictionary<TIdentity, TEntry> Find(IReadOnlyList<TIdentity> identities);
+    }
 }

@@ -120,16 +120,19 @@ namespace Ao.Cache
     }
     public class CacheHelperCreator : ICacheHelperCreator
     {
-        public CacheHelperCreator(IDataFinderFactory factory)
+        public CacheHelperCreator(IDataFinderFactory factory, ISyncDataFinderFactory syncFactory)
         {
             Factory = factory;
+            SyncFactory = syncFactory;
         }
 
         public IDataFinderFactory Factory { get; }
 
+        public ISyncDataFinderFactory SyncFactory { get; }
+
         public ICacheHelper<TReturn> GetHelper<TReturn>()
         {
-            return CacheHelperStore<TReturn>.Get(Factory);
+            return CacheHelperStore<TReturn>.Get(Factory,SyncFactory);
         }
         static class CacheHelperStore<TReturn>
         {
@@ -137,7 +140,7 @@ namespace Ao.Cache
             private static readonly object locker = new object();
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public static ICacheHelper<TReturn> Get(IDataFinderFactory factory)
+            public static ICacheHelper<TReturn> Get(IDataFinderFactory factory,ISyncDataFinderFactory syncFactory)
             {
                 if (instance == null)
                 {
@@ -145,7 +148,7 @@ namespace Ao.Cache
                     {
                         if (instance == null)
                         {
-                            instance = new CacheHelper<TReturn>(factory);
+                            instance = new CacheHelper<TReturn>(factory,syncFactory);
                         }
                     }
                 }
@@ -158,6 +161,22 @@ namespace Ao.Cache
         IDataFinder<string, TReturn> GetFinder(Type instanceType, MethodInfo method);
 
         IDataFinder<string, TReturn> GetFinder(Expression<Func<TReturn>> exp);
+
+        ISyncDataFinder<string, TReturn> GetFinderSync(Type instanceType, MethodInfo method);
+
+        ISyncDataFinder<string, TReturn> GetFinderSync(Expression<Func<TReturn>> exp);
+    }
+    internal class Finders<TReturn>
+    {
+        public readonly IDataFinder<string, TReturn> Finder;
+
+        public readonly ISyncDataFinder<string,TReturn> SyncFinder;
+
+        public Finders(IDataFinder<string, TReturn> finder, ISyncDataFinder<string, TReturn> syncFinder)
+        {
+            Finder = finder;
+            SyncFinder = syncFinder;
+        }
     }
     public class CacheHelper<
 #if NET6_0_OR_GREATER
@@ -165,16 +184,19 @@ namespace Ao.Cache
 #endif
     TReturn> : ICacheHelper<TReturn>
     {
-        private readonly Dictionary<DeclareInfo, IDataFinder<string, TReturn>> finders = new Dictionary<DeclareInfo, IDataFinder<string, TReturn>>();
+        private readonly Dictionary<DeclareInfo, Finders<TReturn>> finders = new Dictionary<DeclareInfo, Finders<TReturn>>();
 
         private readonly object locker = new object();
 
-        public CacheHelper(IDataFinderFactory factory)
+        public CacheHelper(IDataFinderFactory factory, ISyncDataFinderFactory syncFactory)
         {
             Factory = factory ?? throw new ArgumentNullException(nameof(factory));
+            SyncFactory=syncFactory ?? throw new ArgumentNullException(nameof(syncFactory));
         }
 
         public IDataFinderFactory Factory { get; }
+
+        public ISyncDataFinderFactory SyncFactory { get; }
 
         private Type GetDeclareType(Expression expression)
         {
@@ -212,14 +234,14 @@ namespace Ao.Cache
             }
             return ret;
         }
-        public IDataFinder<string, TReturn> GetFinder(Type instanceType, MethodInfo method)
+        private Finders<TReturn> GetFinders(Type instanceType, MethodInfo method)
         {
             var key = new DeclareInfo(instanceType, method);
-            if (!finders.TryGetValue(key, out var finder))
+            if (!this.finders.TryGetValue(key, out var finders))
             {
                 lock (locker)
                 {
-                    if (!finders.TryGetValue(key, out finder))
+                    if (!this.finders.TryGetValue(key, out finders))
                     {
                         CacheProxyAttribute declareAttr = null;
                         if (declareAttr != null)
@@ -227,7 +249,8 @@ namespace Ao.Cache
                             declareAttr = instanceType.GetCustomAttribute<CacheProxyAttribute>();
                         }
                         var proxyAttr = method.GetCustomAttribute<CacheProxyMethodAttribute>();
-                        finder = Factory.Create<string, TReturn>();
+                        var finder = Factory.Create<string, TReturn>();
+                        var syncFinder = SyncFactory.CreateSync<string, TReturn>();
                         string head = null;
                         if (proxyAttr != null)
                         {
@@ -239,6 +262,7 @@ namespace Ao.Cache
                             if (TimeSpan.TryParse(proxyAttr.CacheTime, out var tp))
                             {
                                 finder.Options.WithCacheTime(tp);
+                                syncFinder.Options.WithCacheTime(tp);
                             }
                         }
                         if (string.IsNullOrEmpty(head))
@@ -246,15 +270,22 @@ namespace Ao.Cache
                             head = $"{instanceType.FullName}.{method.Name}[{method.GetGenericArguments().Length}]({method.GetParameters().Length})";
                         }
                         finder.Options.WithHead(head);
+                        syncFinder.Options.WithHead(head);
                         if (proxyAttr != null && proxyAttr.Renewal)
                         {
                             finder.Options.WithRenew(true);
+                            syncFinder.Options.WithRenew(true);
                         }
-                        finders.Add(key, finder);
+                        finders = new Finders<TReturn>(finder, syncFinder);
+                        this.finders.Add(key, finders);
                     }
                 }
             }
-            return finder;
+            return finders;
+        }
+        public IDataFinder<string, TReturn> GetFinder(Type instanceType, MethodInfo method)
+        {
+            return GetFinders(instanceType, method).Finder;
         }
         public IDataFinder<string, TReturn> GetFinder(Expression<Func<TReturn>> exp)
         {
@@ -262,6 +293,21 @@ namespace Ao.Cache
             {
                 var declareType = GetDeclareType(methodCall.Object);
                 return GetFinder(declareType, methodCall.Method);
+            }
+            throw new NotSupportedException(exp.ToString());
+        }
+
+        public ISyncDataFinder<string, TReturn> GetFinderSync(Type instanceType, MethodInfo method)
+        {
+            return GetFinders(instanceType, method).SyncFinder;
+        }
+
+        public ISyncDataFinder<string, TReturn> GetFinderSync(Expression<Func<TReturn>> exp)
+        {
+            if (exp.Body is MethodCallExpression methodCall)
+            {
+                var declareType = GetDeclareType(methodCall.Object);
+                return GetFinderSync(declareType, methodCall.Method);
             }
             throw new NotSupportedException(exp.ToString());
         }

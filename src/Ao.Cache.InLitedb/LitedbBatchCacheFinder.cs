@@ -34,9 +34,7 @@ namespace Ao.Cache.InLitedb
         }
         public override Task<long> DeleteAsync(IReadOnlyList<TIdentity> identity)
         {
-            var i = Collection.DeleteMany(GetWhere(identity));
-
-            return Task.FromResult<long>(i);
+            return Task.FromResult(Delete(identity));
         }
         readonly struct IdentityString
         {
@@ -65,6 +63,30 @@ namespace Ao.Cache.InLitedb
         }
         public override Task<IDictionary<TIdentity, bool>> ExistsAsync(IReadOnlyList<TIdentity> identity)
         {
+            return Task.FromResult(Exists(identity));
+        }
+
+        public override Task<long> RenewalAsync(IDictionary<TIdentity, TimeSpan?> input)
+        {
+            return Task.FromResult(Renewal(input));
+        }
+
+        public override Task<long> SetInCacheAsync(IDictionary<TIdentity, TEntry> pairs)
+        {
+            return Task.FromResult(SetInCache(pairs));
+        }
+        protected override Task<IDictionary<TIdentity, TEntry>> CoreFindInCacheAsync(IReadOnlyList<TIdentity> identity)
+        {
+            return Task.FromResult(CoreFindInCache(identity));
+        }
+
+        public override long Delete(IReadOnlyList<TIdentity> identity)
+        {
+            return Collection.DeleteMany(GetWhere(identity));
+        }
+
+        public override IDictionary<TIdentity, bool> Exists(IReadOnlyList<TIdentity> identity)
+        {
             var keys = GetIdentityString(identity);
             var scanKeys = keys.Keys;
             var ix = Collection.Query()
@@ -77,35 +99,15 @@ namespace Ao.Cache.InLitedb
             {
                 res[item.Key] = hash.Contains(item.Value);
             }
-            return Task.FromResult<IDictionary<TIdentity, bool>>(res);
+            return res;
         }
 
-        public override Task<long> RenewalAsync(IDictionary<TIdentity, TimeSpan?> input)
-        {
-            var keys = GetIdentityString(input.Keys.ToList());
-            var scanKeys = keys.Keys;
-            var ds = Collection.Query()
-                .Where(x => scanKeys.Contains(x.Identity))
-                .ToList();
-            var now = DateTime.Now;
-            foreach (var item in ds)
-            {
-                var v = keys.Map.FirstOrDefault(x => x.Value == item.Identity);
-                if (v.Value != null && input.TryGetValue(v.Key, out var cacheTime))
-                {
-                    item.ExpireTime = cacheTime == null ? (DateTime?)null : now.Add(cacheTime.Value);
-                }
-            }
-            var res = Collection.Update(ds);
-            return Task.FromResult<long>(res);
-        }
-
-        public override Task<long> SetInCacheAsync(IDictionary<TIdentity, TEntry> pairs)
+        public override long SetInCache(IDictionary<TIdentity, TEntry> pairs)
         {
             var ok = Database.BeginTrans();
             if (!ok)
             {
-                return Task.FromResult(0L);
+                return 0L;
             }
             try
             {
@@ -148,7 +150,7 @@ namespace Ao.Cache.InLitedb
                     res += Collection.InsertBulk(inserts);
                 }
                 Database.Commit();
-                return Task.FromResult(res);
+                return res;
             }
             catch
             {
@@ -156,7 +158,8 @@ namespace Ao.Cache.InLitedb
                 throw;
             }
         }
-        protected override Task<IDictionary<TIdentity, TEntry>> CoreFindInCacheAsync(IReadOnlyList<TIdentity> identity)
+
+        protected override IDictionary<TIdentity, TEntry> CoreFindInCache(IReadOnlyList<TIdentity> identity)
         {
             var keys = GetIdentityString(identity);
             var scanKeys = keys.Keys;
@@ -175,8 +178,28 @@ namespace Ao.Cache.InLitedb
                 var iden = identity[idxIndex];
                 res[iden] = (TEntry)EntityConvertor.ToEntry(item.Data, typeof(TEntry));
             }
-            return Task.FromResult<IDictionary<TIdentity, TEntry>>(res);
+            return res;
         }
 
+        public override long Renewal(IDictionary<TIdentity, TimeSpan?> input)
+        {
+
+            var keys = GetIdentityString(input.Keys.ToList());
+            var scanKeys = keys.Keys;
+            var ds = Collection.Query()
+                .Where(x => scanKeys.Contains(x.Identity))
+                .ToList();
+            var now = DateTime.Now;
+            foreach (var item in ds)
+            {
+                var v = keys.Map.FirstOrDefault(x => x.Value == item.Identity);
+                if (v.Value != null && input.TryGetValue(v.Key, out var cacheTime))
+                {
+                    item.ExpireTime = cacheTime == null ? (DateTime?)null : now.Add(cacheTime.Value);
+                }
+            }
+            var res = Collection.Update(ds);
+            return res;
+        }
     }
 }
