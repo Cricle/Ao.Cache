@@ -9,4 +9,10 @@ namespace Ao.Cache
 
         Task<IDictionary<TIdentity, TEntity>> FindInDbAsync(IReadOnlyList<TIdentity> identity, bool cache);
     }
+    public interface ISyncWithBatchDataAccesstorFinder<TIdentity, TEntity>
+    {
+        ISyncBatchDataAccesstor<TIdentity, TEntity> DataAccesstor { get; }
+
+        IDictionary<TIdentity, TEntity> FindInDb(IReadOnlyList<TIdentity> identity, bool cache);
+    }
 }

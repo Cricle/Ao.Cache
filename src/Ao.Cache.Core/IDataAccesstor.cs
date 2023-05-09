@@ -6,4 +6,8 @@ namespace Ao.Cache
     {
         Task<TEntry> FindAsync(TIdentity identity);
     }
+    public interface ISyncDataAccesstor<TIdentity, TEntry>
+    {
+        TEntry Find(TIdentity identity);
+    }
 }

@@ -3,6 +3,26 @@ using System.Threading.Tasks;
 
 namespace Ao.Cache.InMemory
 {
+    public class DefaultSyncInMemoryCacheFinder<TIdentity, TEntry> : InMemoryCacheFinder<TIdentity, TEntry>, ISyncWithDataFinder<TIdentity, TEntry>
+    {
+        public DefaultSyncInMemoryCacheFinder(IMemoryCache memoryCache, ISyncDataAccesstor<TIdentity, TEntry> dataAccesstor)
+            : base(memoryCache)
+        {
+            DataAccesstor = dataAccesstor;
+        }
+
+        public ISyncDataAccesstor<TIdentity, TEntry> DataAccesstor { get; }
+
+        public TEntry FindInDb(TIdentity identity, bool cache)
+        {
+            var entity = DataAccesstor.Find(identity);
+            if (cache && entity != null)
+            {
+                SetInCache(identity, entity);
+            }
+            return entity;
+        }
+    }
     public class DefaultInMemoryCacheFinder<TIdentity, TEntry> : InMemoryCacheFinder<TIdentity, TEntry>,IWithDataFinder<TIdentity, TEntry>
     {
         public DefaultInMemoryCacheFinder(IMemoryCache memoryCache, IDataAccesstor<TIdentity, TEntry> dataAccesstor)

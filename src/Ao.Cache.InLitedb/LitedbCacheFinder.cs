@@ -42,16 +42,12 @@ namespace Ao.Cache.InLitedb
 
         public override Task<bool> DeleteAsync(TIdentity entity)
         {
-            var i = Collection.DeleteMany(GetWhere(entity));
-
-            return Task.FromResult(i != 0);
+            return Task.FromResult(Delete(entity));
         }
 
         public override Task<bool> ExistsAsync(TIdentity identity)
         {
-            var res = Collection.Exists(GetWhere(identity));
-
-            return Task.FromResult(res);
+            return Task.FromResult(Exists(identity));
         }
         protected DateTime? GetExpirationTime(TimeSpan? time)
         {
@@ -59,22 +55,49 @@ namespace Ao.Cache.InLitedb
         }
         public override Task<bool> RenewalAsync(TIdentity identity, TimeSpan? time)
         {
-            var newTime = GetExpirationTime(time);
-            var key = GetEntryKey(identity);
-            var d = Collection.Query()
-                .Where(x => x.Identity == key)
-                .OrderByDescending(x => x.ExpireTime)
-                .FirstOrDefault();
-            if (d == null)
-            {
-                return Task.FromResult(false);
-            }
-            d.ExpireTime = newTime;
-            var ok = Collection.Update(d);
-            return Task.FromResult(ok);
+            return Task.FromResult(Renewal(identity,time));
         }
 
         protected override Task<TEntry> CoreFindInCacheAsync(string key, TIdentity identity)
+        {
+            return Task.FromResult(CoreFindInCache(key,identity));
+        }
+
+        protected override Task<bool> SetInCacheAsync(string key, TIdentity identity, TEntry entity, TimeSpan? caheTime)
+        {            
+            return Task.FromResult(SetInCache(key,identity,entity,caheTime));
+        }
+
+        public override bool Delete(TIdentity identity)
+        {
+           return Collection.DeleteMany(GetWhere(identity))!=0;
+        }
+
+        public override bool Exists(TIdentity identity)
+        {
+            return Collection.Exists(GetWhere(identity));
+        }
+
+        protected override bool SetInCache(string key, TIdentity identity, TEntry entity, TimeSpan? caheTime)
+        {
+            var newTime = GetExpirationTime(caheTime);
+            var row = ToCollectionEntity(identity, entity);
+            var ent = Collection.Query().Where(GetWhere(identity)).OrderByDescending(x => x.ExpireTime).FirstOrDefault();
+            if (ent == null)
+            {
+                Collection.Insert(row);
+                row.ExpireTime = newTime;
+            }
+            else
+            {
+                ent.ExpireTime = newTime;
+                Collection.Update(ent);
+            }
+            Database.Commit();
+            return true;
+        }
+
+        protected override TEntry CoreFindInCache(string key, TIdentity identity)
         {
             var coll = Collection;
             var data = coll.Query()
@@ -82,7 +105,7 @@ namespace Ao.Cache.InLitedb
                 .ToList();
             if (data.Count == 0)
             {
-                return Task.FromResult<TEntry>(default);
+                return default;
             }
             var now = DateTime.Now;
             var rms = new List<ObjectId>();
@@ -127,28 +150,26 @@ namespace Ao.Cache.InLitedb
             }
             if (val != null)
             {
-                return Task.FromResult((TEntry)EntityConvertor.ToEntry(val, typeof(TEntry)));
+                return (TEntry)EntityConvertor.ToEntry(val, typeof(TEntry));
             }
-            return Task.FromResult<TEntry>(default);
+            return default;
         }
 
-        protected override Task<bool> SetInCacheAsync(string key, TIdentity identity, TEntry entity, TimeSpan? caheTime)
+        public override bool Renewal(TIdentity identity, TimeSpan? time)
         {
-            var newTime = GetExpirationTime(caheTime);
-            var row = ToCollectionEntity(identity, entity);
-            var ent = Collection.Query().Where(GetWhere(identity)).OrderByDescending(x => x.ExpireTime).FirstOrDefault();
-            if (ent == null)
+            var newTime = GetExpirationTime(time);
+            var key = GetEntryKey(identity);
+            var d = Collection.Query()
+                .Where(x => x.Identity == key)
+                .OrderByDescending(x => x.ExpireTime)
+                .FirstOrDefault();
+            if (d == null)
             {
-                Collection.Insert(row);
-                row.ExpireTime = newTime;
+                return false;
             }
-            else
-            {
-                ent.ExpireTime = newTime;
-                Collection.Update(ent);
-            }
-            Database.Commit();
-            return Task.FromResult(true);
+            d.ExpireTime = newTime;
+            var ok = Collection.Update(d);
+            return ok;
         }
     }
 }

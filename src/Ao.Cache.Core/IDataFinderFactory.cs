@@ -3,6 +3,12 @@ using System.Collections.Generic;
 
 namespace Ao.Cache
 {
+    public interface ISyncDataFinderFactory
+    {
+        ISyncDataFinder<TIdentity, TEntity> CreateSync<TIdentity, TEntity>();
+
+        ISyncWithDataFinder<TIdentity, TEntity> CreateSync<TIdentity, TEntity>(ISyncDataAccesstor<TIdentity, TEntity> accesstor);
+    }
     public interface IDataFinderFactory
     {
         IDataFinder<TIdentity,TEntity> Create<TIdentity, TEntity>();

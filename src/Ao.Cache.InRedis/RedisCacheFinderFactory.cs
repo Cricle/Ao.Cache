@@ -3,7 +3,7 @@ using System;
 
 namespace Ao.Cache.InRedis
 {
-    public class RedisDataFinderFactory : IBatchDataFinderFactory, IDataFinderFactory
+    public class RedisDataFinderFactory : IBatchDataFinderFactory, IDataFinderFactory, ISyncDataFinderFactory, ISyncBatchDataFinderFactory
     {
         public RedisDataFinderFactory(IConnectionMultiplexer multiplexer, IEntityConvertor entityConvertor)
         {
@@ -34,6 +34,27 @@ namespace Ao.Cache.InRedis
         {
             return BitRedisBatchFinderInstances<TIdentity, TEntity>.Get(Connection, EntityConvertor);
         }
+
+        public ISyncDataFinder<TIdentity, TEntity> CreateSync<TIdentity, TEntity>()
+        {
+            return BitRedisDataFinderInstances<TIdentity, TEntity>.Get(Connection, EntityConvertor);
+        }
+
+        public ISyncWithDataFinder<TIdentity, TEntity> CreateSync<TIdentity, TEntity>(ISyncDataAccesstor<TIdentity, TEntity> accesstor)
+        {
+            return new DefaultSyncBitRedisDataFinder<TIdentity, TEntity>(Connection, accesstor, EntityConvertor);
+        }
+
+        public ISyncBatchDataFinder<TIdentity, TEntity> CreateBatchSync<TIdentity, TEntity>()
+        {
+            return BitRedisBatchFinderInstances<TIdentity, TEntity>.Get(Connection, EntityConvertor);
+        }
+
+        public ISyncWithBatchDataFinder<TIdentity, TEntity> CreateBatchSync<TIdentity, TEntity>(ISyncBatchDataAccesstor<TIdentity, TEntity> accesstor)
+        {
+            return new DefaultSyncBitRedisBatchFinder<TIdentity, TEntity>(Connection, accesstor, EntityConvertor);
+        }
+
         static class BitRedisBatchFinderInstances<TIdentity, TEntity>
         {
             private static BitRedisBatchFinder<TIdentity, TEntity> Instance;

@@ -9,5 +9,10 @@ namespace Ao.Cache
 
         Task<bool> RenewalAsync(TIdentity identity, TimeSpan? time);
     }
+    public interface ISyncRenewalable<TIdentity>
+    {
+        bool Renewal(TIdentity identity);
 
+        bool Renewal(TIdentity identity, TimeSpan? time);
+    }
 }
