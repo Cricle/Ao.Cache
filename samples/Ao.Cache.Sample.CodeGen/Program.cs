@@ -4,8 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Ao.Cache.Gen;
 using System.Diagnostics;
 
-[assembly: EnableCacheAutoServiceRegist]
-
 namespace Ao.Cache.Sample.CodeGen
 {
     internal class Program

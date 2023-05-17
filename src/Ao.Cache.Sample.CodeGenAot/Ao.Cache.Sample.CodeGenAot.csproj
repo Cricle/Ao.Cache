@@ -2,8 +2,9 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFrameworks>net7.0;net472</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
+	  <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 	<ItemGroup>
@@ -11,7 +12,7 @@
 
 	</ItemGroup>
 	<ItemGroup>
-	  <ProjectReference Include="..\Ao.Cache.CodeGen\Ao.Cache.CodeGen.csproj"  OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
+	  <ProjectReference Include="..\Ao.Cache.CodeGen\Ao.Cache.CodeGen.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
 	  <ProjectReference Include="..\Ao.Cache.InMemory.Microsoft.DependencyInjection\Ao.Cache.InMemory.Microsoft.DependencyInjection.csproj" />
 	  <ProjectReference Include="..\Ao.Cache.InMemory\Ao.Cache.InMemory.csproj" />
 	</ItemGroup>
