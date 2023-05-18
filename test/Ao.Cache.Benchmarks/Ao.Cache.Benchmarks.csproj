@@ -9,7 +9,7 @@
     <PackageReference Include="BenchmarkDotNet" Version="0.13.5" />
     <PackageReference Include="EasyCaching.InMemory" Version="1.9.0" />
     <PackageReference Include="EasyCaching.Redis" Version="1.9.0" />
-    <PackageReference Include="EasyCaching.Serialization.MessagePack" Version="1.9.0" />
+    <PackageReference Include="EasyCaching.Serialization.SystemTextJson" Version="1.9.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
     <PackageReference Include="Structing.DryInterceptor" Version="1.3.3-preview.3" />
   </ItemGroup>
@@ -19,7 +19,7 @@
     <ProjectReference Include="..\..\src\Ao.Cache.Core\Ao.Cache.Core.csproj" />
     <ProjectReference Include="..\..\src\Ao.Cache.InMemory.Microsoft.DependencyInjection\Ao.Cache.InMemory.Microsoft.DependencyInjection.csproj" />
     <ProjectReference Include="..\..\src\Ao.Cache.InRedis.Microsoft.DependencyInjection\Ao.Cache.InRedis.Microsoft.DependencyInjection.csproj" />
-    <ProjectReference Include="..\..\src\Ao.Cache.Serizlier.MessagePack\Ao.Cache.Serizlier.MessagePack.csproj" />
+    <ProjectReference Include="..\..\src\Ao.Cache.Serizlier.TextJson\Ao.Cache.Serizlier.TextJson.csproj" />
   </ItemGroup>
 
 </Project>

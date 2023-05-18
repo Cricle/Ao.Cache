@@ -1,8 +1,7 @@
 ﻿using System;
-
 namespace Ao.Cache
 {
-    public class DefaultDataFinderOptions<TIdentity, TEntity> : WithHeaderIdentityGenerater<TIdentity, TEntity>, IDataFinderOptions<TIdentity, TEntity>
+    public class DefaultDataFinderOptions<TIdentity,TEntity> : WithHeaderIdentityGenerater<TIdentity, TEntity>, IDataFinderOptions<TIdentity, TEntity>
     {
         internal bool isCanRenewal = false;
         internal TimeSpan? cacheTime= DataFinderConst.DefaultCacheTime;

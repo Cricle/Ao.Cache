@@ -1,5 +1,6 @@
 ﻿using StackExchange.Redis;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
 namespace Ao.Cache.InRedis

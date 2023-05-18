@@ -3,6 +3,25 @@ using System.Threading.Tasks;
 
 namespace Ao.Cache
 {
+    public readonly struct DelegateSyncDataAccesstor<TIdentity, TEntity> : ISyncDataAccesstor<TIdentity, TEntity>
+    {
+        private readonly Func<TIdentity, TEntity> func;
+#if NET6_0||NETSTANDARD2_1
+        public DelegateDataAccesstor(Func<TIdentity, ValueTask<TEntity>> func)
+        {
+            this.func = async identity => await func(identity);
+        }
+#endif
+        public DelegateSyncDataAccesstor(Func<TIdentity, TEntity> func)
+        {
+            this.func = func;
+        }
+
+        public TEntity Find(TIdentity identity)
+        {
+            return func(identity);
+        }
+    }
     public readonly struct DelegateDataAccesstor<TIdentity, TEntity> : IDataAccesstor<TIdentity, TEntity>
     {
         private readonly Func<TIdentity, Task<TEntity>> func;

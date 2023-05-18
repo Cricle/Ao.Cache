@@ -6,8 +6,8 @@ namespace Ao.Cache
 {
     public class IdentityGenerater<TIdentity, TEntity> : IIdentityGenerater<TIdentity>
     {
-        private string head = FriendlyNameHelper<TEntity>.FriendlyName;
-        private string headWithPoint = FriendlyNameHelper<TEntity>.FriendlyName + ".";
+        internal string head = FriendlyNameHelper<TEntity>.FriendlyName;
+        internal string headWithPoint = FriendlyNameHelper<TEntity>.FriendlyName + ".";
         public string Head
         {
             get => head;

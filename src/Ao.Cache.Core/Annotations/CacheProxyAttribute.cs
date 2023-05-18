@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-namespace Ao.Cache.Core.Annotations
+namespace Ao.Cache.Annotations
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface, AllowMultiple = false, Inherited = false)]
     public sealed class CacheProxyAttribute : Attribute

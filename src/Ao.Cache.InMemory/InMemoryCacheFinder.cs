@@ -1,10 +1,11 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
 namespace Ao.Cache.InMemory
 {
-    public class InMemoryCacheFinder<TIdentity, TEntry> : DataFinderBase<TIdentity, TEntry>
+    public class InMemoryCacheFinder<TIdentity,TEntry> : DataFinderBase<TIdentity, TEntry>
     {
         private static readonly Task<bool> trueTask = Task.FromResult(true);
         private static readonly Task<bool> falseTask = Task.FromResult(false);

@@ -1,12 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Reflection;
-using System;
-using Ao.Cache.Core.Annotations;
-
-namespace Ao.Cache
+﻿namespace Ao.Cache
 {
-    public class WithHeaderIdentityGenerater<TIdentity, TEntity> : IdentityGenerater<TIdentity, TEntity>, IWithHeaderIdentityGenerater<TIdentity>
+    public class WithHeaderIdentityGenerater<TIdentity,TEntity> : IdentityGenerater<TIdentity, TEntity>, IWithHeaderIdentityGenerater<TIdentity>
     {
         private bool ignoreHead;
 

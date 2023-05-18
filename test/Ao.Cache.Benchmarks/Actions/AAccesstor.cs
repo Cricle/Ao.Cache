@@ -13,7 +13,7 @@ namespace Ao.Cache.Benchmarks.Actions
 
         public Task<Student> FindAsync(int identity)
         {
-            return Gt.Raw(identity);
+            return Gt.Raw(identity, null, identity);
         }
     }
 }

@@ -2,187 +2,16 @@
 using System.Linq.Expressions;
 using System.Reflection;
 using System;
-using Ao.Cache.Core.Annotations;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
-using System.Linq;
 using System.Diagnostics.CodeAnalysis;
+using Ao.Cache.Annotations;
 
 namespace Ao.Cache
 {
-    internal readonly struct DeclareInfo : IEquatable<DeclareInfo>
-    {
-        public readonly Type Type;
-
-        public readonly MethodInfo Method;
-
-        public DeclareInfo(Type type, MethodInfo method)
-        {
-            Type = type;
-            Method = method;
-        }
-
-        public override int GetHashCode()
-        {
-#if NETSTANDARD2_0
-            return Type?.GetHashCode() ?? 0 ^ Method?.GetHashCode() ?? 0;
-#else
-            return HashCode.Combine(Type, Method);
-#endif
-        }
-        public override bool Equals(object obj)
-        {
-            if (obj is DeclareInfo info)
-            {
-                return Equals(info);
-            }
-            return false;
-        }
-
-        public bool Equals(DeclareInfo other)
-        {
-            return other.Type == Type && other.Method == Method;
-        }
-    }
-    public interface ICacheHelperCreator
-    {
-        ICacheHelper<TReturn> GetHelper<TReturn>();
-    }
-    public static class CacheHelperCreatorFetchHelper
-    {
-        public static Task<bool> SetInCacheAsync<T>(this ICacheHelperCreator creator, Expression<Func<T>> exp, T value)
-        {
-            var finder = creator.GetHelper<T>().GetFinder(exp);
-            var identity = GetIdentity(exp);
-            return finder.SetInCacheAsync(identity, value);
-        }
-        public static Task<T> FindInCacheAsync<T>(this ICacheHelperCreator creator, Expression<Func<T>> exp)
-        {
-            var finder = creator.GetHelper<T>().GetFinder(exp);
-            var identity = GetIdentity(exp);
-            return finder.FindInCacheAsync(identity);
-        }
-        public static Task<bool> ExistsAsync<T>(this ICacheHelperCreator creator, Expression<Func<T>> exp)
-        {
-            var finder = GetFinder(creator, exp);
-            var identity = GetIdentity(exp);
-            return finder.ExistsAsync(identity);
-        }
-        public static Task<bool> RenewalAsync<T>(this ICacheHelperCreator creator, Expression<Func<T>> exp, TimeSpan? time)
-        {
-            var finder = GetFinder(creator, exp);
-            var identity = GetIdentity(exp);
-            return finder.RenewalAsync(identity, time);
-        }
-        public static Task<bool> RenewalAsync<T>(this ICacheHelperCreator creator, Expression<Func<T>> exp)
-        {
-            var finder = GetFinder(creator, exp);
-            var identity = GetIdentity(exp);
-            return finder.RenewalAsync(identity);
-        }
-        public static Task<bool> DeleteAsync<T>(this ICacheHelperCreator creator, Expression<Func<T>> exp)
-        {
-            var finder = GetFinder(creator, exp);
-            var identity = GetIdentity(exp);
-            return finder.DeleteAsync(identity);
-        }
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static IDataFinder<string, T> GetFinder<T>(this ICacheHelperCreator creator, Expression<Func<T>> exp)
-        {
-            return creator.GetHelper<T>().GetFinder(exp);
-        }
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string GetIdentity(object[] args)
-        {
-            return string.Join(",", args);
-        }
-        public static string GetIdentity<T>(Expression<Func<T>> exp)
-        {
-            if (exp.Body is MethodCallExpression methodCall)
-            {
-                var args = new object[methodCall.Arguments.Count];
-                for (int i = 0; i < methodCall.Arguments.Count; i++)
-                {
-                    var arg = methodCall.Arguments[i];
-                    if (arg is ConstantExpression constExp)
-                    {
-                        args[i] = constExp.Value;
-                    }
-                    else
-                    {
-                        args[i] = Expression.Lambda(arg).Compile().DynamicInvoke();
-                    }
-                }
-                return string.Join(",", args);
-            }
-            throw new NotSupportedException(exp.ToString());
-        }
-    }
-    public class CacheHelperCreator : ICacheHelperCreator
-    {
-        public CacheHelperCreator(IDataFinderFactory factory, ISyncDataFinderFactory syncFactory)
-        {
-            Factory = factory;
-            SyncFactory = syncFactory;
-        }
-
-        public IDataFinderFactory Factory { get; }
-
-        public ISyncDataFinderFactory SyncFactory { get; }
-
-        public ICacheHelper<TReturn> GetHelper<TReturn>()
-        {
-            return CacheHelperStore<TReturn>.Get(Factory,SyncFactory);
-        }
-        static class CacheHelperStore<TReturn>
-        {
-            private static ICacheHelper<TReturn> instance;
-            private static readonly object locker = new object();
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public static ICacheHelper<TReturn> Get(IDataFinderFactory factory,ISyncDataFinderFactory syncFactory)
-            {
-                if (instance == null)
-                {
-                    lock (locker)
-                    {
-                        if (instance == null)
-                        {
-                            instance = new CacheHelper<TReturn>(factory,syncFactory);
-                        }
-                    }
-                }
-                return instance;
-            }
-        }
-    }
-    public interface ICacheHelper<TReturn>
-    {
-        IDataFinder<string, TReturn> GetFinder(Type instanceType, MethodInfo method);
-
-        IDataFinder<string, TReturn> GetFinder(Expression<Func<TReturn>> exp);
-
-        ISyncDataFinder<string, TReturn> GetFinderSync(Type instanceType, MethodInfo method);
-
-        ISyncDataFinder<string, TReturn> GetFinderSync(Expression<Func<TReturn>> exp);
-    }
-    internal class Finders<TReturn>
-    {
-        public readonly IDataFinder<string, TReturn> Finder;
-
-        public readonly ISyncDataFinder<string,TReturn> SyncFinder;
-
-        public Finders(IDataFinder<string, TReturn> finder, ISyncDataFinder<string, TReturn> syncFinder)
-        {
-            Finder = finder;
-            SyncFinder = syncFinder;
-        }
-    }
     public class CacheHelper<
 #if NET6_0_OR_GREATER
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
 #endif
-    TReturn> : ICacheHelper<TReturn>
+        TReturn> : ICacheHelper<TReturn>
     {
         private readonly Dictionary<DeclareInfo, Finders<TReturn>> finders = new Dictionary<DeclareInfo, Finders<TReturn>>();
 
@@ -198,7 +27,7 @@ namespace Ao.Cache
 
         public ISyncDataFinderFactory SyncFactory { get; }
 
-        private Type GetDeclareType(Expression expression)
+        private static Type GetDeclareType(Expression expression)
         {
             if (expression == null)
             {

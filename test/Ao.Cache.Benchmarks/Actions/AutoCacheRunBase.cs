@@ -1,10 +1,10 @@
-﻿using Ao.Cache.Gen;
-using Ao.Cache.Serizlier.MessagePack;
+﻿using Ao.Cache.Serizlier.TextJson;
 using BenchmarkDotNet.Attributes;
-using Example;
 using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Redis;
 using System;
+using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Ao.Cache.Benchmarks.Actions
@@ -55,14 +55,17 @@ namespace Ao.Cache.Benchmarks.Actions
         {
             var ser = new ServiceCollection();
             ser.AddSingleton<GetTimeCt>();
-            ser.AddSingleton<GetTimeCtProxy>();
+            ser.AddSingleton<Gen.GetTimeCtProxy>();
             ser.AddSingleton<IDataAccesstor<int, Student>, AAccesstor>();
             Regist(ser);
             var s = ConfigurationOptions.Parse("127.0.0.1:6379");
             ser.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(s));
             ser.AddScoped(x => x.GetRequiredService<IConnectionMultiplexer>().GetDatabase());
-            ser.AddSingleton<IEntityConvertor, MessagePackEntityConvertor>();
-            ser.AddSingleton(typeof(IEntityConvertor), typeof(MessagePackEntityConvertor));
+            ser.AddSingleton<IEntityConvertor>(p =>
+            {
+                var opt = new JsonSerializerOptions(StudentJsonSerializerContext.Default.Options);
+                return new TextJsonEntityConvertor(opt,Encoding.UTF8);
+            });
             if (UseRedis())
             {
                 ser.AddInRedisFinder();

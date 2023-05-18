@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Ao.Cache.Core.Annotations
+namespace Ao.Cache.Annotations
 {
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
     public sealed class CacheProxyMethodAttribute : Attribute

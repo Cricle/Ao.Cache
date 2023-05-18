@@ -3,7 +3,7 @@ namespace Ao.Cache.CodeGen
 {
     internal static class TypeConsts
     {
-        public const string CacheForDataAccesstorAttribute = "Ao.Cache.Core.Annotations.CacheForDataAccesstorAttribute";
+        public const string CacheForDataAccesstorAttribute = "Ao.Cache.Annotations.CacheForDataAccesstorAttribute";
 
         public const string CacheForDataAccesstorServiceTypeAttribute = "ServiceType";
 
@@ -13,15 +13,15 @@ namespace Ao.Cache.CodeGen
 
         public const string CacheForDataAccesstorImplementTypeAttribute = "ImplementType";
 
-        public const string CacheProxyAttribute = "Ao.Cache.Core.Annotations.CacheProxyAttribute";
+        public const string CacheProxyAttribute = "Ao.Cache.Annotations.CacheProxyAttribute";
 
         public const string CacheProxyProxyAllAttribute = "ProxyAll";
 
-        public const string DataAccesstorAttribute = "Ao.Cache.Core.Annotations.DataAccesstorAttribute";
+        public const string DataAccesstorAttribute = "Ao.Cache.Annotations.DataAccesstorAttribute";
 
-        public const string CacheProxyByInterfaceAttribute = "Ao.Cache.Core.Annotations.CacheProxyByInterfaceAttribute";
+        public const string CacheProxyByInterfaceAttribute = "Ao.Cache.Annotations.CacheProxyByInterfaceAttribute";
 
-        public const string CacheProxyByClassAttribute = "Ao.Cache.Core.Annotations.CacheProxyByClassAttribute";
+        public const string CacheProxyByClassAttribute = "Ao.Cache.Annotations.CacheProxyByClassAttribute";
 
         public const string CacheProxyByProxyTypeAttribute = "ProxyType";
 
@@ -31,7 +31,7 @@ namespace Ao.Cache.CodeGen
 
         public const string CacheProxyAttributeNameSpaceName = "NameSpace";
 
-        public const string CacheProxyMethodAttribute = "Ao.Cache.Core.Annotations.CacheProxyMethodAttribute";
+        public const string CacheProxyMethodAttribute = "Ao.Cache.Annotations.CacheProxyMethodAttribute";
 
         public const string CacheProxyMethodCacheTimeAttribute = "CacheTime";
 
@@ -59,7 +59,7 @@ namespace Ao.Cache.CodeGen
 
         public const string HeadAbsolute = "HeadAbsolute";
 
-        public const string CacheConstructorAttribute = "Ao.Cache.Core.Annotations.CacheConstructorAttribute";
+        public const string CacheConstructorAttribute = "Ao.Cache.Annotations.CacheConstructorAttribute";
 
         public const string ICacheHelperCreator = "Ao.Cache.ICacheHelperCreator";
 

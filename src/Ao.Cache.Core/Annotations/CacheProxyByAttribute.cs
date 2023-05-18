@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Ao.Cache.Core.Annotations
+namespace Ao.Cache.Annotations
 {
     public abstract class CacheProxyByAttribute : Attribute
     {

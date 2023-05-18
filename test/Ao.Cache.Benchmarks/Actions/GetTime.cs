@@ -6,21 +6,23 @@ namespace Ao.Cache.Benchmarks.Actions
     [CacheProxy]
     public class GetTimeCt
     {
-        [CacheProxyMethod]
-        public virtual async Task<Student> NowTime(int id)
+        [CacheProxyMethod(Inline = false)]
+        public virtual async Task<Student> NowTime(int id,object a,double b)
         {
-            return await Raw(id);
+            await Task.Yield();
+            return new Student { Id = id };
         }
-        [CacheProxyMethod]
-        public virtual Student NowTimeSync(int id)
-        {
-            return RawSync(id);
-        }
-        public async Task<Student> Raw(int id)
+        [CacheProxyMethod(Inline =false)]
+        public virtual Student NowTimeSync(int id, object a, double b)
         {
             return new Student { Id = id };
         }
-        public Student RawSync(int id)
+        public async Task<Student> Raw(int id, object a, double b)
+        {
+            await Task.Yield();
+            return new Student { Id = id };
+        }
+        public Student RawSync(int id, object a, double b)
         {
             return new Student { Id = id };
         }

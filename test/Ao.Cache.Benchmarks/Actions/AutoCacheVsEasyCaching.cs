@@ -1,8 +1,6 @@
-﻿using Ao.Cache.Gen;
-using BenchmarkDotNet.Attributes;
+﻿using BenchmarkDotNet.Attributes;
 using EasyCaching.Core;
-using MessagePack;
-using MessagePack.Resolvers;
+using EasyCaching.Serialization.SystemTextJson.Configurations;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Threading.Tasks;
@@ -12,10 +10,10 @@ namespace Ao.Cache.Benchmarks.Actions
     [MemoryDiagnoser]
     public class AutoCacheVsEasyCachingSync : AutoCacheRunBase
     {
-        [Params(500, 1000)]
+        [Params(1000)]
         public int Times { get; set; }
 
-        [Params(10, 100)]
+        [Params(100)]
         public int Concurrent { get; set; }
 
         [Params(true, false)]
@@ -38,10 +36,9 @@ namespace Ao.Cache.Benchmarks.Actions
                         config.DBConfig.SyncTimeout = 10000;
                         config.DBConfig.AsyncTimeout = 10000;
                         config.SerializerName = "mymsgpack";
-                    }, "m1").WithMessagePack(x =>
+                    }, "m1").WithSystemTextJson(x =>
                     {
-                        x.EnableCustomResolver = true;
-                        x.CustomResolvers = TypelessObjectResolver.Instance;
+                        x.AddContext<StudentJsonSerializerContext>();
                     }, "mymsgpack");
                 }
                 else
@@ -67,7 +64,7 @@ namespace Ao.Cache.Benchmarks.Actions
                     var stu = mCache.Get<Student>(str);
                     if (!stu.HasValue)
                     {
-                        var s = scope.ServiceProvider.GetRequiredService<GetTimeCt>().RawSync(i);
+                        var s = scope.ServiceProvider.GetRequiredService<GetTimeCt>().RawSync(i, null, i);
                         mCache.Set(str, s, TimeSpan.FromSeconds(3));
                     }
                 }
@@ -84,7 +81,7 @@ namespace Ao.Cache.Benchmarks.Actions
                     var cache = finder.FindInCache(q);
                     if (cache == null)
                     {
-                        var s = scope.ServiceProvider.GetRequiredService<GetTimeCt>().RawSync(i);
+                        var s = scope.ServiceProvider.GetRequiredService<GetTimeCt>().RawSync(i,null,i);
                         finder.SetInCache(q, s);
                     }
                 }
@@ -104,7 +101,7 @@ namespace Ao.Cache.Benchmarks.Actions
                     var cache = finder.FindInCache(q);
                     if (cache == null)
                     {
-                        var s = scope.ServiceProvider.GetRequiredService<GetTimeCt>().RawSync(i);
+                        var s = scope.ServiceProvider.GetRequiredService<GetTimeCt>().RawSync(i, null, i);
                         finder.SetInCache(q, s);
                     }
                 }
@@ -118,8 +115,8 @@ namespace Ao.Cache.Benchmarks.Actions
             {
                 using (var scope = provider.CreateScope())
                 {
-                    var finder = scope.ServiceProvider.GetRequiredService<GetTimeCtProxy>();
-                    finder.NowTimeSync(i % 5);
+                    var finder = scope.ServiceProvider.GetRequiredService<Gen.GetTimeCtProxy>();
+                    finder.NowTimeSync(i % 5,null,i);
                 }
             });
 
@@ -155,11 +152,10 @@ namespace Ao.Cache.Benchmarks.Actions
                         config.DBConfig.SyncTimeout = 10000;
                         config.DBConfig.AsyncTimeout = 10000;
                         config.SerializerName = "mymsgpack";
-                    }, "m1").WithMessagePack(x =>
+                    }, "m1").WithSystemTextJson(x =>
                     {
-                        x.EnableCustomResolver = true;
-                        x.CustomResolvers= TypelessObjectResolver.Instance;
-                    },"mymsgpack");
+                        x.AddContext<StudentJsonSerializerContext>();
+                    }, "mymsgpack");
                 }
                 else
                 {
@@ -184,7 +180,7 @@ namespace Ao.Cache.Benchmarks.Actions
                     var stu = await mCache.GetAsync<Student>(str);
                     if (!stu.HasValue)
                     {
-                        var s = await scope.ServiceProvider.GetRequiredService<GetTimeCt>().Raw(i);
+                        var s = await scope.ServiceProvider.GetRequiredService<GetTimeCt>().Raw(i, null, i);
                         await mCache.SetAsync(str, s, TimeSpan.FromSeconds(3));
                     }
                 }
@@ -201,7 +197,7 @@ namespace Ao.Cache.Benchmarks.Actions
                     var cache = await finder.FindInCacheAsync(q);
                     if (cache == null)
                     {
-                        var s = await scope.ServiceProvider.GetRequiredService<GetTimeCt>().Raw(i);
+                        var s = await scope.ServiceProvider.GetRequiredService<GetTimeCt>().Raw(i, null, i);
                         await finder.SetInCacheAsync(q, s);
                     }
                 }
@@ -221,7 +217,7 @@ namespace Ao.Cache.Benchmarks.Actions
                     var cache =await finder.FindInCacheAsync(q);
                     if (cache == null)
                     {
-                        var s = await scope.ServiceProvider.GetRequiredService<GetTimeCt>().Raw(i);
+                        var s = await scope.ServiceProvider.GetRequiredService<GetTimeCt>().Raw(i, null, i);
                         await finder.SetInCacheAsync(q, s);
                     }
                 }
@@ -235,8 +231,8 @@ namespace Ao.Cache.Benchmarks.Actions
             {
                 using (var scope = provider.CreateScope())
                 {
-                    var finder = scope.ServiceProvider.GetRequiredService<GetTimeCtProxy>();
-                    await finder.NowTime(i%5);
+                    var finder = scope.ServiceProvider.GetRequiredService<Gen.GetTimeCtProxy>();
+                    await finder.NowTime(i % 5, null, i);
                 }
             });
 
