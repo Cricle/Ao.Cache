@@ -25,6 +25,7 @@ namespace Ao.Cache.Sample.CodeGenAot
             var res = p.NowSync(0, null, null);
             Console.WriteLine("CurrentRes:" + res.Value.Ticks);
             var cacheHelper = provider.GetRequiredService<ICacheHelperCreator>();
+            var incache = cacheHelper.FindInCache(() => p.NowSync(0, null, null));
             var ok = cacheHelper.Delete(() => p.NowSync(0, null, null));
             Console.WriteLine("Delete:" + ok);
             res = p.NowSync(0, null, null);
