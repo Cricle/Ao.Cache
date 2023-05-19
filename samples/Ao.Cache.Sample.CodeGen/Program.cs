@@ -1,5 +1,4 @@
-﻿
-using Ao.Cache.Core.Annotations;
+﻿using Ao.Cache.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Ao.Cache.Gen;
 using System.Diagnostics;

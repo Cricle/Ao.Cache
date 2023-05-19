@@ -1,4 +1,4 @@
-﻿using Ao.Cache.Core.Annotations;
+﻿using Ao.Cache.Annotations;
 using System.Threading.Tasks;
 
 namespace Ao.Cache.Benchmarks.Actions

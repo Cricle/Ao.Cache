@@ -18,5 +18,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Ao.Cache.Core\Ao.Cache.Core.csproj" />
+    <ProjectReference Include="..\..\src\Ao.Cache.InMemory\Ao.Cache.InMemory.csproj" />
   </ItemGroup>
 </Project>

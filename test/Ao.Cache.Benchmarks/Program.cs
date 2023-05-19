@@ -12,16 +12,6 @@ namespace Ao.Cache.Benchmarks
     {
         static void Main(string[] args)
         {
-            _ = typeof(InMemoryCacheFinder<int,Student>);
-            //var r = new AutoCacheVsEasyCaching();
-            //r.Times = 100;
-            //r.Concurrent = 100;
-            //r.IsUseRedis = true;
-            //r.Setup().GetAwaiter().GetResult();
-            //r.UseProxy().GetAwaiter().GetResult();
-            //r.UseProvider().GetAwaiter().GetResult();
-            //r.EasyCaching().GetAwaiter().GetResult();
-
             BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run(args, new MyConfig());
         }
     }
@@ -31,7 +21,7 @@ namespace Ao.Cache.Benchmarks
         {
             AddLogger(BenchmarkDotNet.Loggers.ConsoleLogger.Unicode);
             AddJob(Job.ShortRun.WithPlatform(Platform.X64).WithGcServer(true).WithRuntime(CoreRuntime.Core70));
-            AddJob(Job.ShortRun.WithPlatform(Platform.X64).WithGcServer(true).WithRuntime(NativeAotRuntime.Net70).WithStrategy(BenchmarkDotNet.Engines.RunStrategy.ColdStart).WithId("AOT"));
+            //AddJob(Job.ShortRun.WithPlatform(Platform.X64).WithGcServer(true).WithRuntime(NativeAotRuntime.Net70).WithStrategy(BenchmarkDotNet.Engines.RunStrategy.ColdStart).WithId("AOT"));
             AddExporter(BenchmarkDotNet.Exporters.DefaultExporters.Markdown);
             AddExporter(BenchmarkDotNet.Exporters.DefaultExporters.Csv);
             AddAnalyser(EnvironmentAnalyser.Default
