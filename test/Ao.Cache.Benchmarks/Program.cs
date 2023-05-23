@@ -21,9 +21,8 @@ namespace Ao.Cache.Benchmarks
         {
             AddLogger(BenchmarkDotNet.Loggers.ConsoleLogger.Unicode);
             AddJob(Job.ShortRun.WithPlatform(Platform.X64).WithGcServer(true).WithRuntime(CoreRuntime.Core70));
-            //AddJob(Job.ShortRun.WithPlatform(Platform.X64).WithGcServer(true).WithRuntime(NativeAotRuntime.Net70).WithStrategy(BenchmarkDotNet.Engines.RunStrategy.ColdStart).WithId("AOT"));
-            AddExporter(BenchmarkDotNet.Exporters.DefaultExporters.Markdown);
-            AddExporter(BenchmarkDotNet.Exporters.DefaultExporters.Csv);
+            AddJob(Job.ShortRun.WithPlatform(Platform.X64).WithGcServer(true).WithRuntime(NativeAotRuntime.Net70).WithId("AOT"));
+            AddExporter(BenchmarkDotNet.Exporters.MarkdownExporter.GitHub);
             AddAnalyser(EnvironmentAnalyser.Default
                 , OutliersAnalyser.Default
                 , MinIterationTimeAnalyser.Default
