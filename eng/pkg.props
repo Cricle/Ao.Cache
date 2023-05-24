@@ -1,11 +1,15 @@
 <Project>
-  <PropertyGroup>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Version>1.5.0</Version>
-    <Authors>HCricle</Authors>
-    <Description>A cache model</Description>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)'=='Release'">
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-  </PropertyGroup>
+	<PropertyGroup>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<Version>1.5.0</Version>
+		<Authors>HCricle</Authors>
+		<Description>A cache model</Description>
+		<PackageProjectUrl>https://github.com/Cricle/Ao.Cache</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/Cricle/Ao.Cache</RepositoryUrl>
+		<Description>A cache model, support static proxy class to cache result</Description>
+		<PackageTags>roslyn,cache,redis,memory,proxy,static</PackageTags>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)'=='Release'">
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+	</PropertyGroup>
 </Project>
