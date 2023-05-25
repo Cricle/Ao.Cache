@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using System;
+using System.Runtime.CompilerServices;
 
 namespace Ao.Cache
 {
@@ -9,19 +10,23 @@ namespace Ao.Cache
 
         public readonly MethodInfo Method;
 
+        public readonly int Hash;
+
         public DeclareInfo(Type type, MethodInfo method)
         {
             Type = type;
             Method = method;
-        }
+#if NETSTANDARD2_0
+            Hash= Type?.GetHashCode() ?? 0 ^ Method?.GetHashCode() ?? 0;
+#else
+            Hash = HashCode.Combine(Type, Method);
+#endif
 
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override int GetHashCode()
         {
-#if NETSTANDARD2_0
-            return Type?.GetHashCode() ?? 0 ^ Method?.GetHashCode() ?? 0;
-#else
-            return HashCode.Combine(Type, Method);
-#endif
+            return Hash;
         }
         public override bool Equals(object obj)
         {

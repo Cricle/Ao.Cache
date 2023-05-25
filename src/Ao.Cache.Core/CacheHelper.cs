@@ -4,6 +4,7 @@ using System.Reflection;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using Ao.Cache.Annotations;
+using System.Runtime.CompilerServices;
 
 namespace Ao.Cache
 {
@@ -63,6 +64,46 @@ namespace Ao.Cache
             }
             return ret;
         }
+
+        private Finders<TReturn> BuildFinders(Type instanceType, MethodInfo method)
+        {
+            CacheProxyAttribute declareAttr = null;
+            if (declareAttr != null)
+            {
+                declareAttr = instanceType.GetCustomAttribute<CacheProxyAttribute>();
+            }
+            var proxyAttr = method.GetCustomAttribute<CacheProxyMethodAttribute>();
+            var finder = Factory.Create<string, TReturn>();
+            var syncFinder = SyncFactory.CreateSync<string, TReturn>();
+            string head = null;
+            if (proxyAttr != null)
+            {
+                head = proxyAttr.Head;
+                if (!proxyAttr.HeadAbsolute)
+                {
+                    head = (string.IsNullOrEmpty(declareAttr?.Head) ? string.Empty : ".") + head;
+                }
+                if (TimeSpan.TryParse(proxyAttr.CacheTime, out var tp))
+                {
+                    finder.Options.WithCacheTime(tp);
+                    syncFinder.Options.WithCacheTime(tp);
+                }
+            }
+            if (string.IsNullOrEmpty(head))
+            {
+                head = $"{instanceType.FullName}.{method.Name}[{method.GetGenericArguments().Length}]({method.GetParameters().Length})";
+            }
+            finder.Options.WithHead(head);
+            syncFinder.Options.WithHead(head);
+            if (proxyAttr != null && proxyAttr.Renewal)
+            {
+                finder.Options.WithRenew(true);
+                syncFinder.Options.WithRenew(true);
+            }
+            return new Finders<TReturn>(finder, syncFinder);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private Finders<TReturn> GetFinders(Type instanceType, MethodInfo method)
         {
             var key = new DeclareInfo(instanceType, method);
@@ -72,46 +113,14 @@ namespace Ao.Cache
                 {
                     if (!this.finders.TryGetValue(key, out finders))
                     {
-                        CacheProxyAttribute declareAttr = null;
-                        if (declareAttr != null)
-                        {
-                            declareAttr = instanceType.GetCustomAttribute<CacheProxyAttribute>();
-                        }
-                        var proxyAttr = method.GetCustomAttribute<CacheProxyMethodAttribute>();
-                        var finder = Factory.Create<string, TReturn>();
-                        var syncFinder = SyncFactory.CreateSync<string, TReturn>();
-                        string head = null;
-                        if (proxyAttr != null)
-                        {
-                            head = proxyAttr.Head;
-                            if (!proxyAttr.HeadAbsolute)
-                            {
-                                head = (string.IsNullOrEmpty(declareAttr?.Head) ? string.Empty : ".") + head;
-                            }
-                            if (TimeSpan.TryParse(proxyAttr.CacheTime, out var tp))
-                            {
-                                finder.Options.WithCacheTime(tp);
-                                syncFinder.Options.WithCacheTime(tp);
-                            }
-                        }
-                        if (string.IsNullOrEmpty(head))
-                        {
-                            head = $"{instanceType.FullName}.{method.Name}[{method.GetGenericArguments().Length}]({method.GetParameters().Length})";
-                        }
-                        finder.Options.WithHead(head);
-                        syncFinder.Options.WithHead(head);
-                        if (proxyAttr != null && proxyAttr.Renewal)
-                        {
-                            finder.Options.WithRenew(true);
-                            syncFinder.Options.WithRenew(true);
-                        }
-                        finders = new Finders<TReturn>(finder, syncFinder);
+                        finders = BuildFinders(instanceType, method);
                         this.finders.Add(key, finders);
                     }
                 }
             }
             return finders;
         }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IDataFinder<string, TReturn> GetFinder(Type instanceType, MethodInfo method)
         {
             return GetFinders(instanceType, method).Finder;
@@ -126,6 +135,7 @@ namespace Ao.Cache
             throw new NotSupportedException(exp.ToString());
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ISyncDataFinder<string, TReturn> GetFinderSync(Type instanceType, MethodInfo method)
         {
             return GetFinders(instanceType, method).SyncFinder;
