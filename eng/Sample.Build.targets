@@ -1,0 +1,6 @@
+<Project>
+	<Target Name="PublishAot">
+		<Message Importance="normal" Text="Now publish $(TargetFramework).$(Configuration) aot!"></Message>
+		<Exec Command="dotnet publish $(ProjectFile) -c $(Configuration) -f $(TargetFramework) -p:PublishAot=true"/>
+	</Target>
+</Project>

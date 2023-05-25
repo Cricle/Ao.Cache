@@ -16,4 +16,5 @@
 	  <ProjectReference Include="..\Ao.Cache.InMemory.Microsoft.DependencyInjection\Ao.Cache.InMemory.Microsoft.DependencyInjection.csproj" />
 	  <ProjectReference Include="..\Ao.Cache.InMemory\Ao.Cache.InMemory.csproj" />
 	</ItemGroup>
+	<Import Project="../../eng/Sample.Build.targets"/>
 </Project>

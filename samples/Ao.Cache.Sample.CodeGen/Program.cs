@@ -1,6 +1,5 @@
-﻿using Ao.Cache.Annotations;
+﻿using LiteDB;
 using Microsoft.Extensions.DependencyInjection;
-using Ao.Cache.Gen;
 using System.Diagnostics;
 
 namespace Ao.Cache.Sample.CodeGen
@@ -9,96 +8,70 @@ namespace Ao.Cache.Sample.CodeGen
     {
         static void Main(string[] args)
         {
-            //var services = new ServiceCollection();
-            //services.AddInMemoryFinder();
-            //services.AddScoped<Student>();
-            //services.AddScoped<StudentProxy>();
-            //var provider = services.BuildServiceProvider();
-            //var finder = provider.GetRequiredService<StudentProxy>();
-            //var creator = provider.GetRequiredService<ICacheHelperCreator>();
-            //var c = provider.GetRequiredService<Student>();
-            //var ax = new A();
-            //_ = finder.Get<int>(0);
-            //_ = c.Get2(ax).Result;
-            //var gc = GC.GetTotalMemory(true);
-            //var sw = Stopwatch.GetTimestamp();
-            //for (int i = 0; i < 1_000_000; i++)
-            //{
-            //    _ = finder.Get2(ax).Result;
-            //}
-            //Console.WriteLine(new TimeSpan(Stopwatch.GetTimestamp() - sw));
-            //Console.WriteLine($"{(GC.GetTotalMemory(false) - gc) / 1024 / 1024.0}");
+            var db = new LiteDatabase("filename=a.ldb");
+            var provider = new ServiceCollection()
+                .AddInMemoryFinder()
+                .AddSingleton<ILiteDatabase>(db)
+                .AddSingleton<UserService, Gen.UserServiceProxy>()
+                .BuildServiceProvider();
+            var ser = provider.GetRequiredService<UserService>();
+            while (true)
+            {
+                try
+                {
+                    Console.Write("> ");
+                    var c = Console.ReadLine();
+                    var command = c.Split(' ');
+                    var key = command[0][0];
+                    Console.Clear();
+                    Console.CursorLeft = 0;
+                    var sw = Stopwatch.GetTimestamp();
+                    if (key == 'a')
+                    {
+                        var users = ser.AllUser();
+                        Console.WriteLine("Total:" + users.Length);
+                        foreach (var item in users)
+                        {
+                            Console.WriteLine(item);
+                        }
+                    }
+                    else if (key == 'f')
+                    {
+                        Console.WriteLine(ser.GetUser(command[1]));
+                    }
+                    else if (key == 'i')
+                    {
+                        Console.WriteLine(ser.Add(command[1]).ToString());
+                    }
+                    else if (key == 'r')
+                    {
+                        var count = int.Parse(command[1]);
+                        Console.WriteLine(ser.AddRange(count));
+                    }
+                    else if (key == 'd')
+                    {
+                        Console.WriteLine(ser.Delete(command[1]).ToString());
+                    }
+                    else if (key == 'p')
+                    {
+                        db.Checkpoint();
+                        Console.WriteLine("ok");
+                    }
+                    else if (key == 'c')
+                    {
+                        Console.WriteLine(ser.Clear());
+                    }
+                    else if (key == 'q')
+                    {
+                        break;
+                    }
+                    Console.WriteLine(Stopwatch.GetElapsedTime(sw));
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                }
+            }
         }
     }
-    //[CacheProxy(ProxyType = typeof(Student), ProxyAll = true)]
-    public interface IStudent
-    {
-        void Run();
-
-        int? Get<T>(int? a);
-
-        int? Get1(A a);
-
-        Task<int?> Get2(A a);
-    }
-    [CacheProxy(Head = "test")]
-    public class Student:IStudent
-    {
-        public Student()
-        {
-
-        }
-        public virtual int? Get<T>()
-        {
-            return Random.Shared.Next(0, 9999);
-        }
-        public virtual int? Get<T>(int? a)
-        {
-            return Random.Shared.Next(0, 9999) + a.GetHashCode();
-        }
-
-        public virtual int? Get1(A a)
-        {
-            return Random.Shared.Next(0, 9999) + a.GetHashCode();
-        }
-        public virtual int? Getmul(A a, int b, DateTime c)
-        {
-            return Random.Shared.Next(0, 9999) + a.GetHashCode();
-        }
-        public virtual async Task<int?> Get2(A a)
-        {
-            await Task.Yield();
-            return Random.Shared.Next(0, 9999) + a.GetHashCode();
-        }
-        public virtual ValueTask<int> Get3(A a)
-        {
-            return new ValueTask<int>(Random.Shared.Next(0, 9999) + a.GetHashCode());
-        }
-
-        public virtual void Run()
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    public struct A
-    {
-        public override int GetHashCode()
-        {
-            return 111;
-        }
-        public override string ToString()
-        {
-            return GetHashCode().ToString();
-        }
-    }
-    [DataAccesstor(NameSpace = "dsadsa")]
-    public class TestDataAccesstor : IDataAccesstor<A, int?>
-    {
-        public Task<int?> FindAsync(A identity)
-        {
-            return Task.FromResult<int?>(identity.GetHashCode() + Random.Shared.Next(0, 9999));
-        }
-    }
-
 }
