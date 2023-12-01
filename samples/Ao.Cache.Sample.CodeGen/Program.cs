@@ -1,6 +1,7 @@
 ﻿using LiteDB;
 using Microsoft.Extensions.DependencyInjection;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace Ao.Cache.Sample.CodeGen
 {

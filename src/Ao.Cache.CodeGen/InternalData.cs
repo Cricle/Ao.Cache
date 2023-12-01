@@ -6,6 +6,6 @@
 
         public static readonly string Version = "1.0";
 
-        public static readonly string GeneratedCode = $"[System.CodeDom.Compiler.GeneratedCode(\"{ToolName}\",\"{Version}\")]";
+        public static readonly string GeneratedCode = $"[global::System.CodeDom.Compiler.GeneratedCode(\"{ToolName}\",\"{Version}\")]";
     }
 }

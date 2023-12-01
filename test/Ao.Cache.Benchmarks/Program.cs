@@ -1,5 +1,4 @@
-﻿using Ao.Cache.InMemory;
-using BenchmarkDotNet.Analysers;
+﻿using BenchmarkDotNet.Analysers;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Environments;
 using BenchmarkDotNet.Jobs;
@@ -20,8 +19,8 @@ namespace Ao.Cache.Benchmarks
         public MyConfig()
         {
             AddLogger(BenchmarkDotNet.Loggers.ConsoleLogger.Unicode);
-            AddJob(Job.ShortRun.WithPlatform(Platform.X64).WithGcServer(true).WithRuntime(CoreRuntime.Core70));
-            AddJob(Job.ShortRun.WithPlatform(Platform.X64).WithGcServer(true).WithRuntime(NativeAotRuntime.Net70).WithId("AOT"));
+            AddJob(Job.MediumRun.WithPlatform(Platform.X64).WithGcServer(true).WithRuntime(CoreRuntime.Core80));
+            AddJob(Job.MediumRun.WithPlatform(Platform.X64).WithGcServer(true).WithRuntime(NativeAotRuntime.Net80).WithId("AOT"));
             AddExporter(BenchmarkDotNet.Exporters.MarkdownExporter.GitHub);
             AddAnalyser(EnvironmentAnalyser.Default
                 , OutliersAnalyser.Default
