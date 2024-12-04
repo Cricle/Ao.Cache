@@ -28,7 +28,7 @@ namespace Ao.Cache.Sample.CodeGen
         }
 
         [CacheProxyMethod(CacheTime = "00:01:00")]
-        public virtual User GetUser(string name)
+        public virtual User? GetUser(string name)
         {
             Console.WriteLine("Run in raw method");
             return Users.Find(x => x.Name == name).FirstOrDefault();

@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="BenchmarkDotNet" Version="0.13.10" />
+    <PackageReference Include="BenchmarkDotNet" Version="0.14.0" />
     <PackageReference Include="EasyCaching.InMemory" Version="1.9.2" />
     <PackageReference Include="EasyCaching.Redis" Version="1.9.2" />
     <PackageReference Include="EasyCaching.Serialization.SystemTextJson" Version="1.9.2" />

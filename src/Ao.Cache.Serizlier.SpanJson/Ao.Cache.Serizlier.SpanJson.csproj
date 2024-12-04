@@ -2,7 +2,7 @@
 
 	<Import Project="..\..\eng\pkg.props" />
 	<PropertyGroup>
-		<TargetFrameworks>net6.0</TargetFrameworks>
+		<TargetFrameworks>net6.0;net8.0</TargetFrameworks>
 	</PropertyGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\Ao.Cache.Core\Ao.Cache.Core.csproj" />

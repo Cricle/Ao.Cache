@@ -1,13 +1,11 @@
 ﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System.Linq;
+using Microsoft.CodeAnalysis.Text;
 using System;
 using System.Collections.Generic;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.Text;
+using System.Linq;
 using System.Text;
-using System.Reflection;
-using System.Diagnostics;
 
 namespace Ao.Cache.CodeGen
 {

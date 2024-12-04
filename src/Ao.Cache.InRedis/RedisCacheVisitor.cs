@@ -6,15 +6,17 @@ namespace Ao.Cache.InRedis
 {
     public partial class RedisCacheVisitor : ICacheVisitor
     {
-        public RedisCacheVisitor(IDatabase database, IEntityConvertor entityConvertor)
+        public RedisCacheVisitor(IConnectionMultiplexer connectionMultiplexer, IEntityConvertor entityConvertor)
         {
-            Database = database ?? throw new ArgumentNullException(nameof(database));
+            ConnectionMultiplexer = connectionMultiplexer ?? throw new ArgumentNullException(nameof(connectionMultiplexer));
             EntityConvertor = entityConvertor ?? throw new ArgumentNullException(nameof(entityConvertor));
         }
 
-        public IDatabase Database { get; }
+        public IConnectionMultiplexer ConnectionMultiplexer { get; }
 
         public IEntityConvertor EntityConvertor { get; }
+
+        public IDatabase Database => ConnectionMultiplexer.GetDatabase();
 
         public bool Delete(string key)
         {
