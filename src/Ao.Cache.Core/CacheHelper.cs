@@ -72,7 +72,7 @@ namespace Ao.Cache
             {
                 declareAttr = instanceType.GetCustomAttribute<CacheProxyAttribute>();
             }
-            var proxyAttr = method.GetCustomAttribute<CacheProxyMethodAttribute>();
+            var proxyAttr = method.GetCustomAttribute<CacheProxyMethodAttribute>();//TODO: 这里不用反射，而是直接传入
             var finder = Factory.Create<string, TReturn>();
             var syncFinder = SyncFactory.CreateSync<string, TReturn>();
             string head = null;

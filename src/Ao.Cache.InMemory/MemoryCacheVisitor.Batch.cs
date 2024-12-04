@@ -6,114 +6,109 @@ namespace Ao.Cache.InMemory
 {
     public partial class MemoryCacheVisitor
     {
-        public IDictionary<string, bool> Delete(IReadOnlyList<string> keys)
+        public long Delete(IReadOnlyList<string> keys)
         {
-            var map = new Dictionary<string, bool>(keys.Count);
+            var res = 0;
             for (int i = 0; i < keys.Count; i++)
             {
-                var data = keys[i];
-                map[data] = Delete(data);
+                if (Delete(keys[i])) res++;
             }
-            return map;
+            return res;
         }
 
-        public Task<IDictionary<string, bool>> DeleteAsync(IReadOnlyList<string> keys)
+        public Task<long> DeleteAsync(IReadOnlyList<string> keys)
         {
             return Task.FromResult(Delete(keys));
         }
 
-        public IDictionary<string, bool> Exists(IReadOnlyList<string> keys)
+        public long Exists(IReadOnlyList<string> keys)
         {
-            var map = new Dictionary<string, bool>(keys.Count);
+            var res = 0;
             for (int i = 0; i < keys.Count; i++)
             {
-                var data = keys[i];
-                map[data] = Exists(data);
+                if (Exists(keys[i])) res++;
             }
-            return map;
+            return res;
         }
 
-        public Task<IDictionary<string, bool>> ExistsAsync(IReadOnlyList<string> keys)
+        public Task<long> ExistsAsync(IReadOnlyList<string> keys)
         {
             return Task.FromResult(Exists(keys));
         }
 
-        public IDictionary<string, bool> Expire(IReadOnlyList<string> keys, TimeSpan? cacheTime)
+        public long Expire(IReadOnlyList<string> keys, TimeSpan? cacheTime)
         {
-            var map = new Dictionary<string, bool>(keys.Count);
+            var res = 0;
             for (int i = 0; i < keys.Count; i++)
             {
-                var data = keys[i];
-                map[data] = Expire(data, cacheTime);
+                if (Expire(keys[i],cacheTime)) res++;
             }
-            return map;
+            return res;
         }
 
-        public Task<IDictionary<string, bool>> ExpireAsync(IReadOnlyList<string> keys, TimeSpan? cacheTime)
+        public Task<long> ExpireAsync(IReadOnlyList<string> keys, TimeSpan? cacheTime)
         {
             return Task.FromResult(Expire(keys, cacheTime));
         }
 
-        public IDictionary<string, T> Get<T>(IReadOnlyList<string> keys)
+        public IReadOnlyList<T> Get<T>(IReadOnlyList<string> keys)
         {
-            var map = new Dictionary<string, T>(keys.Count);
+            var map = new T[keys.Count];
             for (int i = 0; i < keys.Count; i++)
             {
-                var data = keys[i];
-                map[data] = Get<T>(data);
+                map[i] = Get<T>(keys[i]);
             }
             return map;
         }
 
-        public Task<IDictionary<string, T>> GetAsync<T>(IReadOnlyList<string> keys)
+        public Task<IReadOnlyList<T>> GetAsync<T>(IReadOnlyList<string> keys)
         {
             return Task.FromResult(Get<T>(keys));
         }
 
-        public IDictionary<string, string> GetString(IReadOnlyList<string> keys)
+        public IReadOnlyList<string> GetString(IReadOnlyList<string> keys)
         {
-            var map = new Dictionary<string, string>(keys.Count);
+            var map = new string[keys.Count];
             for (int i = 0; i < keys.Count; i++)
             {
-                var data = keys[i];
-                map[data] = GetString(data);
+                map[i] = GetString(keys[i]);
             }
             return map;
         }
 
-        public Task<IDictionary<string, string>> GetStringAsync(IReadOnlyList<string> keys)
+        public Task<IReadOnlyList<string>> GetStringAsync(IReadOnlyList<string> keys)
         {
             return Task.FromResult(GetString(keys));
         }
 
-        public IDictionary<string, bool> Set<T>(KeyValuePair<string, T>[] datas, TimeSpan? cacheTime, CacheSetIf cacheSetIf = CacheSetIf.Always)
+        public long Set<T>(KeyValuePair<string, T>[] datas, TimeSpan? cacheTime, CacheSetIf cacheSetIf = CacheSetIf.Always)
         {
-            var map = new Dictionary<string, bool>(datas.Length);
+            var res = 0;
             for (int i = 0; i < datas.Length; i++)
             {
                 var data = datas[i];
-                map[data.Key] = Set(data.Key, data.Value, cacheTime, cacheSetIf);
+                if (Set(data.Key, data.Value, cacheTime, cacheSetIf)) res++;
             }
-            return map;
+            return res;
         }
 
-        public Task<IDictionary<string, bool>> SetAsync<T>(KeyValuePair<string, T>[] datas, TimeSpan? cacheTime, CacheSetIf cacheSetIf = CacheSetIf.Always)
+        public Task<long> SetAsync<T>(KeyValuePair<string, T>[] datas, TimeSpan? cacheTime, CacheSetIf cacheSetIf = CacheSetIf.Always)
         {
             return Task.FromResult(Set(datas, cacheTime, cacheSetIf));
         }
 
-        public IDictionary<string, bool> SetString(KeyValuePair<string, string>[] datas, TimeSpan? cacheTime, CacheSetIf cacheSetIf = CacheSetIf.Always)
+        public long SetString(KeyValuePair<string, string>[] datas, TimeSpan? cacheTime, CacheSetIf cacheSetIf = CacheSetIf.Always)
         {
-            var map = new Dictionary<string, bool>(datas.Length);
+            var res = 0;
             for (int i = 0; i < datas.Length; i++)
             {
                 var data = datas[i];
-                map[data.Key] = SetString(data.Key, data.Value, cacheTime, cacheSetIf);
+                if (SetString(data.Key, data.Value, cacheTime, cacheSetIf)) res++;
             }
-            return map;
+            return res;
         }
 
-        public Task<IDictionary<string, bool>> SetStringAsync(KeyValuePair<string, string>[] datas, TimeSpan? cacheTime, CacheSetIf cacheSetIf = CacheSetIf.Always)
+        public Task<long> SetStringAsync(KeyValuePair<string, string>[] datas, TimeSpan? cacheTime, CacheSetIf cacheSetIf = CacheSetIf.Always)
         {
             return Task.FromResult(SetString(datas, cacheTime, cacheSetIf));
         }
