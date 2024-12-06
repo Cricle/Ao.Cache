@@ -39,7 +39,7 @@ namespace Ao.Cache
 
         public bool Equals(DeclareInfo other)
         {
-            return other.Type == Type && other.Method == Method;
+            return other.Hash == Hash && other.Type == Type && other.Method == Method;
         }
     }
 

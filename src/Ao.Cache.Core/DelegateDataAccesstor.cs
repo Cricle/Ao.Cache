@@ -33,7 +33,7 @@ namespace Ao.Cache
 #endif
         public DelegateDataAccesstor(Func<TIdentity, TEntity> func)
         {
-            this.func = identity=>Task.FromResult(func(identity));
+            this.func = identity => Task.FromResult(func(identity));
         }
         public DelegateDataAccesstor(Func<TIdentity, Task<TEntity>> func)
         {
